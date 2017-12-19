@@ -167,7 +167,7 @@ module OpenCensus
       # @private
       #
       def initialize name, trace_id: nil, span_id: nil, parent_span_id: nil,
-                           kind: nil, start_time: nil, end_time: nil,
+                           start_time: nil, end_time: nil,
                            attributes: {}, dropped_attributes_count: 0,
                            stack_trace: [], dropped_frames_count: 0,
                            time_events: [], dropped_annotations_count: 0,
@@ -179,7 +179,6 @@ module OpenCensus
         @trace_id = trace_id
         @span_id = span_id
         @parent_span_id = parent_span_id
-        @kind = kind
         @start_time = start_time
         @end_time = end_time
         @attributes = attributes

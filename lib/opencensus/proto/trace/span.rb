@@ -75,9 +75,15 @@ module OpenCensus
         ##
         # The properties of this span.
         #
-        # @return [Attributes, nil]
+        # @return [Hash{String => String}]
         #
         attr_reader :attributes
+
+        ##
+        # The number of attributes that were discarded. Attributes can be
+        # discarded because their keys are too long or because there are too
+        # many attributes. If this value is 0, then no attributes were dropped.
+        attr_reader :dropped_attributes_count
 
         ##
         # A stack trace captured at the start of the span.
@@ -89,16 +95,40 @@ module OpenCensus
         ##
         # The included time events.
         #
-        # @return [TimeEvents, nil]
+        # @return [TimeEvent[]]
         #
         attr_reader :time_events
 
         ##
+        # The number of dropped annotations in all the included time events.
+        # If the value is 0, then no annotations were dropped.
+        #
+        # @return [Fixnum]
+        #
+        attr_reader :dropped_annotations_count
+
+        ##
+        # The number of dropped message events in all the included time events.
+        # If the value is 0, then no message events were dropped.
+        #
+        # @return [Fixnum]
+        #
+        attr_reader :dropped_message_events_count
+
+        ##
         # The included links.
         #
-        # @return [Links, nil]
+        # @return [Link[]]
         #
         attr_reader :links
+
+        ##
+        # The number of dropped links after the maximum size was enforced
+        # If the value is 0, then no links were dropped.
+        #
+        # @return [Fixnum]
+        #
+        attr_reader :dropped_links_count
 
         ##
         # An optional final status for this span.

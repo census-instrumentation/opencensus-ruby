@@ -29,8 +29,15 @@ module OpenCensus
         ##
         # A set of attributes on the annotation.
         #
-        # @return [Attributes]
+        # @return [Hash{String => String}]
+        #
         attr_reader :attributes
+
+        ##
+        # The number of attributes that were discarded. Attributes can be
+        # discarded because their keys are too long or because there are too
+        # many attributes. If this value is 0, then no attributes were dropped.
+        attr_reader :dropped_attributes_count
 
         ##
         # Create an Annotation object.

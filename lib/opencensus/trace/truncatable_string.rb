@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module OpenCensus
-  module Proto
+  module Trace
     ##
     # A string that might be shortened to a specified length.
     #

@@ -20,37 +20,40 @@ module OpenCensus
     # or have a parent span, and may have zero or more children.
     #
     class Span
-      SPAN_KIND_UNKNOWN   = :UNKNOWN
-      SPAN_KIND_CLIENT    = :CLIENT
-      SPAN_KIND_SERVER    = :SERVER
-      SPAN_KIND_PRODUCER  = :PRODUCER
-      SPAN_KIND_CONSUMER  = :CONSUMER
 
       ##
-      # The numeric ID of this span.
+      # A unique identifier for a trace. All spans from the same trace share
+      # the same `trace_id`. The ID is a 16-byte value represented as a
+      # hexadecimal string.
       #
-      # @return [Integer]
+      # @return [String]
       #
-      attr_accessor :span_id
+      attr_reader :trace_id
 
       ##
-      # The ID of the parent span, as an integer that may be zero if this
-      # is a true root span.
+      # A unique identifier for a span within a trace, assigned when the span
+      # is created. The ID is an 8-byte value represented as a hexadecimal
+      # string.
       #
-      # @return [Integer]
+      # @return [String]
       #
-      attr_accessor :parent_span_id
+      attr_reader :span_id
 
       ##
-      # FIXME
-      attr_accessor :kind
+      # The `span_id` of this span's parent span. If this is a root span, then
+      # this field must be empty. The ID is an 8-byte value represented as a
+      # hexadecimal string.
+      #
+      # @return [String]
+      #
+      attr_reader :parent_span_id
 
       ##
       # The name of this span.
       #
-      # @return [String]
+      # @return [OpenCensus::Trace::TruncatableString]
       #
-      attr_accessor :name
+      attr_reader :name
 
       ##
       # The starting timestamp of this span in UTC, or `nil` if the
@@ -58,7 +61,7 @@ module OpenCensus
       #
       # @return [Time, nil]
       #
-      attr_accessor :start_time
+      attr_reader :start_time
 
       ##
       # The ending timestamp of this span in UTC, or `nil` if the
@@ -66,72 +69,115 @@ module OpenCensus
       #
       # @return [Time, nil]
       #
-      attr_accessor :end_time
+      attr_reader :end_time
 
       ##
       # The properties of this span.
       #
       # @return [Hash{String => String}]
       #
-      attr_accessor :labels
+      attr_reader :attributes
+
+      ##
+      # The number of attributes that were discarded. Attributes can be
+      # discarded because their keys are too long or because there are too
+      # many attributes. If this value is 0, then no attributes were dropped.
+      attr_reader :dropped_attributes_count
+
+      ##
+      # A stack trace captured at the start of the span.
+      #
+      # @return [String[]]
+      #
+      attr_reader :stack_trace
+
+      ##
+      # The included time events.
+      #
+      # @return [TimeEvent[]]
+      #
+      attr_reader :time_events
+
+      ##
+      # The number of dropped annotations in all the included time events.
+      # If the value is 0, then no annotations were dropped.
+      #
+      # @return [Fixnum]
+      #
+      attr_reader :dropped_annotations_count
+
+      ##
+      # The number of dropped message events in all the included time events.
+      # If the value is 0, then no message events were dropped.
+      #
+      # @return [Fixnum]
+      #
+      attr_reader :dropped_message_events_count
+
+      ##
+      # The included links.
+      #
+      # @return [Link[]]
+      #
+      attr_reader :links
+
+      ##
+      # The number of dropped links after the maximum size was enforced
+      # If the value is 0, then no links were dropped.
+      #
+      # @return [Fixnum]
+      #
+      attr_reader :dropped_links_count
+
+      ##
+      # An optional final status for this span.
+      #
+      # @return [Status, nil]
+      attr_reader :status
+
+      ##
+      # A highly recommended but not required flag that identifies when a trace
+      # crosses a process boundary. True when the parent_span belongs to the
+      # same process as the current span.
+      #
+      # @return [Boolean]
+      #
+      attr_reader :same_process_as_parent_span
+
+      ##
+      # An optional number of child spans that were generated while this span
+      # was active. If set, allows an implementation to detect missing child
+      # spans.
+      #
+      # @return [Fixnum]
+      #
+      attr_reader :child_span_count
 
       ##
       # Create an empty Span object.
       #
       # @private
       #
-      def initialize name, span_id: nil, parent_span_id: nil, kind: nil, start_time: nil, end_time: nil, labels: {}
-        @span_id = span_id
+      def initialize name, trace_id: nil, span_id: nil, parent_span_id: nil,
+                           kind: nil, start_time: nil, end_time: nil,
+                           attributes: nil, stack_trace: [], time_events: nil,
+                           links: nil, status: nil,
+                           same_process_as_parent_span: true,
+                           child_span_count: nil
         @name = name
+        @trace_id = trace_id
+        @span_id = span_id
         @parent_span_id = parent_span_id
         @kind = kind
         @start_time = start_time
         @end_time = end_time
-        @labels = labels
-      end
-
-      ##
-      # Standard value equality check for this object.
-      #
-      # @param [Object] other
-      # @return [Boolean]
-      #
-      # rubocop:disable Metrics/AbcSize
-      def eql? other
-        other.is_a?(OpenCensus::Trace::Span) &&
-          span_id == other.span_id &&
-          parent_span_id == other.parent_span_id &&
-          kind == other.kind &&
-          name == other.name &&
-          start_time == other.start_time &&
-          end_time == other.end_time &&
-          labels == other.labels
-      end
-      alias_method :==, :eql?
-
-      ##
-      # Sets the starting timestamp for this span to the current time.
-      # Asserts that the timestamp has not yet been set, and throws a
-      # RuntimeError if that is not the case.
-      # Also ensures that all ancestor spans have already started, and
-      # starts them if not.
-      #
-      def start!
-        fail "Span already started" if start_time
-        self.start_time = ::Time.now.utc
-      end
-
-      ##
-      # Sets the ending timestamp for this span to the current time.
-      # Asserts that the timestamp has not yet been set, and throws a
-      # RuntimeError if that is not the case.
-      # Also ensures that all descendant spans have also finished, and
-      # finishes them if not.
-      #
-      def finish!
-        fail "Span not yet started" unless start_time
-        fail "Span already finished" if end_time
-        self.end_time = ::Time.now.utc
+        @attributes = attributes
+        @stack_trace = stack_trace
+        @time_events = time_events
+        @links = links
+        @status = status
+        @same_process_as_parent_span = same_process_as_parent_span
+        @child_span_count = child_span_count
       end
     end
   end

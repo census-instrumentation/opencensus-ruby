@@ -13,27 +13,25 @@
 # limitations under the License.
 
 module OpenCensus
-  module Proto
-    module Trace
+  module Trace
+    ##
+    # A time-stamped annotation or message event in the Span.
+    #
+    class TimeEvent
       ##
-      # A time-stamped annotation or message event in the Span.
+      # The time the event occurred.
       #
-      class TimeEvent
-        ##
-        # The time the event occurred.
-        #
-        # @return [Time]
-        # 
-        attr_reader :time
+      # @return [Time]
+      #
+      attr_reader :time
 
-        ##
-        # Create a TimeEvent object
-        #
-        # @private
-        #
-        def initialize time: nil
-          @time = time || ::Time.now.utc
-        end
+      ##
+      # Create a TimeEvent object
+      #
+      # @private
+      #
+      def initialize time: nil
+        @time = time || ::Time.now.utc
       end
     end
   end

@@ -43,7 +43,7 @@ module OpenCensus
       #
       # @private
       #
-      def initialize value: nil, truncated_byte_count: 0
+      def initialize value, truncated_byte_count: 0
         @value = value
         @truncated_byte_count = truncated_byte_count
       end

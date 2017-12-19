@@ -29,8 +29,8 @@ module OpenCensus
         @spans_by_id = {}
       end
 
-      def in_span name, kind: OpenCensus::Trace::Span::SPAN_KIND_UNKNOWN, labels: {}
-        span = OpenCensus::Trace::Span.new name, span_id: unique_span_id, kind: kind, labels: labels
+      def in_span name, labels: {}
+        span = OpenCensus::Trace::Span.new name, span_id: unique_span_id, labels: labels
         span.parent_span_id = spans.last.span_id unless spans.empty?
         span.start!
         spans.push(span)

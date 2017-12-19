@@ -87,9 +87,17 @@ module OpenCensus
       ##
       # A stack trace captured at the start of the span.
       #
-      # @return [String[]]
+      # @return [Thread::Backtrace::Location[]]
       #
       attr_reader :stack_trace
+
+      ##
+      # The number of stack frames that were dropped because there were too many
+      # stack frames. If this value is 0, then no stack frames were dropped.
+      #
+      # @return [Fixnum]
+      #
+      attr_reader :dropped_frames_count
 
       ##
       # The included time events.
@@ -160,8 +168,11 @@ module OpenCensus
       #
       def initialize name, trace_id: nil, span_id: nil, parent_span_id: nil,
                            kind: nil, start_time: nil, end_time: nil,
-                           attributes: nil, stack_trace: [], time_events: nil,
-                           links: nil, status: nil,
+                           attributes: {}, dropped_attributes_count: 0,
+                           stack_trace: [], dropped_frames_count: 0,
+                           time_events: [], dropped_annotations_count: 0,
+                           dropped_message_events_count: 0
+                           links: [], dropped_links_count: 0, status: nil,
                            same_process_as_parent_span: true,
                            child_span_count: nil
         @name = name
@@ -172,9 +183,14 @@ module OpenCensus
         @start_time = start_time
         @end_time = end_time
         @attributes = attributes
+        @dropped_annotations_count = dropped_annotations_count
         @stack_trace = stack_trace
+        @dropped_frames_count = dropped_frames_count
         @time_events = time_events
+        @dropped_annotations_count = dropped_annotations_count
+        @dropped_message_events_count = dropped_message_events_count
         @links = links
+        @dropped_links_count = dropped_links_count
         @status = status
         @same_process_as_parent_span = same_process_as_parent_span
         @child_span_count = child_span_count

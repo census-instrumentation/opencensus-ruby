@@ -13,6 +13,5 @@
 # limitations under the License.
 
 require "opencensus/context"
-require "opencensus/proto"
 require "opencensus/trace"
 require "opencensus/version"

@@ -21,7 +21,7 @@ module OpenCensus
       ##
       # A user-supplied message describing the event.
       #
-      # @return [OpenCensus\Trace\TruncatableString]
+      # @return [OpenCensus::Trace::TruncatableString]
       #
       attr_reader :description
 
@@ -43,10 +43,11 @@ module OpenCensus
       #
       # @private
       #
-      def initialize description, attributes: {}, time: nil
+      def initialize description, attributes: {}, dropped_attributes_count: 0, time: nil
         super time: time
         @description = description
         @attributes = attributes
+        @dropped_attributes_count = dropped_attributes_count
       end
     end
   end

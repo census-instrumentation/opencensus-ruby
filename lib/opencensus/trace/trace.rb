@@ -30,7 +30,7 @@ module OpenCensus
       end
 
       def in_span name, labels: {}
-        span = OpenCensus::Trace::Span.new name, span_id: unique_span_id, labels: labels
+        span = OpenCensus::Trace::SpanBuilder.new name, span_id: unique_span_id, labels: labels
         span.parent_span_id = spans.last.span_id unless spans.empty?
         span.start!
         spans.push(span)

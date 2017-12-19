@@ -171,7 +171,7 @@ module OpenCensus
                            attributes: {}, dropped_attributes_count: 0,
                            stack_trace: [], dropped_frames_count: 0,
                            time_events: [], dropped_annotations_count: 0,
-                           dropped_message_events_count: 0
+                           dropped_message_events_count: 0,
                            links: [], dropped_links_count: 0, status: nil,
                            same_process_as_parent_span: true,
                            child_span_count: nil

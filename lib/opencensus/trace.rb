@@ -17,6 +17,7 @@ require "opencensus/trace/exporters"
 require "opencensus/trace/integrations"
 require "opencensus/trace/samplers"
 require "opencensus/trace/span"
+require "opencensus/trace/span_builder"
 require "opencensus/trace/trace"
 
 module OpenCensus
@@ -28,9 +29,9 @@ module OpenCensus
         set OpenCensus::Trace::Trace.new
       end
 
-      def in_span name, kind: OpenCensus::Trace::Span::SPAN_KIND_UNKNOWN, labels: {}
+      def in_span name, labels: {}
         if parent = get
-          parent.in_span name, kind: kind, labels: labels do |span|
+          parent.in_span name, labels: labels do |span|
             yield span
           end
         else

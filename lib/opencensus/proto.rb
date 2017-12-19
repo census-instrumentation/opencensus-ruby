@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "opencensus/context"
-require "opencensus/proto"
-require "opencensus/trace"
-require "opencensus/version"
+require "opencensus/proto/trace/annotation"
+require "opencensus/proto/trace/attributes"
+require "opencensus/proto/trace/link"
+require "opencensus/proto/trace/links"
+require "opencensus/proto/trace/message_event"
+require "opencensus/proto/trace/span"
+require "opencensus/proto/trace/status"
+require "opencensus/proto/trace/time_event"
+require "opencensus/proto/trace/time_events"

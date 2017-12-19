@@ -75,7 +75,7 @@ module OpenCensus
         ##
         # The properties of this span.
         #
-        # @return [Attributes]
+        # @return [Attributes, nil]
         #
         attr_reader :attributes
 
@@ -89,14 +89,14 @@ module OpenCensus
         ##
         # The included time events.
         #
-        # @return [TimeEvent[]]
+        # @return [TimeEvents, nil]
         #
         attr_reader :time_events
 
         ##
         # The included links.
         #
-        # @return [Link[]]
+        # @return [Links, nil]
         #
         attr_reader :links
 
@@ -148,6 +148,7 @@ module OpenCensus
           @links = links
           @status = status
           @same_process_as_parent_span = same_process_as_parent_span
+          @child_span_count = child_span_count
         end
       end
     end

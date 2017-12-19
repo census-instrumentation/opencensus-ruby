@@ -16,42 +16,59 @@ require "opencensus/trace/config"
 require "opencensus/trace/exporters"
 require "opencensus/trace/integrations"
 require "opencensus/trace/samplers"
-require "opencensus/trace/span"
-require "opencensus/trace/trace"
+require "opencensus/trace/span_builder"
+require "opencensus/trace/span_context"
 
 module OpenCensus
   module Trace
-    CONTEXT_KEY = :__opencensus_trace__
+    SPAN_CONTEXT_KEY = :__span_context__
 
     class << self
-      def start
-        set OpenCensus::Trace::Trace.new
+      def set_span_context span_context
+        OpenCensus::Context.set SPAN_CONTEXT_KEY, span_context
       end
 
-      def in_span name, kind: OpenCensus::Trace::Span::SPAN_KIND_UNKNOWN, labels: {}
-        if parent = get
-          parent.in_span name, kind: kind, labels: labels do |span|
-            yield span
+      def unset_span_context
+        OpenCensus::Context.unset SPAN_CONTEXT_KEY
+      end
+
+      def current_span_context
+        OpenCensus::Context.get SPAN_CONTEXT_KEY
+      end
+
+      def current_span
+        context = current_span_context
+        context ? context.this_span : nil
+      end
+
+      def start_request_trace rack_env: nil
+        span_context = SpanContext.create_from_rack_env rack_env
+        set_span_context span_context
+        if block_given?
+          begin
+            yield span_context
+          ensure
+            unset_span_context
           end
-        else
-          yield nil
         end
       end
 
-      def spans
-        if parent = get
-          parent.spans
-        else
-          []
-        end
+      def start_span name
+        current_span_context.start_span name
       end
 
-      def set span
-        OpenCensus::Context.set CONTEXT_KEY, span
+      def in_span name, &block
+        current_span_context.in_span name, &block
       end
 
-      def get
-        OpenCensus::Context.get CONTEXT_KEY
+      def end_span
+        context = current_span_context
+        raise "No currently active span context" unless context
+        span = context.this_span
+        raise "No currently active span" unless span
+        span.finish!
+        set_span_context context.parent
+        span
       end
     end
   end

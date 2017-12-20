@@ -28,15 +28,14 @@ module OpenCensus
           "deliver.action_mailer"
         ].freeze
 
-        def initializer "opencensus.trace" do |app|
+        initializer "opencensus.trace" do |app|
           # initialize middleware
-          app.middleware.insert_before Rack::Runtime,
-                                       OpenCensus::Trace::Integrations::RackMiddleware
+          app.middleware.insert_before ::Rack::Runtime, RackMiddleware
 
           # TODO: handle rails configuration
           DEFAULT_NOTIFICATIONS.each do |type|
             ActiveSupport::Notifications.subscribe(type) do |*args|
-              event = ActiveSupport::Notifications::Event.new(*args)
+              # event = ActiveSupport::Notifications::Event.new(*args)
               # TODO: handle event
             end
           end

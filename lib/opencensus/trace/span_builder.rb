@@ -54,7 +54,9 @@ module OpenCensus
       end
 
       ##
-      # Sampler for this span. This field is required.
+      # Sampler for this span. Generally this field is set from the Trace
+      # configuration when the span is first created. However, you can also
+      # change it after the fact.
       #
       # @return [Sampler]
       #
@@ -99,12 +101,21 @@ module OpenCensus
       #
       attr_accessor :end_time
 
+      ##
+      # Start this span by setting the start time to the current time.
+      # Raises an exception if the start time is already set.
+      #
       def start!
         raise "Span already started" unless start_time.nil?
         @start_time = Time.now.utc
         self
       end
 
+      ##
+      # Finish this span by setting the end time to the current time.
+      # Raises an exception if the start time is not yet set, or the end time
+      # is already set.
+      #
       def finish!
         raise "Span not yet started" if start_time.nil?
         raise "Span already finished" unless end_time.nil?

@@ -16,11 +16,9 @@ module OpenCensus
   module Trace
     module Exporters
       class Zipkin
-        def initialize
-        end
+        def initialize; end
 
-        def report(trace)
-        end
+        def report trace; end
       end
     end
   end

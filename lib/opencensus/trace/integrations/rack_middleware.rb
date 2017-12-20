@@ -24,7 +24,7 @@ module OpenCensus
           OpenCensus::Context.clear
           trace = OpenCensus::Trace.start
           begin
-            OpenCensus::Trace.in_span "rack-request" do |span|
+            OpenCensus::Trace.in_span "rack-request" do |_span|
               @app.call env
             end
           ensure
@@ -32,10 +32,7 @@ module OpenCensus
           end
         end
 
-        def send_trace trace, env
-          require 'pp'
-          pp trace
-        end
+        def send_trace trace, env; end
       end
     end
   end

@@ -16,7 +16,7 @@ module OpenCensus
   module Trace
     module Samplers
       class NeverSample
-        def call opts={}
+        def call _opts = {}
           false
         end
       end

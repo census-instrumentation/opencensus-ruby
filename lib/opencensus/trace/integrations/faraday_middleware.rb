@@ -61,7 +61,7 @@ module OpenCensus
           labels["/rpc/response/size"] = response_body.bytesize.to_s
           labels["/rpc/status_code"] = response_status.to_s
 
-          if 300 <= response_status && response_status < 400 && response_url
+          if response_status >= 300 && response_status < 400 && response_url
             labels["http/redirected_url"] = response_url
           end
         end

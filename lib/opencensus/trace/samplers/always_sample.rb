@@ -16,7 +16,7 @@ module OpenCensus
   module Trace
     module Samplers
       class AlwaysSample
-        def call opts={}
+        def call _opts = {}
           true
         end
       end

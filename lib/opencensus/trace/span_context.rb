@@ -24,6 +24,10 @@ module OpenCensus
       TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env
       ## @private Internal struct that holds parsed trace context data.
       TraceContext = Struct.new :trace_id, :span_id, :trace_options
+      TRACE_CONTEXT_HEADER_V0_PATTERN =
+        /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
+      MAX_TRACE_ID = 0xffffffffffffffffffffffffffffffff
+      MAX_SPAN_ID = 0xffffffffffffffff
 
       class << self
         ##
@@ -46,7 +50,7 @@ module OpenCensus
               trace_context.trace_id, trace_context.trace_options, {}, rack_env
             new trace_data, nil, trace_context.span_id
           else
-            trace_id = rand(0xffffffffffffffffffffffffffffffff) + 1
+            trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
             trace_data = TraceData.new trace_id, 0, {}, rack_env
             new trace_data, nil, ""
@@ -68,7 +72,7 @@ module OpenCensus
       #
       def root
         root = self
-        while !(parent = root.parent).nil?
+        until (parent = root.parent).nil?
           root = parent
         end
         root
@@ -185,12 +189,13 @@ module OpenCensus
       # @private
       #
       def create_child
-        while true
-          child_span_id = rand(0xffffffffffffffff) + 1
+        loop do
+          child_span_id = rand 1..MAX_SPAN_ID
           child_span_id = child_span_id.to_s(16).rjust(16, "0")
-          break unless @trace_data.span_map.has_key? child_span_id
+          unless @trace_data.span_map.key? child_span_id
+            return SpanContext.new @trace_data, self, child_span_id
+          end
         end
-        SpanContext.new @trace_data, self, child_span_id
       end
 
       ##
@@ -207,9 +212,10 @@ module OpenCensus
         private
 
         def parse_trace_context_header header
-          if header =~ /^([0-9a-fA-F]{2})-(.+)$/
-            version = $1.to_i(16)
-            version_format = $2
+          match = /^([0-9a-fA-F]{2})-(.+)$/.match(header)
+          if match
+            version = match[1].to_i(16)
+            version_format = match[2]
             case version
             when 0
               parse_trace_context_header_version_0 version_format
@@ -222,14 +228,14 @@ module OpenCensus
         end
 
         def parse_trace_context_header_version_0 str
-          if str =~ /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
-            TraceContext.new $1.downcase, $2.downcase, $4.to_i(16)
-          else
-            nil
+          match = TRACE_CONTEXT_HEADER_V0_PATTERN.match(str)
+          if match
+            TraceContext.new match[1].downcase,
+                             match[2].downcase,
+                             match[4].to_i(16)
           end
         end
       end
-
     end
   end
 end

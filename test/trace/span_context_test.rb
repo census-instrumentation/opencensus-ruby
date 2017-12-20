@@ -20,18 +20,18 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_be_kind_of Integer
-      span_context.span_id.must_equal 0
+      span_context.trace_id.must_match /^[0-9a-f]{32}$/
+      span_context.span_id.must_equal ""
       span_context.trace_options.must_equal 0
     end
 
     it "parses a directly given Trace-Context header" do
-      header = "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
+      header = "00-0123456789ABCDEF0123456789abcdef-0123456789ABCdef-01"
       span_context = OpenCensus::Trace::SpanContext.create_root header: header
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_equal 0x123456789abcdef0123456789abcdef
-      span_context.span_id.must_equal 0x123456789abcdef
+      span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
+      span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
       span_context.to_trace_context_header.must_equal \
         "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
@@ -40,13 +40,13 @@ describe OpenCensus::Trace::SpanContext do
     it "parses trace-context header from rack environment" do
       env = {
         "HTTP_TRACE_CONTEXT" =>
-          "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
+          "00-0123456789ABCDEF0123456789abcdef-0123456789ABCdef-01"
       }
       span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_equal 0x123456789abcdef0123456789abcdef
-      span_context.span_id.must_equal 0x123456789abcdef
+      span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
+      span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
       span_context.to_trace_context_header.must_equal \
         "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
@@ -60,8 +60,8 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_be_kind_of Integer
-      span_context.span_id.must_equal 0
+      span_context.trace_id.must_match /^[0-9a-f]{32}$/
+      span_context.span_id.must_equal ""
       span_context.trace_options.must_equal 0
     end
 
@@ -73,8 +73,8 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_be_kind_of Integer
-      span_context.span_id.must_equal 0
+      span_context.trace_id.must_match /^[0-9a-f]{32}$/
+      span_context.span_id.must_equal ""
       span_context.trace_options.must_equal 0
     end
   end
@@ -88,7 +88,7 @@ describe OpenCensus::Trace::SpanContext do
       span.start_time.wont_be_nil
       span.end_time.must_be_nil
       span.span_id.must_equal span.context.span_id
-      span.parent_span_id.must_equal 0
+      span.parent_span_id.must_equal ""
       span.context.this_span.must_be_same_as span
     end
 

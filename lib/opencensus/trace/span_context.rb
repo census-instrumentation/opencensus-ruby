@@ -31,7 +31,7 @@ module OpenCensus
         # header value by itself, or an entire Rack environment. If a valid
         # Trace-Context header can be obtained from either source, it is used
         # to generate the SpanContext. Otherwise, a new root context with a
-        # unique `trace_id` and a root `span_id` of 0 is used.
+        # unique `trace_id` and a root `span_id` of "" is used.
         #
         # @param [String] header A Trace-Context header (optional)
         # @param [Hash] rack_env The Rack environment hash (optional)
@@ -47,8 +47,9 @@ module OpenCensus
             new trace_data, nil, trace_context.span_id
           else
             trace_id = rand(0xffffffffffffffffffffffffffffffff) + 1
+            trace_id = trace_id.to_s(16).rjust(32, "0")
             trace_data = TraceData.new trace_id, 0, {}, rack_env
-            new trace_data, nil, 0
+            new trace_data, nil, ""
           end
         end
       end
@@ -74,9 +75,9 @@ module OpenCensus
       end
 
       ##
-      # The numeric trace ID, as a big-endian unsigned integer.
+      # The trace ID, as a 32-character hex string.
       #
-      # @return [Integer]
+      # @return [String]
       #
       def trace_id
         @trace_data.trace_id
@@ -92,10 +93,10 @@ module OpenCensus
       end
 
       ##
-      # The numeric span ID, as a big-endian unsigned integer, or 0 if the
-      # context is the root of the trace.
+      # The span ID as a 16-character hex string, or the empty string if the
+      # context refers to the root of the trace.
       #
-      # @return [Integer]
+      # @return [String]
       #
       attr_reader :span_id
 
@@ -107,10 +108,8 @@ module OpenCensus
       # @return [String]
       #
       def to_trace_context_header
-        trace_id_hex = trace_id.to_s(16).rjust(32, "0")
-        span_id_hex = span_id.to_s(16).rjust(16, "0")
         options_hex = trace_options.to_s(16).rjust(2, "0")
-        "00-#{trace_id_hex}-#{span_id_hex}-#{options_hex}"
+        "00-#{trace_id}-#{span_id}-#{options_hex}"
       end
 
       ##
@@ -188,6 +187,7 @@ module OpenCensus
       def create_child
         while true
           child_span_id = rand(0xffffffffffffffff) + 1
+          child_span_id = child_span_id.to_s(16).rjust(16, "0")
           break unless @trace_data.span_map.has_key? child_span_id
         end
         SpanContext.new @trace_data, self, child_span_id
@@ -207,7 +207,7 @@ module OpenCensus
         private
 
         def parse_trace_context_header header
-          if header =~ /(\w{1,2})-(.+)/
+          if header =~ /^([0-9a-fA-F]{2})-(.+)$/
             version = $1.to_i(16)
             version_format = $2
             case version
@@ -222,8 +222,8 @@ module OpenCensus
         end
 
         def parse_trace_context_header_version_0 str
-          if str =~ /(\w+)-(\w+)(-(\w+))?/
-            TraceContext.new $1.to_i(16), $2.to_i(16), $4.to_i(16)
+          if str =~ /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
+            TraceContext.new $1.downcase, $2.downcase, $4.to_i(16)
           else
             nil
           end

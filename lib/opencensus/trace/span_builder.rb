@@ -26,28 +26,28 @@ module OpenCensus
       attr_reader :context
 
       ##
-      # The numeric trace ID, as a big-endian unsigned integer.
+      # The trace ID, as a 32-character hex string.
       #
-      # @return [Integer]
+      # @return [String]
       #
       def trace_id
         context.trace_id
       end
 
       ##
-      # The numeric span ID, as a big-endian unsigned integer.
+      # The span ID, as a 16-character hex string.
       #
-      # @return [Integer]
+      # @return [String]
       #
       def span_id
         context.span_id
       end
 
       ##
-      # The numeric span ID of the parent, as a big-endian unsigned integer.
-      # May be 0 if this is a root span.
+      # The span ID of the parent, as a 16-character hex string, or the empty
+      # string if this is a root span.
       #
-      # @return [Integer]
+      # @return [String]
       #
       def parent_span_id
         context.parent.span_id

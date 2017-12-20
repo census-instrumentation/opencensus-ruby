@@ -21,7 +21,7 @@ module OpenCensus
       ##
       # The context that can build children of this span.
       #
-      # @return [RequestTrace]
+      # @return [SpanContext]
       #
       attr_reader :context
 

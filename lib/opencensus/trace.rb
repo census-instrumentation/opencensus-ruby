@@ -54,18 +54,23 @@ module OpenCensus
       end
 
       def start_span name
-        current_span_context.start_span name
+        context = current_span_context
+        raise "No currently active span context" unless context
+        context.start_span name
       end
 
       def in_span name, &block
-        current_span_context.in_span name, &block
-      end
-
-      def end_span
         context = current_span_context
         raise "No currently active span context" unless context
-        span = context.this_span
-        raise "No currently active span" unless span
+        context.in_span name, &block
+      end
+
+      def end_span span
+        context = current_span_context
+        raise "No currently active span context" unless context
+        unless span.equal? context.this_span
+          raise "The given span doesn't match the currently active span"
+        end
         span.finish!
         set_span_context context.parent
         span

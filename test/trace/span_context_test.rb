@@ -20,7 +20,7 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_match /^[0-9a-f]{32}$/
+      span_context.trace_id.must_match %r{^[0-9a-f]{32}$}
       span_context.span_id.must_equal ""
       span_context.trace_options.must_equal 0
     end
@@ -60,7 +60,7 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_match /^[0-9a-f]{32}$/
+      span_context.trace_id.must_match %r{^[0-9a-f]{32}$}
       span_context.span_id.must_equal ""
       span_context.trace_options.must_equal 0
     end
@@ -73,7 +73,7 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_match /^[0-9a-f]{32}$/
+      span_context.trace_id.must_match %r{^[0-9a-f]{32}$}
       span_context.span_id.must_equal ""
       span_context.trace_options.must_equal 0
     end

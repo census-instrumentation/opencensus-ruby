@@ -23,7 +23,7 @@ module OpenCensus
           @level = level
         end
 
-        def report(trace)
+        def report trace
           logger.log(@level, trace.to_json)
         end
       end

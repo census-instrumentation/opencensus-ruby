@@ -15,10 +15,6 @@
 module OpenCensus
   module Trace
     module Integrations
-      autoload :FaradayMiddleware, "opencensus/trace/integrations/faraday_middleware"
-      autoload :Grpc, "opencensus/trace/integrations/grpc"
-      autoload :RackMiddleware, "opencensus/trace/integrations/rack_middleware"
-      autoload :Rails, "opencensus/trace/integrations/rails"
     end
   end
 end

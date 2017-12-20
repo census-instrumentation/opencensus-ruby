@@ -16,11 +16,11 @@ Style/MethodDefParentheses:
   EnforcedStyle: require_no_parentheses
 Style/NumericLiterals:
   Enabled: false
-Style/SpaceAroundOperators:
+Layout/SpaceAroundOperators:
   Enabled: false
 Metrics/ClassLength:
   Enabled: false
-Style/EmptyLines:
+Layout/EmptyLines:
   Enabled: false
 Style/EmptyElse:
   Enabled: false

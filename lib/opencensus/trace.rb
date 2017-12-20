@@ -111,7 +111,7 @@ module OpenCensus
       #
       def start_span name
         context = span_context
-        fail "No currently active span context" unless context
+        raise "No currently active span context" unless context
         span = context.start_span name
         self.span_context = span.context
         span
@@ -149,9 +149,9 @@ module OpenCensus
       #
       def end_span span
         context = span_context
-        fail "No currently active span context" unless context
+        raise "No currently active span context" unless context
         unless span.equal? context.this_span
-          fail "The given span doesn't match the currently active span"
+          raise "The given span doesn't match the currently active span"
         end
         span.finish!
         self.span_context = context.parent

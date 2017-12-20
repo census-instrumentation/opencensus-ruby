@@ -26,6 +26,8 @@ module OpenCensus
       TraceContext = Struct.new :trace_id, :span_id, :trace_options
       TRACE_CONTEXT_HEADER_V0_PATTERN =
         /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
+      MAX_TRACE_ID = 0xffffffffffffffffffffffffffffffff
+      MAX_SPAN_ID = 0xffffffffffffffff
 
       class << self
         ##
@@ -48,7 +50,7 @@ module OpenCensus
               trace_context.trace_id, trace_context.trace_options, {}, rack_env
             new trace_data, nil, trace_context.span_id
           else
-            trace_id = rand(0xffffffffffffffffffffffffffffffff) + 1
+            trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
             trace_data = TraceData.new trace_id, 0, {}, rack_env
             new trace_data, nil, ""
@@ -188,7 +190,7 @@ module OpenCensus
       #
       def create_child
         loop do
-          child_span_id = rand(0xffffffffffffffff) + 1
+          child_span_id = rand 1..MAX_SPAN_ID
           child_span_id = child_span_id.to_s(16).rjust(16, "0")
           unless @trace_data.span_map.key? child_span_id
             return SpanContext.new @trace_data, self, child_span_id

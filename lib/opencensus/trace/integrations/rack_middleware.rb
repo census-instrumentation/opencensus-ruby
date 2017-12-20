@@ -32,8 +32,7 @@ module OpenCensus
           end
         end
 
-        def send_trace trace, env
-        end
+        def send_trace trace, env; end
       end
     end
   end

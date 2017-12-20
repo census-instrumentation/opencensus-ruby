@@ -106,7 +106,7 @@ module OpenCensus
       # Raises an exception if the start time is already set.
       #
       def start!
-        fail "Span already started" unless start_time.nil?
+        raise "Span already started" unless start_time.nil?
         @start_time = Time.now.utc
         self
       end
@@ -117,8 +117,8 @@ module OpenCensus
       # is already set.
       #
       def finish!
-        fail "Span not yet started" if start_time.nil?
-        fail "Span already finished" unless end_time.nil?
+        raise "Span not yet started" if start_time.nil?
+        raise "Span already finished" unless end_time.nil?
         @end_time = Time.now.utc
         self
       end

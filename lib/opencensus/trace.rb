@@ -55,7 +55,7 @@ module OpenCensus
       #
       # @return [SpanContext, nil]
       #
-      def current_span_context
+      def span_context
         OpenCensus::Context.get SPAN_CONTEXT_KEY
       end
 
@@ -110,10 +110,10 @@ module OpenCensus
       #     set span attributes and create children.
       #
       def start_span name
-        context = current_span_context
+        context = span_context
         fail "No currently active span context" unless context
         span = context.start_span name
-        set_span_context span.context
+        self.span_context = span.context
         span
       end
 
@@ -148,13 +148,13 @@ module OpenCensus
       # @param [String] name Name of the span
       #
       def end_span span
-        context = current_span_context
+        context = span_context
         fail "No currently active span context" unless context
         unless span.equal? context.this_span
           fail "The given span doesn't match the currently active span"
         end
         span.finish!
-        set_span_context context.parent
+        self.span_context = context.parent
         span
       end
     end

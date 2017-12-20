@@ -24,7 +24,7 @@ module OpenCensus
           OpenCensus::Context.clear
           trace = OpenCensus::Trace.start
           begin
-            OpenCensus::Trace.in_span "rack-request" do
+            OpenCensus::Trace.in_span "rack-request" do |_span|
               @app.call env
             end
           ensure

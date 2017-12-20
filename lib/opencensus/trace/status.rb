@@ -44,7 +44,6 @@ module OpenCensus
         @code = code
         @message = message
       end
-
     end
   end
 end

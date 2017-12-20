@@ -57,7 +57,7 @@ module OpenCensus
       # be the same size as uncompressed.
       #
       # @return [Integer, nil]
-      # 
+      #
       attr_reader :compressed_size
 
       ##
@@ -65,7 +65,8 @@ module OpenCensus
       #
       # @private
       #
-      def initialize type, id, uncompressed_size, compressed_size: nil, time: time
+      def initialize type, id, uncompressed_size, compressed_size: nil,
+                     time: nil
         super time: time
         @type = type
         @id = id

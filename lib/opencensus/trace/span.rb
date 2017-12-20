@@ -20,7 +20,6 @@ module OpenCensus
     # or have a parent span, and may have zero or more children.
     #
     class Span
-
       ##
       # A unique identifier for a trace. All spans from the same trace share
       # the same `trace_id`. The ID is a 16-byte value represented as a
@@ -167,14 +166,14 @@ module OpenCensus
       # @private
       #
       def initialize name, trace_id: nil, span_id: nil, parent_span_id: nil,
-                           start_time: nil, end_time: nil,
-                           attributes: {}, dropped_attributes_count: 0,
-                           stack_trace: [], dropped_frames_count: 0,
-                           time_events: [], dropped_annotations_count: 0,
-                           dropped_message_events_count: 0,
-                           links: [], dropped_links_count: 0, status: nil,
-                           same_process_as_parent_span: true,
-                           child_span_count: nil
+                     start_time: nil, end_time: nil, attributes: {},
+                     dropped_attributes_count: 0, stack_trace: [],
+                     dropped_frames_count: 0, time_events: [],
+                     dropped_annotations_count: 0,
+                     dropped_message_events_count: 0, links: [],
+                     dropped_links_count: 0, status: nil,
+                     same_process_as_parent_span: true,
+                     child_span_count: nil
         @name = name
         @trace_id = trace_id
         @span_id = span_id
@@ -182,7 +181,7 @@ module OpenCensus
         @start_time = start_time
         @end_time = end_time
         @attributes = attributes
-        @dropped_annotations_count = dropped_annotations_count
+        @dropped_attributes_count = dropped_attributes_count
         @stack_trace = stack_trace
         @dropped_frames_count = dropped_frames_count
         @time_events = time_events

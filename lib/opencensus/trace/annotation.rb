@@ -38,7 +38,7 @@ module OpenCensus
       # many attributes. If this value is 0, then no attributes were dropped.
       #
       # @return [Integer]
-      # 
+      #
       attr_reader :dropped_attributes_count
 
       ##
@@ -46,7 +46,8 @@ module OpenCensus
       #
       # @private
       #
-      def initialize description, attributes: {}, dropped_attributes_count: 0, time: nil
+      def initialize description, attributes: {}, dropped_attributes_count: 0,
+                     time: nil
         super time: time
         @description = description
         @attributes = attributes

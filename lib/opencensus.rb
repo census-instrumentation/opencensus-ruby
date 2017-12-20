@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "opencensus/common"
 require "opencensus/context"
+require "opencensus/stats"
+require "opencensus/tags"
 require "opencensus/trace"
 require "opencensus/version"

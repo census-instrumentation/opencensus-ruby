@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "opencensus/trace/samplers/always_sample"
+require "opencensus/trace/samplers/never_sample"
+require "opencensus/trace/samplers/probability"
+require "opencensus/trace/samplers/time"
+
 module OpenCensus
   module Trace
     module Samplers
-      autoload :AlwaysSample, "opencensus/trace/samplers/always_sample"
-      autoload :NeverSample, "opencensus/trace/samplers/never_sample"
-      autoload :Probability, "opencensus/trace/samplers/probability"
-      autoload :Time, "opencensus/trace/samplers/time"
+      DEFAULT = Probability.new Probability::DEFAULT_RATE
     end
   end
 end

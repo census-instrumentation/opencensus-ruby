@@ -190,9 +190,10 @@ module OpenCensus
         loop do
           child_span_id = rand(0xffffffffffffffff) + 1
           child_span_id = child_span_id.to_s(16).rjust(16, "0")
-          break unless @trace_data.span_map.key? child_span_id
+          unless @trace_data.span_map.key? child_span_id
+            return SpanContext.new @trace_data, self, child_span_id
+          end
         end
-        SpanContext.new @trace_data, self, child_span_id
       end
 
       ##
@@ -209,7 +210,8 @@ module OpenCensus
         private
 
         def parse_trace_context_header header
-          if match = /^([0-9a-fA-F]{2})-(.+)$/.match(header)
+          match = /^([0-9a-fA-F]{2})-(.+)$/.match(header)
+          if match
             version = match[1].to_i(16)
             version_format = match[2]
             case version
@@ -224,7 +226,8 @@ module OpenCensus
         end
 
         def parse_trace_context_header_version_0 str
-          if match = TRACE_CONTEXT_HEADER_V0_PATTERN.match(str)
+          match = TRACE_CONTEXT_HEADER_V0_PATTERN.match(str)
+          if match
             TraceContext.new match[1].downcase,
                              match[2].downcase,
                              match[4].to_i(16)

@@ -20,17 +20,17 @@ module OpenCensus
 
         def initialize rate, rng: nil
           if rate > 1 || rate < 0
-            raise ArgumentError.new("Invalid rate - must be between 0 and 1.")
+            fail ArgumentError, "Invalid rate - must be between 0 and 1."
           end
           @rate = rate
           @rng = rng || Random.new
         end
 
-        def call opts={}
+        def call opts = {}
           span_context = opts[:span_context]
           if span_context
             value = (span_context.trace_id % 0x10000000000000000).to_f /
-              0x10000000000000000
+                    0x10000000000000000
           else
             value = @rng.rand
           end

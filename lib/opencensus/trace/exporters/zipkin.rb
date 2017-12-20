@@ -19,7 +19,7 @@ module OpenCensus
         def initialize
         end
 
-        def report(trace)
+        def report trace
         end
       end
     end

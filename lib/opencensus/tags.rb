@@ -13,13 +13,6 @@
 # limitations under the License.
 
 module OpenCensus
-  module Trace
-    module Samplers
-      class NeverSample
-        def call opts={}
-          false
-        end
-      end
-    end
+  module Tags
   end
 end

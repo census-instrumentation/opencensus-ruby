@@ -15,36 +15,4 @@
 require "test_helper"
 
 describe OpenCensus::Trace do
-  before {
-    OpenCensus::Context.reset!
-    OpenCensus::Trace.start
-  }
-
-  describe ".in_span" do
-    before {
-      OpenCensus::Trace.in_span("main") do |primary|
-        OpenCensus::Trace.in_span("child") do |secondary|
-          # do something
-        end
-      end
-    }
-
-    let(:spans) { OpenCensus::Trace.spans }
-
-    it "captures spans" do
-      spans.count.must_equal 2
-    end
-
-    it "captures parent_span_id" do
-      spans[1].parent_span_id.must_equal spans[0].span_id
-    end
-
-    it "captures span names" do
-      spans[0].name.must_equal "main"
-    end
-
-    it "captures nested span names" do
-      spans[1].name.must_equal "child"
-    end
-  end
 end

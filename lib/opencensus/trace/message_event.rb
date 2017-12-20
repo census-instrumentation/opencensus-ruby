@@ -42,12 +42,14 @@ module OpenCensus
       # unique within a Span.
       #
       # @return [Integer]
+      #
       attr_reader :id
 
       ##
       # The number of uncompressed bytes sent or received.
       #
-      # @return [Integer, nil]
+      # @return [Integer]
+      #
       attr_reader :uncompressed_size
 
       ##
@@ -55,6 +57,7 @@ module OpenCensus
       # be the same size as uncompressed.
       #
       # @return [Integer, nil]
+      # 
       attr_reader :compressed_size
 
       ##
@@ -62,7 +65,8 @@ module OpenCensus
       #
       # @private
       #
-      def initialize type, id, uncompressed_size: nil, compressed_size: nil
+      def initialize type, id, uncompressed_size, compressed_size: nil, time: time
+        super time: time
         @type = type
         @id = id
         @uncompressed_size = uncompressed_size

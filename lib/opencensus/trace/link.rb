@@ -23,17 +23,18 @@ module OpenCensus
     class Link
       # The relationship of the two spans is unknown, or known but other
       # than parent-child.
-      LINK_TYPE_UNSPECIFIED         = :TYPE_UNSPECIFIED
+      TYPE_UNSPECIFIED    = :TYPE_UNSPECIFIED
 
       # The linked span is a child of the current span.
-      LINK_TYPE_CHILD_LINKED_SPAN   = :CHILD_LINKED_SPAN
+      CHILD_LINKED_SPAN   = :CHILD_LINKED_SPAN
 
       # The linked span is a parent of the current span.
-      LINK_TYPE_PARENT_LINKED_SPAN  = :PARENT_LINKED_SPAN
+      PARENT_LINKED_SPAN  = :PARENT_LINKED_SPAN
 
       ##
       # A unique identifier for a trace. All spans from the same trace share
-      # the same `trace_id`. The ID is a 16-byte array.
+      # the same `trace_id`. The ID is a 16-byte represented as a hexadecimal
+      # string.
       #
       # @return [String]
       #
@@ -41,28 +42,34 @@ module OpenCensus
 
       ##
       # A unique identifier for a span within a trace, assigned when the span
-      # is created. The ID is an 8-byte array.
+      # is created. The ID is a 16-byte represented as a hexadecimal string.
       #
       # @return [String]
       #
       attr_reader :span_id
 
       ##
-      # The relationship of the current span relative to the linked span.
+      # The relationship of the current span relative to the linked span. You
+      # should use the type constants provided by this class.
       #
       # @return [Symbol]
+      #
       attr_reader :type
 
       ##
       # A set of attributes on the link.
       #
-      # @return [Hash{String => String}]
+      # @return [Hash{String => [String, TruncatableString, Integer, Boolean]}]
+      #
       attr_reader :attributes
 
       ##
       # The number of attributes that were discarded. Attributes can be
       # discarded because their keys are too long or because there are too
       # many attributes. If this value is 0, then no attributes were dropped.
+      #
+      # @return [Integer]
+      #
       attr_reader :dropped_attributes_count
 
       ##

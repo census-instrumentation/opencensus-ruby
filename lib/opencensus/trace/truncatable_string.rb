@@ -34,7 +34,7 @@ module OpenCensus
       # The number of bytes removed from the original string. If this value is
       # 0, then the string was not shortened.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       #
       attr_reader :truncated_byte_count
 
@@ -46,6 +46,10 @@ module OpenCensus
       def initialize value, truncated_byte_count: 0
         @value = value
         @truncated_byte_count = truncated_byte_count
+      end
+
+      def to_s
+        @value
       end
     end
   end

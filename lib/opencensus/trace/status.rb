@@ -24,7 +24,7 @@ module OpenCensus
       ##
       # The status code.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       #
       attr_reader :code
 
@@ -40,7 +40,7 @@ module OpenCensus
       #
       # @private
       #
-      def initialize code: nil, message: nil
+      def initialize code, message
         @code = code
         @message = message
       end

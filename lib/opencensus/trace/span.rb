@@ -95,7 +95,7 @@ module OpenCensus
       # The number of stack frames that were dropped because there were too many
       # stack frames. If this value is 0, then no stack frames were dropped.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       #
       attr_reader :dropped_frames_count
 
@@ -110,7 +110,7 @@ module OpenCensus
       # The number of dropped annotations in all the included time events.
       # If the value is 0, then no annotations were dropped.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       #
       attr_reader :dropped_annotations_count
 
@@ -118,7 +118,7 @@ module OpenCensus
       # The number of dropped message events in all the included time events.
       # If the value is 0, then no message events were dropped.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       #
       attr_reader :dropped_message_events_count
 
@@ -133,7 +133,7 @@ module OpenCensus
       # The number of dropped links after the maximum size was enforced
       # If the value is 0, then no links were dropped.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       #
       attr_reader :dropped_links_count
 
@@ -157,7 +157,7 @@ module OpenCensus
       # was active. If set, allows an implementation to detect missing child
       # spans.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       #
       attr_reader :child_span_count
 

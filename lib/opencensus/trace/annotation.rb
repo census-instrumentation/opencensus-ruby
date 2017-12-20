@@ -36,6 +36,9 @@ module OpenCensus
       # The number of attributes that were discarded. Attributes can be
       # discarded because their keys are too long or because there are too
       # many attributes. If this value is 0, then no attributes were dropped.
+      #
+      # @return [Integer]
+      # 
       attr_reader :dropped_attributes_count
 
       ##

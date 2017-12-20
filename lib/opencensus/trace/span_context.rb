@@ -127,9 +127,9 @@ module OpenCensus
       # @return [SpanBuilder] A SpanBuilder object that you can use to
       #     set span attributes and create children.
       #
-      def start_span name
+      def start_span name, skip_frames: 0
         child_context = create_child
-        span = SpanBuilder.new child_context
+        span = SpanBuilder.new child_context, skip_frames: skip_frames + 1
         span.name = name
         span.start!
         @trace_data.span_map[child_context.span_id] = span
@@ -146,8 +146,8 @@ module OpenCensus
       #
       # @param [String] name Name of the span
       #
-      def in_span name
-        span = start_span name
+      def in_span name, skip_frames: 0
+        span = start_span name, skip_frames: skip_frames + 1
         begin
           yield span
         ensure

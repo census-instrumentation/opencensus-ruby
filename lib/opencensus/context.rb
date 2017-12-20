@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module OpenCensus
-  class Context
+  module Context
     THREAD_KEY = :__opencensus_context__
 
     class << self
@@ -25,6 +25,10 @@ module OpenCensus
         storage[key]
       end
 
+      def unset key
+        storage.delete key
+      end
+
       def reset!
         Thread.current[THREAD_KEY] = {}
       end
@@ -32,7 +36,7 @@ module OpenCensus
       private
 
       def storage
-        Thread.current[THREAD_KEY] ||= reset!
+        Thread.current[THREAD_KEY] ||= {}
       end
     end
   end

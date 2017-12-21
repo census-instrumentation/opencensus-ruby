@@ -77,13 +77,12 @@ module OpenCensus
       end
 
       ##
-      # Sampler for this span. Generally this field is set from the Trace
-      # configuration when the span is first created. However, you can also
-      # change it after the fact.
+      # Sampling decision for this span. Generally this field is set when the
+      # span is first created. However, you can also change it after the fact.
       #
-      # @return [Sampler]
+      # @return [boolean]
       #
-      attr_accessor :sampler
+      attr_accessor :sampled
 
       ##
       # A description of the span's operation.
@@ -276,9 +275,9 @@ module OpenCensus
       #
       # @private
       #
-      def initialize span_context, skip_frames: 0
+      def initialize span_context, sampled, skip_frames: 0
         @context = span_context
-        @sampler = OpenCensus::Trace::Samplers::DEFAULT
+        @sampled = sampled
         @name = ""
         @start_time = nil
         @end_time = nil

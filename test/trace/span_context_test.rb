@@ -116,6 +116,16 @@ describe OpenCensus::Trace::SpanContext do
       frame.label.must_match %r{^block}
       frame.path.must_match %r{span_context_test\.rb$}
     end
+
+    it "honors span-scoped sampler" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      sampler = OpenCensus::Trace::Samplers::AlwaysSample.new
+      span = span_context.start_span "hello", sampler: sampler
+      span.sampled.must_equal true
+      sampler = OpenCensus::Trace::Samplers::NeverSample.new
+      span = span_context.start_span "hello", sampler: sampler
+      span.sampled.must_equal false
+    end
   end
 
   describe "in_span" do
@@ -136,6 +146,18 @@ describe OpenCensus::Trace::SpanContext do
         frame = span.instance_variable_get(:@stack_trace).first
         frame.label.must_match %r{^block}
         frame.path.must_match %r{span_context_test\.rb$}
+      end
+    end
+
+    it "honors span-scoped sampler" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      sampler = OpenCensus::Trace::Samplers::AlwaysSample.new
+      span_context.in_span "hello", sampler: sampler do |span|
+        span.sampled.must_equal true
+      end
+      sampler = OpenCensus::Trace::Samplers::NeverSample.new
+      span_context.in_span "hello", sampler: sampler do |span|
+        span.sampled.must_equal false
       end
     end
   end

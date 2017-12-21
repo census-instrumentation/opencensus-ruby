@@ -58,7 +58,7 @@ module OpenCensus
       # The starting timestamp of this span in UTC, or `nil` if the
       # starting timestamp has not yet been populated.
       #
-      # @return [Time, nil]
+      # @return [Time]
       #
       attr_reader :start_time
 
@@ -66,7 +66,7 @@ module OpenCensus
       # The ending timestamp of this span in UTC, or `nil` if the
       # ending timestamp has not yet been populated.
       #
-      # @return [Time, nil]
+      # @return [Time]
       #
       attr_reader :end_time
 
@@ -165,8 +165,8 @@ module OpenCensus
       #
       # @private
       #
-      def initialize name, trace_id: nil, span_id: nil, parent_span_id: nil,
-                     start_time: nil, end_time: nil, attributes: {},
+      def initialize trace_id, span_id, name, start_time, end_time,
+                     parent_span_id: nil, attributes: {},
                      dropped_attributes_count: 0, stack_trace: [],
                      dropped_frames_count: 0, time_events: [],
                      dropped_annotations_count: 0,

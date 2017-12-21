@@ -105,6 +105,21 @@ module OpenCensus
       attr_reader :span_id
 
       ##
+      # Whether the context (e.g. the parent span) has been sampled. This
+      # information may be used in sampling decisions for new spans.
+      #
+      # @return [boolean]
+      #
+      def sampled?
+        span = this_span
+        if span
+          span.sampled
+        else
+          trace_options & 0x01 != 0
+        end
+      end
+
+      ##
       # Generate and return a Trace-Context header value corresponding to
       # this context. This header may be passed as a Trace-Context to
       # downstream remote API calls.

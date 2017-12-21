@@ -50,7 +50,7 @@ module OpenCensus
       ##
       # The name of this span.
       #
-      # @return [OpenCensus::Trace::TruncatableString]
+      # @return [TruncatableString]
       #
       attr_reader :name
 

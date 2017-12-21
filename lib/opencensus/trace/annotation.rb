@@ -21,7 +21,7 @@ module OpenCensus
       ##
       # A user-supplied message describing the event.
       #
-      # @return [OpenCensus::Trace::TruncatableString]
+      # @return [TruncatableString]
       #
       attr_reader :description
 

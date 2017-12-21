@@ -20,6 +20,7 @@ module OpenCensus
       # the Google X-Cloud-Trace header specification.
       #
       class CloudTrace
+        ## @private Internal regex used to parse fields
         HEADER_FORMAT = %r{([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?}
 
         ##

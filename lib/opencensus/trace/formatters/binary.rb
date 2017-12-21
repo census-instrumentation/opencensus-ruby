@@ -21,7 +21,9 @@ module OpenCensus
       # [documentation](https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md).
       #
       class Binary
+        ## @private Internal format used to (un)pack binary data
         BINARY_FORMAT = "CCH32CH16CC".freeze
+
         ##
         # Deserialize a trace context header into a TraceContext object.
         #

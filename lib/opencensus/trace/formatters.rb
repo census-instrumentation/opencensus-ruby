@@ -19,6 +19,7 @@ require "opencensus/trace/formatters/trace_context"
 module OpenCensus
   module Trace
     module Formatters
+      ## The default context formatter
       DEFAULT = TraceContext.new
 
       ## @private Internal struct that holds parsed trace context data.

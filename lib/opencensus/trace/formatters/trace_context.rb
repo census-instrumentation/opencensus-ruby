@@ -29,7 +29,7 @@ module OpenCensus
         # Deserialize a trace context header into a TraceContext object.
         #
         # @param [String]
-        # @return [TraceContext, nil]
+        # @return [TraceContextData, nil]
         #
         def deserialize header
           match = VERSION_PATTERN.match(header)

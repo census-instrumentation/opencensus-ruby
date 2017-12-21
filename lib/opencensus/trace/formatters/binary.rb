@@ -26,7 +26,7 @@ module OpenCensus
         # Deserialize a trace context header into a TraceContext object.
         #
         # @param [String]
-        # @return [TraceContext, nil]
+        # @return [TraceContextData, nil]
         #
         def deserialize binary
           data = binary.unpack(BINARY_FORMAT)

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "opencensus/trace/time_event"
+
 module OpenCensus
   module Trace
     ##

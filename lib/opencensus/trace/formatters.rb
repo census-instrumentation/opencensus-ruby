@@ -19,7 +19,9 @@ require "opencensus/trace/formatters/trace_context"
 module OpenCensus
   module Trace
     module Formatters
-      DEFAULT = CloudTrace.new
+      DEFAULT = TraceContext.new
+
+      ## @private Internal struct that holds parsed trace context data.
       TraceContextData = Struct.new :trace_id, :span_id, :trace_options
     end
   end

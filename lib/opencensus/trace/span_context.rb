@@ -21,11 +21,8 @@ module OpenCensus
     #
     class SpanContext
       ## @private Internal struct that holds trace-wide data.
-      TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env
-      ## @private Internal struct that holds parsed trace context data.
-      TraceContext = Struct.new :trace_id, :span_id, :trace_options
-      TRACE_CONTEXT_HEADER_V0_PATTERN =
-        /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
+      TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env,
+                             :formatter
       MAX_TRACE_ID = 0xffffffffffffffffffffffffffffffff
       MAX_SPAN_ID = 0xffffffffffffffff
 
@@ -42,17 +39,20 @@ module OpenCensus
         #
         # @return [SpanContext]
         #
-        def create_root header: nil, rack_env: nil
+        def create_root header: nil, rack_env: nil, formatter: nil
+          formatter ||= Formatters::DEFAULT
           header ||= rack_env["HTTP_TRACE_CONTEXT"] if rack_env
-          trace_context = parse_trace_context_header header if header
+          trace_context = formatter.deserialize header if header
+
           if trace_context
             trace_data = TraceData.new \
-              trace_context.trace_id, trace_context.trace_options, {}, rack_env
+              trace_context.trace_id, trace_context.trace_options, {}, rack_env,
+              formatter
             new trace_data, nil, trace_context.span_id
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
-            trace_data = TraceData.new trace_id, 0, {}, rack_env
+            trace_data = TraceData.new trace_id, 0, {}, rack_env, formatter
             new trace_data, nil, ""
           end
         end
@@ -112,8 +112,7 @@ module OpenCensus
       # @return [String]
       #
       def to_trace_context_header
-        options_hex = trace_options.to_s(16).rjust(2, "0")
-        "00-#{trace_id}-#{span_id}-#{options_hex}"
+        @trace_data.formatter.serialize self
       end
 
       ##
@@ -206,35 +205,6 @@ module OpenCensus
       #
       def get_span span_id
         @trace_data.span_map[span_id]
-      end
-
-      class << self
-        private
-
-        def parse_trace_context_header header
-          match = /^([0-9a-fA-F]{2})-(.+)$/.match(header)
-          if match
-            version = match[1].to_i(16)
-            version_format = match[2]
-            case version
-            when 0
-              parse_trace_context_header_version_0 version_format
-            else
-              nil
-            end
-          else
-            nil
-          end
-        end
-
-        def parse_trace_context_header_version_0 str
-          match = TRACE_CONTEXT_HEADER_V0_PATTERN.match(str)
-          if match
-            TraceContext.new match[1].downcase,
-                             match[2].downcase,
-                             match[4].to_i(16)
-          end
-        end
       end
     end
   end

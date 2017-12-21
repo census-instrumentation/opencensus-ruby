@@ -92,17 +92,6 @@ describe OpenCensus::Trace::SpanContext do
       span.context.this_span.must_be_same_as span
     end
 
-    it "finishes when given a block" do
-      span_context = OpenCensus::Trace::SpanContext.create_root
-      span = span_context.in_span "hello" do |block_span|
-        block_span.start_time.wont_be_nil
-        block_span.end_time.must_be_nil
-        block_span
-      end
-      span.start_time.wont_be_nil
-      span.end_time.wont_be_nil
-    end
-
     it "creates a hierarchy of contexts" do
       root_context = OpenCensus::Trace::SpanContext.create_root
       span1 = root_context.start_span "hello"
@@ -118,6 +107,36 @@ describe OpenCensus::Trace::SpanContext do
       context2.root.must_be_same_as root_context
       context1.root.must_be_same_as root_context
       root_context.root.must_be_same_as root_context
+    end
+
+    it "captures the stack trace" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      span = span_context.start_span "hello"
+      frame = span.instance_variable_get(:@stack_trace).first
+      frame.label.must_match %r{^block}
+      frame.path.must_match %r{span_context_test\.rb$}
+    end
+  end
+
+  describe "in_span" do
+    it "finishes at the end of the block" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      span = span_context.in_span "hello" do |block_span|
+        block_span.start_time.wont_be_nil
+        block_span.end_time.must_be_nil
+        block_span
+      end
+      span.start_time.wont_be_nil
+      span.end_time.wont_be_nil
+    end
+
+    it "captures the stack trace" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      span_context.in_span "hello" do |span|
+        frame = span.instance_variable_get(:@stack_trace).first
+        frame.label.must_match %r{^block}
+        frame.path.must_match %r{span_context_test\.rb$}
+      end
     end
   end
 end

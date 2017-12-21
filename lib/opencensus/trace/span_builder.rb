@@ -172,8 +172,8 @@ module OpenCensus
       # @param [String] attributes Key-value pairs providing additional
       #     properties of the event. Keys must be strings, and values are
       #     restricted to the same types as attributes (see #put_attribute).
-      # @param [Time] time Timestamp of the event (optional, defaults to the
-      #     current time)
+      # @param [Time, nil] time Timestamp of the event. Optional, defaults to
+      #     the current time.
       #
       def put_annotation description, attributes = {}, time: nil
         time ||= Time.now.utc
@@ -195,13 +195,13 @@ module OpenCensus
       #     unsigned `(0..2^64-1)`
       # @param [Integer] uncompressed_size The number of uncompressed bytes
       #     sent or received.
-      # @param [Integer] compressed_size The number of compressed bytes sent
-      #     or received. (optional, defaults to the same as uncompressed_size)
-      # @param [Time] time Timestamp of the event (optional, defaults to the
-      #     current time)
+      # @param [Integer, nil] compressed_size The number of compressed bytes
+      #     sent or received. Optional.
+      # @param [Time, nil] time Timestamp of the event. Optional, defaults to
+      #     the current time.
       #
       def put_message_event type, id, uncompressed_size,
-                            compressed_size: 0, time: nil
+                            compressed_size: nil, time: nil
         time ||= Time.now.utc
         message_event = MessageEvent.new time, type, id, uncompressed_size,
                                          compressed_size
@@ -256,7 +256,7 @@ module OpenCensus
       # *   Pass in an explicit array of Thread::Backtrace::Location as
       #     returned from Kernel#caller_locations
       #
-      # @param [Array{Thread::Backtrace::Location}, Integer] locations
+      # @param [Array<Thread::Backtrace::Location>, Integer] locations
       #
       def update_stack_trace stack_trace = 0
         @stack_trace =

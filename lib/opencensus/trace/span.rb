@@ -73,7 +73,7 @@ module OpenCensus
       ##
       # The properties of this span.
       #
-      # @return [Hash{String => String}]
+      # @return [Hash<String, (TruncatableString, Integer, Boolean)>]
       #
       attr_reader :attributes
 
@@ -86,7 +86,7 @@ module OpenCensus
       ##
       # A stack trace captured at the start of the span.
       #
-      # @return [Thread::Backtrace::Location[]]
+      # @return [Array<Thread::Backtrace::Location>]
       #
       attr_reader :stack_trace
 
@@ -101,7 +101,7 @@ module OpenCensus
       ##
       # The included time events.
       #
-      # @return [TimeEvent[]]
+      # @return [Array<TimeEvent>]
       #
       attr_reader :time_events
 
@@ -124,7 +124,7 @@ module OpenCensus
       ##
       # The included links.
       #
-      # @return [Link[]]
+      # @return [Array<Link>]
       #
       attr_reader :links
 

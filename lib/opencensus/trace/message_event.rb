@@ -19,17 +19,17 @@ module OpenCensus
     #
     class MessageEvent < TimeEvent
       # Unknown event type.
-      MESSAGE_EVENT_TYPE_UNSPECIFIED  = :TYPE_UNSPECIFIED
+      TYPE_UNSPECIFIED = :TYPE_UNSPECIFIED
 
       # Indicates a sent message.
-      MESSAGE_EVENT_TYPE_SENT         = :SENT
+      SENT = :SENT
 
       # Indicates a received message.
-      MESSAGE_EVENT_TYPE_RECEIVED     = :RECEIVED
+      RECEIVED = :RECEIVED
 
       ##
       # The type of MessageEvent. Indicates whether the message was sent or
-      # received.
+      # received. You should use the type constants provided by this class.
       #
       # @return [Symbol]
       #
@@ -56,7 +56,7 @@ module OpenCensus
       # The number of compressed bytes sent or received. If zero, assumed to
       # be the same size as uncompressed.
       #
-      # @return [Integer, nil]
+      # @return [Integer]
       #
       attr_reader :compressed_size
 
@@ -65,7 +65,7 @@ module OpenCensus
       #
       # @private
       #
-      def initialize type, id, uncompressed_size, compressed_size: nil,
+      def initialize type, id, uncompressed_size, compressed_size: 0,
                      time: nil
         super time: time
         @type = type

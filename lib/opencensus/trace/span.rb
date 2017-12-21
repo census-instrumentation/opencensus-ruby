@@ -55,16 +55,14 @@ module OpenCensus
       attr_reader :name
 
       ##
-      # The starting timestamp of this span in UTC, or `nil` if the
-      # starting timestamp has not yet been populated.
+      # The starting timestamp of this span in UTC.
       #
       # @return [Time]
       #
       attr_reader :start_time
 
       ##
-      # The ending timestamp of this span in UTC, or `nil` if the
-      # ending timestamp has not yet been populated.
+      # The ending timestamp of this span in UTC.
       #
       # @return [Time]
       #
@@ -156,7 +154,7 @@ module OpenCensus
       # was active. If set, allows an implementation to detect missing child
       # spans.
       #
-      # @return [Integer]
+      # @return [Integer, nil]
       #
       attr_reader :child_span_count
 

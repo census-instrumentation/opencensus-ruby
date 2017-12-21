@@ -54,12 +54,12 @@ module OpenCensus
         # @return [String]
         #
         def serialize span_context
-          sprintf(
-            "%02d-%s-%s-%02d",
-            0, # version 0
-            span_context.trace_id,
-            span_context.span_id,
-            span_context.trace_options
+          format(
+            "%02<version>d-%<trace_id>s-%<span_id>s-%02<trace_options>d",
+            version: 0, # version 0,
+            trace_id: span_context.trace_id,
+            span_id: span_context.span_id,
+            trace_options: span_context.trace_options
           )
         end
 

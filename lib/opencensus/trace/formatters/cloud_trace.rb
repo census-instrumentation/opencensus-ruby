@@ -20,7 +20,7 @@ module OpenCensus
       # the Google X-Cloud-Trace header specification.
       #
       class CloudTrace
-        HEADER_FORMAT = /([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?/
+        HEADER_FORMAT = %r{([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?}
 
         ##
         # Deserialize a trace context header into a TraceContext object.
@@ -29,9 +29,10 @@ module OpenCensus
         # @return [TraceContext, nil]
         #
         def deserialize header
-          if match = HEADER_FORMAT.match(header)
+          match = HEADER_FORMAT.match(header)
+          if match
             trace_id = match[1]
-            span_id = sprintf("%016x", match[2].to_i)
+            span_id = format("%016x", match[2].to_i)
             trace_options = match[3].to_i
             TraceContextData.new trace_id, span_id, trace_options
           else
@@ -46,10 +47,14 @@ module OpenCensus
         # @return [String]
         #
         def serialize span_context
-          ret = span_context.trace_id
-          ret << '/' << span_context.span_id.to_i(16).to_s if span_context.span_id
-          ret << ';o=' << span_context.trace_options.to_s if span_context.trace_options
-          ret
+          span_context.trace_id.tap do |ret|
+            if span_context.span_id
+              ret << "/" << span_context.span_id.to_i(16).to_s
+            end
+            if span_context.trace_options
+              ret << ";o=" << span_context.trace_options.to_s
+            end
+          end
         end
       end
     end

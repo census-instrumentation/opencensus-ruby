@@ -21,7 +21,7 @@ module OpenCensus
       # [documentation](https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md).
       #
       class Binary
-        BINARY_FORMAT = "CCH32CH16CC"
+        BINARY_FORMAT = "CCH32CH16CC".freeze
         ##
         # Deserialize a trace context header into a TraceContext object.
         #
@@ -30,7 +30,7 @@ module OpenCensus
         #
         def deserialize binary
           data = binary.unpack(BINARY_FORMAT)
-          if (data[0] == 0 && data[1] == 0 && data[3] == 1 && data[5] == 2)
+          if data[0].zero? && data[1].zero? && data[3] == 1 && data[5] == 2
             TraceContextData.new data[2], data[4], data[6]
           else
             nil

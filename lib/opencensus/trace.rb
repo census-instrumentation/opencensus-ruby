@@ -14,6 +14,7 @@
 
 require "opencensus/trace/config"
 require "opencensus/trace/exporters"
+require "opencensus/trace/formatters"
 require "opencensus/trace/integrations"
 require "opencensus/trace/samplers"
 require "opencensus/trace/span"

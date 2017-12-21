@@ -163,6 +163,7 @@ module OpenCensus
       #
       def put_attribute key, value
         @attributes[key.to_s] = value
+        self
       end
 
       ##
@@ -301,13 +302,25 @@ module OpenCensus
         raise "Span must have end_time" unless @end_time
 
         time_events = @annotations.map do |annotation|
-
+          OpenCensus::Trace::Annotation.new \
+            annotation.description,
+            attributes: annotation.attributes,
+            time: annotation.time
         end
         time_events += @message_events.map do |message_event|
-
+          OpenCensus::Trace::MessageEvent.new \
+            message_event.type,
+            message_event.id,
+            message_event.uncompressed_size,
+            compressed_size: message_event.compressed_size,
+            time: message_event.time
         end
         links = @links.map do |link|
-
+          OpenCensus::Trace::Link.new \
+            link.trace_id,
+            link.span_id,
+            type: link.type,
+            attributes: link.attributes
         end
         status = if @status_code || @status_message
                    Status.new @status_code, @status_message

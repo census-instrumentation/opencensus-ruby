@@ -41,7 +41,7 @@ module OpenCensus
       #
       # Example:
       #
-      #     OpenCensus::Trace::configure do |config|
+      #     OpenCensus::Trace.configure do |config|
       #       config.default_sampler =
       #         OpenCensus::Trace::Samplers::AlwaysSample.new
       #       config.default_max_attributes = 16

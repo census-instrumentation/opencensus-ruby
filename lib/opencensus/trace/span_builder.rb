@@ -162,6 +162,7 @@ module OpenCensus
       #
       def put_attribute key, value
         @attributes[key.to_s] = value
+        self
       end
 
       ##
@@ -288,6 +289,55 @@ module OpenCensus
         @status_code = nil
         @status_message = nil
         @stack_trace = caller_locations(skip_frames + 2)
+      end
+
+      ##
+      # Return a read-only version of this span
+      #
+      # @return [Span]
+      #
+      def to_span
+        raise "Span must have start_time" unless @start_time
+        raise "Span must have end_time" unless @end_time
+
+        Span.new trace_id, span_id, name, @start_time, @end_time,
+                 parent_span_id: parent_span_id, attributes: @attributes,
+                 stack_trace: @stack_trace, time_events: time_events,
+                 links: links, status: status
+      end
+
+      private
+
+      def time_events
+        @annotations.map do |annotation|
+          OpenCensus::Trace::Annotation.new \
+            annotation.description,
+            attributes: annotation.attributes,
+            time: annotation.time
+        end + @message_events.map do |message_event|
+          OpenCensus::Trace::MessageEvent.new \
+            message_event.type,
+            message_event.id,
+            message_event.uncompressed_size,
+            compressed_size: message_event.compressed_size,
+            time: message_event.time
+        end
+      end
+
+      def links
+        @links.map do |link|
+          OpenCensus::Trace::Link.new \
+            link.trace_id,
+            link.span_id,
+            type: link.type,
+            attributes: link.attributes
+        end
+      end
+
+      def status
+        return nil unless @status_code || @status_message
+
+        Status.new @status_code, @status_message
       end
     end
   end

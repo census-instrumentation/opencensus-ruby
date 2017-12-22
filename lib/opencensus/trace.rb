@@ -12,14 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "opencensus/trace/annotation"
 require "opencensus/trace/config"
 require "opencensus/trace/exporters"
 require "opencensus/trace/formatters"
 require "opencensus/trace/integrations"
+require "opencensus/trace/link"
+require "opencensus/trace/message_event"
 require "opencensus/trace/samplers"
-require "opencensus/trace/span"
 require "opencensus/trace/span_builder"
 require "opencensus/trace/span_context"
+require "opencensus/trace/span"
+require "opencensus/trace/status"
+require "opencensus/trace/truncatable_string"
 
 module OpenCensus
   ##

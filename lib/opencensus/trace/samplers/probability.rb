@@ -28,14 +28,11 @@ module OpenCensus
 
         def call opts = {}
           span_context = opts[:span_context]
+          return true if span_context && span_context.sampled?
           value =
             if span_context
-              if span_context.sampled?
-                0.0
-              else
-                (span_context.trace_id.to_i(16) % 0x10000000000000000).to_f /
-                  0x10000000000000000
-              end
+              (span_context.trace_id.to_i(16) % 0x10000000000000000).to_f /
+                0x10000000000000000
             else
               @rng.rand
             end

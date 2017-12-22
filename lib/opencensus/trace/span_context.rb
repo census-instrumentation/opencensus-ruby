@@ -105,6 +105,21 @@ module OpenCensus
       attr_reader :span_id
 
       ##
+      # Whether the context (e.g. the parent span) has been sampled. This
+      # information may be used in sampling decisions for new spans.
+      #
+      # @return [boolean]
+      #
+      def sampled?
+        span = this_span
+        if span
+          span.sampled
+        else
+          trace_options & 0x01 != 0
+        end
+      end
+
+      ##
       # Generate and return a Trace-Context header value corresponding to
       # this context. This header may be passed as a Trace-Context to
       # downstream remote API calls.
@@ -123,12 +138,19 @@ module OpenCensus
       # However, you are responsible for finishing the span yourself.
       #
       # @param [String] name Name of the span
+      # @param [Sampler] sampler Span-scoped sampler. If not provided,
+      #     defaults to the trace configuration's default sampler.
+      #
       # @return [SpanBuilder] A SpanBuilder object that you can use to
       #     set span attributes and create children.
       #
-      def start_span name, skip_frames: 0
+      def start_span name, skip_frames: 0, sampler: nil
         child_context = create_child
-        span = SpanBuilder.new child_context, skip_frames: skip_frames + 1
+        sampler ||= OpenCensus::Trace::Samplers::DEFAULT
+        sampled = sampler.call span_context: self,
+                               rack_env: @trace_data.rack_env
+        span = SpanBuilder.new child_context, sampled,
+                               skip_frames: skip_frames + 1
         span.name = name
         span.start!
         @trace_data.span_map[child_context.span_id] = span
@@ -144,9 +166,11 @@ module OpenCensus
       # be finished automatically at the end of the block.
       #
       # @param [String] name Name of the span
+      # @param [Sampler] sampler Span-scoped sampler. If not provided,
+      #     defaults to the trace configuration's default sampler.
       #
-      def in_span name, skip_frames: 0
-        span = start_span name, skip_frames: skip_frames + 1
+      def in_span name, skip_frames: 0, sampler: nil
+        span = start_span name, skip_frames: skip_frames + 1, sampler: sampler
         begin
           yield span
         ensure

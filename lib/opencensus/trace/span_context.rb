@@ -146,7 +146,7 @@ module OpenCensus
       #
       def start_span name, skip_frames: 0, sampler: nil
         child_context = create_child
-        sampler ||= OpenCensus::Trace::Samplers::DEFAULT
+        sampler ||= OpenCensus::Trace::Config.default_sampler
         sampled = sampler.call span_context: self,
                                rack_env: @trace_data.rack_env
         span = SpanBuilder.new child_context, sampled,

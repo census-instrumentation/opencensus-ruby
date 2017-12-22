@@ -14,26 +14,20 @@
 
 require "test_helper"
 
-describe OpenCensus::Trace::Samplers::Time do
+describe OpenCensus::Trace::Samplers::MaxQPS do
   let(:start_time) { ::Time.at(12345678) }
   let(:env) { {} }
 
   def sampler
     ::Time.stub :now, start_time do
-      OpenCensus::Trace::Samplers::Time.new
+      OpenCensus::Trace::Samplers::MaxQPS.new
     end
   end
 
   describe ".call" do
     it "samples the first time called" do
-      sam = OpenCensus::Trace::Samplers::Time.new
+      sam = OpenCensus::Trace::Samplers::MaxQPS.new
       sam.call(env).must_equal true
-    end
-
-    it "omits the default blacklisted path" do
-      sam = OpenCensus::Trace::Samplers::Time.new
-      blacklisted_env = { "PATH_INFO" => "/_ah/health" }
-      sam.call(blacklisted_env).must_equal false
     end
 
     it "doesn't sample when called too soon" do

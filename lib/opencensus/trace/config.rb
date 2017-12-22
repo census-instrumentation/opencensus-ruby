@@ -20,7 +20,9 @@ module OpenCensus
     # The OpenCensus Trace configuration. See Trace#configure for more info.
     #
     Config = Common::Config.new do |config|
-      config.add_option! :default_sampler, Samplers::DEFAULT do |value|
+      default_sampler =
+        Samplers::Probability.new Samplers::Probability::DEFAULT_RATE
+      config.add_option! :default_sampler, default_sampler do |value|
         value.respond_to? :call
       end
       config.add_option! :default_max_attributes, 32
@@ -54,8 +56,8 @@ module OpenCensus
       #
       # *   `default_sampler` The default sampler to use. Must be a sampler,
       #     an object with a call method that takes a single options hash.
-      #     See OpenCensus::Trace::Samplers. The initial value is the value of
-      #     `OpenCensus::Trace::Samplers::DEFAULT`.
+      #     See OpenCensus::Trace::Samplers. The initial value is a Probability
+      #     sampler with a default rate.
       # *   `default_max_attributes` The maximum number of attributes to add to
       #     a span. Initial value is 32. Use 0 for no maximum.
       # *   `default_max_stack_frames` The maximum number of stack frames to

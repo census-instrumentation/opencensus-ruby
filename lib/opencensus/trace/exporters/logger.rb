@@ -17,14 +17,31 @@ require "logger"
 module OpenCensus
   module Trace
     module Exporters
+      ##
+      # The Logger exporter exports captured spans to a standard Ruby Logger
+      # interface.
+      #
       class Logger
-        def initialize logger, level: Logger::INFO
+        ##
+        # Create a new Logger exporter
+        #
+        # @param [#log] logger The logger to write to.
+        # @param [Symbol] level The log level. This should be a log level
+        #        defined by {https://ruby-doc.org/stdlib-2.5.0/libdoc/logger/rdoc/Logger.html Logger Standard Library}.
+        #
+        def initialize logger, level: ::Logger::INFO
           @logger = logger
           @level = level
         end
 
-        def report trace
-          logger.log(@level, trace.to_json)
+        ##
+        # Export the captured spans to the configured logger.
+        #
+        # @param [Array<Span>] spans The captured spans.
+        # @return [Boolean]
+        #
+        def export spans
+          logger.log @level, spans.to_json
         end
       end
     end

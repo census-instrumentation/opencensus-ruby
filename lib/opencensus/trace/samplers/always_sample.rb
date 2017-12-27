@@ -15,7 +15,16 @@
 module OpenCensus
   module Trace
     module Samplers
+      ##
+      # The AlwaysSample sampler always returns true.
+      #
       class AlwaysSample
+        ##
+        # Implements the sampler contract. Checks to see whether a sample
+        # should be taken at this time.
+        #
+        # @return [boolean] Whether to sample at this time.
+        #
         def call _opts = {}
           true
         end

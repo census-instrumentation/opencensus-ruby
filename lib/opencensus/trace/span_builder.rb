@@ -124,6 +124,15 @@ module OpenCensus
       attr_accessor :end_time
 
       ##
+      # Whether this span is finished (i.e. has both a start and end time)
+      #
+      # @return [boolean]
+      #
+      def finished?
+        !start_time.nil? && !end_time.nil?
+      end
+
+      ##
       # Start this span by setting the start time to the current time.
       # Raises an exception if the start time is already set.
       #

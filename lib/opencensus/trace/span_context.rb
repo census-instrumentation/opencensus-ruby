@@ -66,6 +66,15 @@ module OpenCensus
       attr_reader :parent
 
       ##
+      # Returns true if this is a root span context
+      #
+      # @return [boolean]
+      #
+      def root?
+        parent.nil?
+      end
+
+      ##
       # The root context, which may be this context or one of its ancestors.
       #
       # @return [SpanContext]
@@ -76,6 +85,35 @@ module OpenCensus
           root = parent
         end
         root
+      end
+
+      ##
+      # Returns true if this context equals or is an ancestor of the given
+      # context.
+      #
+      # @return [boolean]
+      #
+      def contains? context
+        until context.nil?
+          return true if context == self
+          context = context.parent
+        end
+        false
+      end
+
+      ##
+      # Returns all SpanBuilder objects created by this context or any
+      # descendant context. The order of the returned spans is undefined.
+      #
+      # @return [Array<SpanBuilder>]
+      #
+      def contained_span_builders
+        builders = @trace_data.span_map.values
+        if root?
+          builders
+        else
+          builders.find_all { |sb| contains? sb.context.parent }
+        end
       end
 
       ##
@@ -188,6 +226,22 @@ module OpenCensus
       #
       def this_span
         get_span span_id
+      end
+
+      ##
+      # Builds all finished spans under this context, and returns an array of
+      # built `Span` objects. Ignores any unfinished spans. The order of the
+      # generated spans is undefined.
+      #
+      # Does not build any ancestor spans. If you want the entire span tree
+      # built, call this method on the `#root` context.
+      #
+      # @return [Array<Span>] Built Span objects
+      #
+      def build_contained_spans
+        contained_span_builders
+          .map { |sb| sb.finished? ? sb.to_span : nil }
+          .compact
       end
 
       ##

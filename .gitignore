@@ -7,3 +7,6 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+/docs/_site
+/docs/Gemfile.lock

@@ -18,6 +18,14 @@ module OpenCensus
       class Probability
         DEFAULT_RATE = 0.1
 
+        ##
+        # Create a sampler for the given probability.
+        #
+        # @param [Number] rate Probability that we will sample. This value must
+        #        be between 0 and 1.
+        # @param [#rand] rng The random number generator to use. Default is a
+        #        new Random instance.
+        #
         def initialize rate, rng: nil
           if rate > 1 || rate < 0
             raise ArgumentError, "Invalid rate - must be between 0 and 1."
@@ -26,6 +34,16 @@ module OpenCensus
           @rng = rng || Random.new
         end
 
+        ##
+        # Implements the sampler contract. Checks to see whether a sample
+        # should be taken at this time.
+        #
+        # @param [Hash] opts The options to sample with.
+        # @option opts [SpanContext] :span_context If provided, the span context
+        #         will be used to generate a deterministic value in place of the
+        #         pseudo-random number generator.        #
+        # @return [boolean] Whether to sample at this time.
+        #
         def call opts = {}
           span_context = opts[:span_context]
           return true if span_context && span_context.sampled?

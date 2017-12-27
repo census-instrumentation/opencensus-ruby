@@ -256,7 +256,7 @@ module OpenCensus
       # *   Pass in an explicit array of Thread::Backtrace::Location as
       #     returned from Kernel#caller_locations
       #
-      # @param [Array<Thread::Backtrace::Location>, Integer] locations
+      # @param [Array<Thread::Backtrace::Location>, Integer] stack_trace
       #
       def update_stack_trace stack_trace = 0
         @stack_trace =

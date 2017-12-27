@@ -27,7 +27,7 @@ module OpenCensus
         ##
         # Deserialize a trace context header into a TraceContext object.
         #
-        # @param [String]
+        # @param [String] binary
         # @return [TraceContextData, nil]
         #
         def deserialize binary
@@ -42,7 +42,7 @@ module OpenCensus
         ##
         # Serialize a SpanContext object.
         #
-        # @param [SpanContext]
+        # @param [SpanContext] span_context
         # @return [String]
         #
         def serialize span_context

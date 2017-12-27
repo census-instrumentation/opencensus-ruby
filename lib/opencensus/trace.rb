@@ -158,7 +158,7 @@ module OpenCensus
       # SpanContext so subsequent calls no longer create subspans of the
       # finished span.
       #
-      # @param [String] name Name of the span
+      # @param [Span] span The expected, currently active span
       #
       def end_span span
         context = span_context

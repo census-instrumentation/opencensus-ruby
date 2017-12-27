@@ -153,12 +153,12 @@ module OpenCensus
       end
 
       ##
-      # Finish the given span, which should be the span that created the
+      # Finish the given span, which must be the span that created the
       # current thread-local SpanContext. Also updates the thread-local
       # SpanContext so subsequent calls no longer create subspans of the
       # finished span.
       #
-      # @param [Span] span The expected, currently active span
+      # @param [SpanBuilder] span The expected currently active span to finish.
       #
       def end_span span
         context = span_context

@@ -17,53 +17,87 @@ require "faraday"
 module OpenCensus
   module Trace
     module Integrations
+      ##
+      # A middleware for Faraday that creates spans for outgoing requests, and
+      # propagates the trace context appropriately.
+      #
       class FaradayMiddleware < Faraday::Middleware
+        ## The default name for Faraday spans
+        DEFAULT_SPAN_NAME = "faraday_request".freeze
+
         ##
-        # Create a Trace span with the HTTP request/response information.
-        def call env
-          OpenCensus::Trace.in_span "faraday_request" do |span|
-            add_request_labels span, env if span
+        # Create a FaradayMiddleware.
+        #
+        # @param [#call] app Next item on the middleware stack.
+        # @param [SpanContext] span_context The span context within which
+        #     to create spans. Optional: If omitted, spans are created in the
+        #     current thread-local span context.
+        # @param [String, #call] span_name The name of the span to create.
+        #     Can be a string or a callable that takes a faraday request env
+        #     and returns a string. Optional: If omitted, uses
+        #     `DEFAULT_SPAN_NAME`
+        # @param [#call] sampler The sampler to use when creating spans.
+        #     Optional: If omitted, uses the sampler in the current config.
+        #
+        def initialize app, span_context: nil, span_name: nil, sampler: nil
+          @app = app
+          @span_context = span_context || OpenCensus::Trace
+          @span_name = span_name || DEFAULT_SPAN_NAME
+          @sampler = sampler
+        end
 
-            response = @app.call env
-
-            add_response_labels span, env if span
-
-            response
+        ##
+        # Wraps an HTTP call with a span with the request/response info.
+        #
+        def call request_env
+          if @span_context == OpenCensus::Trace && !@span_context.span_context
+            return @app.call request_env
+          end
+          span_name =
+            if @span_name.respond_to? :call
+              @span_name.call request_env
+            else
+              @span_name
+            end
+          span = @span_context.start_span span_name, sampler: @sampler
+          start_request span, request_env
+          @app.call(request_env).on_complete do |response_env|
+            finish_request span, response_env
+            @span_context.end_span span
           end
         end
 
         protected
 
         ##
-        # @private Set Trace span labels from request object
-        def add_request_labels span, env
-          labels = span.labels
-          labels["/http/method"] = env.method
-          labels["/http/url"] = env.url.to_s
+        # @private Set span attributes from request object
+        #
+        def start_request span, env
+          req_method = env[:method]
+          span.put_attribute "/http/method", req_method if req_method
+          url = env[:url]
+          span.put_attribute "/http/url", url if url
+          body = env[:body]
+          body_size = body.bytesize.to_s if body.respond_to? :bytesize
+          span.put_attribute "/rpc/request/size", body_size if body_size
 
-          # Only sets request size if request is not sent yet.
-          unless env.status
-            request_body = env.body || ""
-            labels["/rpc/request/size"] = request_body.bytesize.to_s
-          end
+          trace_context = span.context.to_trace_context_header
+          headers = env[:request_headers] ||= {}
+          headers["Trace-Context"] = trace_context
         end
 
         ##
-        # @private Set Trace span labels from response
-        def add_response_labels span, env
-          labels = span.labels
-
-          response = env.response
-          response_body = response.body || ""
-          response_status = response.status
-          response_url = response.headers[:location]
-
-          labels["/rpc/response/size"] = response_body.bytesize.to_s
-          labels["/rpc/status_code"] = response_status.to_s
-
-          if response_status >= 300 && response_status < 400 && response_url
-            labels["http/redirected_url"] = response_url
+        # @private Set span attributes from response
+        #
+        def finish_request span, env
+          status = env[:status].to_i
+          if status > 0
+            span.set_status status
+            span.put_attribute "/rpc/status_code", status.to_s
           end
+          body = env[:body]
+          body_size = body.bytesize.to_s if body.respond_to? :bytesize
+          span.put_attribute "/rpc/response/size", body_size if body_size
         end
       end
     end

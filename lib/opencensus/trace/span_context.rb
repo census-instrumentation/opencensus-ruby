@@ -183,8 +183,21 @@ module OpenCensus
         begin
           yield span
         ensure
-          span.finish!
+          end_span span
         end
+      end
+
+      ##
+      # Finish the given span, which must have been created by this span
+      # context.
+      #
+      # @param [SpanBuilder] span The span to finish.
+      #
+      def end_span span
+        unless span.context.parent == self
+          raise "The given span was not created by this context"
+        end
+        span.finish!
       end
 
       ##

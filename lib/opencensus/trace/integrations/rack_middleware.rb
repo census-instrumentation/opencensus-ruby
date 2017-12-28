@@ -29,8 +29,11 @@ module OpenCensus
         def call env
           OpenCensus::Trace.start_request_trace rack_env: env do |span_context|
             begin
-              span_context.in_span get_path(env) do |_span|
-                @app.call env
+              span_context.in_span get_path(env) do |span|
+                start_request span, env
+                @app.call(env).tap do |response|
+                  finish_request span, response
+                end
               end
             ensure
               @exporter.export span_context.build_contained_spans
@@ -44,6 +47,37 @@ module OpenCensus
           path = "#{env['SCRIPT_NAME']}#{env['PATH_INFO']}"
           path = "/#{path}" unless path.start_with? "/"
           path
+        end
+
+        def get_host env
+          env["HTTP_HOST"] || env["SERVER_NAME"]
+        end
+
+        def get_url env
+          path = get_path env
+          host = get_host env
+          scheme = env["SERVER_PROTOCOL"]
+          query_string = env["QUERY_STRING"].to_s
+          url = "#{scheme}://#{host}#{path}"
+          url = "#{url}?#{query_string}" unless query_string.empty?
+          url
+        end
+
+        def start_request span, env
+          span.put_attribute "/http/host", get_host(env)
+          span.put_attribute "/http/url", get_url(env)
+          span.put_attribute "/http/method", env["REQUEST_METHOD"]
+          span.put_attribute "/http/client_protocol", env["SERVER_PROTOCOL"]
+          span.put_attribute "/http/user_agent", env["HTTP_USER_AGENT"]
+          span.put_attribute "/pid", ::Process.pid.to_s
+          span.put_attribute "/tid", ::Thread.current.object_id.to_s
+        end
+
+        def finish_request span, response
+          if response.is_a?(::Array) && response.size == 3
+            span.set_status response[0]
+            response[1]["Trace-Context"] = span.context.to_trace_context_header
+          end
         end
       end
     end

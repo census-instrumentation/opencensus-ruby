@@ -40,17 +40,51 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
 
   describe "basic request" do
     let(:middleware) { OpenCensus::Trace::Integrations::RackMiddleware.new app, exporter: exporter }
-
-    it "parses the request path" do
+    let(:response) {
       env = {
         "SCRIPT_NAME" => "",
-        "PATH_INFO" => "/hello/world"
+        "PATH_INFO" => "/hello/world",
+        "HTTP_HOST" => "www.google.com",
+        "REQUEST_METHOD" => "GET",
+        "SERVER_PROTOCOL" => "https",
+        "HTTP_USER_AGENT" => "Google Chrome",
       }
       middleware.call env
+    }
+    let(:spans) do
+      response # make sure the request is processed
+      exporter.spans
+    end
+    let(:root_span) { spans.first }
 
-      spans = exporter.spans
+    it "captures spans" do
       spans.wont_be_empty
       spans.count.must_equal 1
+    end
+
+    it "parses the request path" do
+      root_span.name.must_equal "/hello/world"
+    end
+
+    it "captures the response status code" do
+      root_span.status.wont_be_nil
+      root_span.status.code.must_equal 200
+    end
+
+    it "adds attributes to the span" do
+      root_span.attributes["/http/method"].must_equal "GET"
+      root_span.attributes["/http/url"].must_equal "https://www.google.com/hello/world"
+      root_span.attributes["/http/host"].must_equal "www.google.com"
+      root_span.attributes["/http/client_protocol"].must_equal "https"
+      root_span.attributes["/http/user_agent"].must_equal "Google Chrome"
+      root_span.attributes["/pid"].wont_be_empty
+      root_span.attributes["/tid"].wont_be_empty
+    end
+
+    it "adds trace context header to response" do
+      response.must_be_kind_of Array
+      response.size.must_equal 3
+      response[1]["Trace-Context"].wont_be_empty
     end
   end
 

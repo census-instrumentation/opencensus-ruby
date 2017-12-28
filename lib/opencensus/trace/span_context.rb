@@ -210,9 +210,7 @@ module OpenCensus
       # @return [Array<Span>] Built Span objects
       #
       def build_contained_spans
-        contained_span_builders
-          .filter { |sb| sb.finished? }
-          .map { |sb| sb.to_span }
+        contained_span_builders.find_all(&:finished?).map(&:to_span)
       end
 
       ##
@@ -226,35 +224,6 @@ module OpenCensus
         @trace_data = trace_data
         @parent = parent
         @span_id = span_id
-      end
-
-      private
-
-      ##
-      # Create a child of this SpanContext, with a random unique span ID.
-      #
-      # @return [SpanContext] The created child context.
-      # @private
-      #
-      def create_child
-        loop do
-          child_span_id = rand 1..MAX_SPAN_ID
-          child_span_id = child_span_id.to_s(16).rjust(16, "0")
-          unless @trace_data.span_map.key? child_span_id
-            return SpanContext.new @trace_data, self, child_span_id
-          end
-        end
-      end
-
-      ##
-      # Get the SpanBuilder given a Span ID.
-      #
-      # @private
-      # @param [Integer] span_id the ID of the span to get
-      # @return [SpanBuilder, nil] The SpanBuilder, or `nil` if ID not found
-      #
-      def get_span span_id
-        @trace_data.span_map[span_id]
       end
 
       ##
@@ -286,6 +255,35 @@ module OpenCensus
         else
           builders.find_all { |sb| contains? sb.context.parent }
         end
+      end
+
+      private
+
+      ##
+      # Create a child of this SpanContext, with a random unique span ID.
+      #
+      # @return [SpanContext] The created child context.
+      # @private
+      #
+      def create_child
+        loop do
+          child_span_id = rand 1..MAX_SPAN_ID
+          child_span_id = child_span_id.to_s(16).rjust(16, "0")
+          unless @trace_data.span_map.key? child_span_id
+            return SpanContext.new @trace_data, self, child_span_id
+          end
+        end
+      end
+
+      ##
+      # Get the SpanBuilder given a Span ID.
+      #
+      # @private
+      # @param [Integer] span_id the ID of the span to get
+      # @return [SpanBuilder, nil] The SpanBuilder, or `nil` if ID not found
+      #
+      def get_span span_id
+        @trace_data.span_map[span_id]
       end
     end
   end

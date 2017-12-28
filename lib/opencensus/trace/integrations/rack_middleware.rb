@@ -21,11 +21,27 @@ module OpenCensus
       # the captured spans at the end of the request.
       #
       class RackMiddleware
+        ##
+        # Create the Rack middleware.
+        #
+        # @param [#call] app Next item on the middleware stack
+        # @param [#export] exporter The exported used to export captured spans
+        #     at the end of the request. Optional: If omitted, uses the exporter
+        #     in the current config.
+        #
         def initialize app, exporter: nil
           @app = app
           @exporter = exporter || OpenCensus::Trace::Config.exporter
         end
 
+        ##
+        # Run the Rack middleware.
+        #
+        # @param [Hash] env The rack environment
+        # @return [Array] The rack response. An array with 3 elements: the HTTP
+        #     response code, a Hash of the response headers, and the response
+        #     body which must respond to `each`.
+        #
         def call env
           OpenCensus::Trace.start_request_trace rack_env: env do |span_context|
             begin

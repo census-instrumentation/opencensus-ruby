@@ -79,6 +79,52 @@ describe OpenCensus::Trace::SpanContext do
     end
   end
 
+  describe "context hierarchy" do
+    let(:root_context) { OpenCensus::Trace::SpanContext.create_root }
+    let(:span1) { root_context.start_span "hello" }
+    let(:context1) { span1.context }
+    let(:span2) { context1.start_span "world" }
+    let(:context2) { span2.context }
+
+    it "consists of distinct contexts" do
+      context2.wont_be_same_as context1
+      context1.wont_be_same_as root_context
+    end
+
+    it "supports getting context parents" do
+      context2.parent.must_be_same_as context1
+      context1.parent.must_be_same_as root_context
+      root_context.parent.must_be_nil
+    end
+
+    it "supports getting the root context" do
+      context2.root.must_be_same_as root_context
+      context1.root.must_be_same_as root_context
+      root_context.root.must_be_same_as root_context
+      context2.root?.must_equal false
+      context1.root?.must_equal false
+      root_context.root?.must_equal true
+    end
+
+    it "supports contains" do
+      root_context.contains?(context2).must_equal true
+      root_context.contains?(context1).must_equal true
+      root_context.contains?(root_context).must_equal true
+      context1.contains?(root_context).must_equal false
+      context2.contains?(context1).must_equal false
+    end
+
+    it "supports contained_span_builders" do
+      context2   # Cause all spans to be built before expectations are run
+      root_context.contained_span_builders.must_include span1
+      root_context.contained_span_builders.must_include span2
+      context1.contained_span_builders.wont_include span1
+      context1.contained_span_builders.must_include span2
+      context2.contained_span_builders.wont_include span1
+      context2.contained_span_builders.wont_include span2
+    end
+  end
+
   describe "start_span" do
     it "creates the correct span" do
       span_context = OpenCensus::Trace::SpanContext.create_root
@@ -90,23 +136,6 @@ describe OpenCensus::Trace::SpanContext do
       span.span_id.must_equal span.context.span_id
       span.parent_span_id.must_equal ""
       span.context.this_span.must_be_same_as span
-    end
-
-    it "creates a hierarchy of contexts" do
-      root_context = OpenCensus::Trace::SpanContext.create_root
-      span1 = root_context.start_span "hello"
-      context1 = span1.context
-      span2 = context1.start_span "world"
-      context2 = span2.context
-
-      context2.wont_be_same_as context1
-      context1.wont_be_same_as root_context
-      context2.parent.must_be_same_as context1
-      context1.parent.must_be_same_as root_context
-      root_context.parent.must_be_nil
-      context2.root.must_be_same_as root_context
-      context1.root.must_be_same_as root_context
-      root_context.root.must_be_same_as root_context
     end
 
     it "captures the stack trace" do
@@ -159,6 +188,36 @@ describe OpenCensus::Trace::SpanContext do
       span_context.in_span "hello", sampler: sampler do |span|
         span.sampled.must_equal false
       end
+    end
+  end
+
+  describe "build_contained_spans" do
+    let(:root_context) { OpenCensus::Trace::SpanContext.create_root }
+    let(:span1) { root_context.start_span "hello" }
+    let(:context1) { span1.context }
+    let(:span2) { context1.start_span "world" }
+    let(:context2) { span2.context }
+
+    it "builds finished spans contained in the context" do
+      span2.finish!
+      span1.finish!
+      spans = root_context.build_contained_spans
+      spans.size.must_equal 2
+    end
+
+    it "omits unfinished spans" do
+      span1.finish!
+      spans = root_context.build_contained_spans
+      spans.size.must_equal 1
+      spans.first.name.must_equal "hello"
+    end
+
+    it "omits spans not contained in the context" do
+      span2.finish!
+      span1.finish!
+      spans = context1.build_contained_spans
+      spans.size.must_equal 1
+      spans.first.name.must_equal "world"
     end
   end
 end

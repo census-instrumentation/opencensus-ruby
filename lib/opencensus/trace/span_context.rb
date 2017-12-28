@@ -263,7 +263,6 @@ module OpenCensus
       # Create a child of this SpanContext, with a random unique span ID.
       #
       # @return [SpanContext] The created child context.
-      # @private
       #
       def create_child
         loop do
@@ -278,7 +277,6 @@ module OpenCensus
       ##
       # Get the SpanBuilder given a Span ID.
       #
-      # @private
       # @param [Integer] span_id the ID of the span to get
       # @return [SpanBuilder, nil] The SpanBuilder, or `nil` if ID not found
       #

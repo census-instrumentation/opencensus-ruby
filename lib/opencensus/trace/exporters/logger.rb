@@ -28,7 +28,8 @@ module OpenCensus
         #
         # @param [#log] logger The logger to write to.
         # @param [Symbol] level The log level. This should be a log level
-        #        defined by {https://ruby-doc.org/stdlib-2.5.0/libdoc/logger/rdoc/Logger.html Logger Standard Library}.
+        #        defined by {https://ruby-doc.org/stdlib-2.5.0/libdoc/logger/rdoc/Logger.html
+        #        Logger Standard Library}.
         #
         def initialize logger, level: ::Logger::INFO
           @logger = logger
@@ -42,7 +43,7 @@ module OpenCensus
         # @return [Boolean]
         #
         def export spans
-          @logger.log @level, spans.map {|span| format_span(span)}.to_json
+          @logger.log @level, spans.map { |span| format_span(span) }.to_json
         end
 
         private
@@ -59,10 +60,10 @@ module OpenCensus
             dropped_attributes_count: span.dropped_attributes_count,
             stack_trace: span.stack_trace,
             dropped_frames_count: span.dropped_frames_count,
-            time_events: span.time_events.map {|time_event| format_time_event(time_event)},
+            time_events: span.time_events.map { |te| format_time_event(te) },
             dropped_annotations_count: span.dropped_annotations_count,
             dropped_message_events_count: span.dropped_message_events_count,
-            links: span.links.map {|link| format_link(link)},
+            links: span.links.map { |link| format_link(link) },
             dropped_links_count: span.dropped_links_count,
             status: format_status(span.status),
             same_process_as_parent_span: span.same_process_as_parent_span,

@@ -80,12 +80,6 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
       root_span.attributes["/pid"].wont_be_empty
       root_span.attributes["/tid"].wont_be_empty
     end
-
-    it "adds trace context header to response" do
-      response.must_be_kind_of Array
-      response.size.must_equal 3
-      response[1]["Trace-Context"].wont_be_empty
-    end
   end
 
   describe "global configuration" do

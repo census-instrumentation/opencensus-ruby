@@ -92,7 +92,6 @@ module OpenCensus
         def finish_request span, response
           if response.is_a?(::Array) && response.size == 3
             span.set_status response[0]
-            response[1]["Trace-Context"] = span.context.to_trace_context_header
           end
         end
       end

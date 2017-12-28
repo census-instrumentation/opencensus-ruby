@@ -18,8 +18,57 @@ module OpenCensus
   module Trace
     module Integrations
       ##
-      # A middleware for Faraday that creates spans for outgoing requests, and
-      # propagates the trace context appropriately.
+      # # Faraday integration
+      #
+      # This is a middleware for the Faraday HTTP client:
+      #
+      # * It wraps all outgoing requests in spans
+      # * It adds the trace context to outgoing requests.
+      #
+      # Example:
+      #
+      #     conn = Faraday.new(url: "http://www.example.com") do |c|
+      #       c.use OpenCensus::Trace::Integrations::FaradayMiddleware,
+      #             span_name: "http request"
+      #       c.adapter Faraday.default_adapter
+      #     end
+      #     conn.get "/"
+      #
+      # ## Configuring spans
+      #
+      # By default, spans are added to the thread-local span context, as if
+      # by calling `OpenCensus::Trace.start_span`. If there is no span context,
+      # then no span is added and this middleware effectively disables itself.
+      #
+      # You may also provide a span context, by passing it in the middleware
+      # options hash. For example:
+      #
+      #     conn = Faraday.new(url: "http://www.example.com") do |c|
+      #       c.use OpenCensus::Trace::Integrations::FaradayMiddleware,
+      #             span_context: my_span_context
+      #       c.adapter Faraday.default_adapter
+      #     end
+      #
+      # You may also override the span context for a particular request by
+      # including it in the options:
+      #
+      #     conn.get do |req|
+      #       req.url "/"
+      #       req.options.context = { span_context: my_span_context }
+      #     end
+      #
+      # By default, all spans are given a default name. You may also override
+      # this by passing a `:span_name` in the middleware options hash and/or
+      # the request options.
+      #
+      # ## Trace context
+      #
+      # This currently adds a "Trace-Context" header to each outgoing request,
+      # propagating the trace context for distributed tracing. See
+      # https://github.com/TraceContext/tracecontext-spec for more information
+      # on the trace context.
+      #
+      # TODO: Support other trace context formats.
       #
       class FaradayMiddleware < Faraday::Middleware
         ## The default name for Faraday spans
@@ -51,20 +100,19 @@ module OpenCensus
         # @private
         #
         def call request_env
-          if @span_context == OpenCensus::Trace && !@span_context.span_context
+          span_context = request_env[:span_context] || @span_context
+          if span_context == OpenCensus::Trace && !span_context.span_context
             return @app.call request_env
           end
-          span_name =
-            if @span_name.respond_to? :call
-              @span_name.call request_env
-            else
-              @span_name
-            end
-          span = @span_context.start_span span_name, sampler: @sampler
+
+          span_name = request_env[:span_name] || @span_name
+          span_name = span_name.call request_env if span_name.respond_to? :call
+
+          span = span_context.start_span span_name, sampler: @sampler
           start_request span, request_env
           @app.call(request_env).on_complete do |response_env|
             finish_request span, response_env
-            @span_context.end_span span
+            span_context.end_span span
           end
         end
 

@@ -77,6 +77,17 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       spans.size.must_equal 1
       spans.first.name.must_equal "bar"
     end
+
+    it "should honor per-request span name" do
+      middleware = OpenCensus::Trace::Integrations::FaradayMiddleware.new \
+        app, span_context: root_context
+      env = {span_name: "my-span"}
+      middleware.call env
+      spans = root_context.build_contained_spans
+
+      spans.size.must_equal 1
+      spans.first.name.must_equal "my-span"
+    end
   end
 
   describe "default span context" do

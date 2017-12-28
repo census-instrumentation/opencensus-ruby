@@ -15,24 +15,36 @@
 module OpenCensus
   module Trace
     module Integrations
+      ##
+      # This Rack middleware implementation manages the trace context and
+      # captures a trace for this request. It is also responsible for exporting
+      # the captured spans at the end of the request.
+      #
       class RackMiddleware
-        def initialize app
+        def initialize app, exporter: nil
           @app = app
+          @exporter = exporter || OpenCensus::Trace::Config.exporter
         end
 
         def call env
-          OpenCensus::Context.clear
-          trace = OpenCensus::Trace.start
-          begin
-            OpenCensus::Trace.in_span "rack-request" do |_span|
-              @app.call env
+          OpenCensus::Trace.start_request_trace rack_env: env do |span_context|
+            begin
+              span_context.in_span get_path(env) do |_span|
+                @app.call env
+              end
+            ensure
+              @exporter.export span_context.build_contained_spans
             end
-          ensure
-            send_trace trace, env
           end
         end
 
-        def send_trace trace, env; end
+        private
+
+        def get_path env
+          path = "#{env['SCRIPT_NAME']}#{env['PATH_INFO']}"
+          path = "/#{path}" unless path.start_with? "/"
+          path
+        end
       end
     end
   end

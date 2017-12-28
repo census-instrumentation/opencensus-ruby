@@ -13,6 +13,7 @@
 # limitations under the License.
 
 require "logger"
+require "json"
 
 module OpenCensus
   module Trace
@@ -41,7 +42,77 @@ module OpenCensus
         # @return [Boolean]
         #
         def export spans
-          logger.log @level, spans.to_json
+          @logger.log @level, spans.map {|span| format_span(span)}.to_json
+        end
+
+        private
+
+        def format_span span
+          {
+            name: span.name,
+            trace_id: span.trace_id,
+            span_id: span.span_id,
+            parent_span_id: span.parent_span_id,
+            start_time: span.start_time,
+            end_time: span.end_time,
+            attributes: span.attributes,
+            dropped_attributes_count: span.dropped_attributes_count,
+            stack_trace: span.stack_trace,
+            dropped_frames_count: span.dropped_frames_count,
+            time_events: span.time_events.map {|time_event| format_time_event(time_event)},
+            dropped_annotations_count: span.dropped_annotations_count,
+            dropped_message_events_count: span.dropped_message_events_count,
+            links: span.links.map {|link| format_link(link)},
+            dropped_links_count: span.dropped_links_count,
+            status: format_status(span.status),
+            same_process_as_parent_span: span.same_process_as_parent_span,
+            child_span_count: span.child_span_count
+          }
+        end
+
+        def format_time_event time_event
+          case time_event
+          when Annotation
+            format_annotation time_event
+          when MessageEvent
+            format_message_event time_event
+          end
+        end
+
+        def format_annotation annotation
+          {
+            description: annotation.description,
+            attributes: annotation.attributes,
+            time: annotation.time
+          }
+        end
+
+        def format_message_event message_event
+          {
+            type: message_event.type,
+            id: message_event.id,
+            uncompressed_size: message_event.uncompressed_size,
+            compressed_size: message_event.compressed_size,
+            time: message_event.time
+          }
+        end
+
+        def format_link link
+          {
+            trace_id: link.trace_id,
+            span_id: link.span_id,
+            type: link.type,
+            attributes: link.attributes
+          }
+        end
+
+        def format_status status
+          return nil if status.nil?
+
+          {
+            code: status.code,
+            message: status.message
+          }
         end
       end
     end

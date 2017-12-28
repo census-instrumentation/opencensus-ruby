@@ -48,6 +48,7 @@ module OpenCensus
 
         ##
         # Wraps an HTTP call with a span with the request/response info.
+        # @private
         #
         def call request_env
           if @span_context == OpenCensus::Trace && !@span_context.span_context

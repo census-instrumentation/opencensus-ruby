@@ -115,7 +115,7 @@ describe OpenCensus::Trace::SpanContext do
     end
 
     it "supports contained_span_builders" do
-      context2
+      context2   # Cause all spans to be built before expectations are run
       root_context.contained_span_builders.must_include span1
       root_context.contained_span_builders.must_include span2
       context1.contained_span_builders.wont_include span1

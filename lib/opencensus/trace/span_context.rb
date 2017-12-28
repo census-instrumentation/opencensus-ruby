@@ -88,35 +88,6 @@ module OpenCensus
       end
 
       ##
-      # Returns true if this context equals or is an ancestor of the given
-      # context.
-      #
-      # @return [boolean]
-      #
-      def contains? context
-        until context.nil?
-          return true if context == self
-          context = context.parent
-        end
-        false
-      end
-
-      ##
-      # Returns all SpanBuilder objects created by this context or any
-      # descendant context. The order of the returned spans is undefined.
-      #
-      # @return [Array<SpanBuilder>]
-      #
-      def contained_span_builders
-        builders = @trace_data.span_map.values
-        if root?
-          builders
-        else
-          builders.find_all { |sb| contains? sb.context.parent }
-        end
-      end
-
-      ##
       # The trace ID, as a 32-character hex string.
       #
       # @return [String]
@@ -240,8 +211,8 @@ module OpenCensus
       #
       def build_contained_spans
         contained_span_builders
-          .map { |sb| sb.finished? ? sb.to_span : nil }
-          .compact
+          .filter { |sb| sb.finished? }
+          .map { |sb| sb.to_span }
       end
 
       ##
@@ -278,11 +249,43 @@ module OpenCensus
       ##
       # Get the SpanBuilder given a Span ID.
       #
+      # @private
       # @param [Integer] span_id the ID of the span to get
       # @return [SpanBuilder, nil] The SpanBuilder, or `nil` if ID not found
       #
       def get_span span_id
         @trace_data.span_map[span_id]
+      end
+
+      ##
+      # Returns true if this context equals or is an ancestor of the given
+      # context.
+      #
+      # @private
+      # @return [boolean]
+      #
+      def contains? context
+        until context.nil?
+          return true if context == self
+          context = context.parent
+        end
+        false
+      end
+
+      ##
+      # Returns all SpanBuilder objects created by this context or any
+      # descendant context. The order of the returned spans is undefined.
+      #
+      # @private
+      # @return [Array<SpanBuilder>]
+      #
+      def contained_span_builders
+        builders = @trace_data.span_map.values
+        if root?
+          builders
+        else
+          builders.find_all { |sb| contains? sb.context.parent }
+        end
       end
     end
   end

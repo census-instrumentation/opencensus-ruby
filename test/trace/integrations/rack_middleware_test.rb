@@ -17,7 +17,7 @@ require "test_helper"
 require "opencensus/trace/integrations/rack_middleware"
 
 describe OpenCensus::Trace::Integrations::RackMiddleware do
-  class TestApp
+  class TestRackApp
     def call env
       [200, {}, ["Hello World!"]]
     end
@@ -35,7 +35,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
     end
   end
 
-  let(:app) { TestApp.new }
+  let(:app) { TestRackApp.new }
   let(:exporter) { TestExporter.new }
 
   describe "basic request" do

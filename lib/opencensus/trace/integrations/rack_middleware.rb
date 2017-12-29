@@ -16,9 +16,18 @@ module OpenCensus
   module Trace
     module Integrations
       ##
-      # This Rack middleware implementation manages the trace context and
-      # captures a trace for this request. It is also responsible for exporting
-      # the captured spans at the end of the request.
+      # # Rack integration
+      #
+      # This is a middleware for Rack applications:
+      #
+      # * It wraps all incoming requests in a root span
+      # * It exports the captured spans at the end of the request.
+      #
+      # Example:
+      #
+      #     require "opencensus/trace/integrations/rack_middleware"
+      #
+      #     use OpenCensus::Trace::Integrations::RackMiddleware
       #
       class RackMiddleware
         ##

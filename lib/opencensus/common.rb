@@ -15,6 +15,10 @@
 require "opencensus/common/config"
 
 module OpenCensus
+  ##
+  # The Common module contains common infrastructure that can be shared between
+  # Trace and Stats (not yet implemented)
+  #
   module Common
   end
 end

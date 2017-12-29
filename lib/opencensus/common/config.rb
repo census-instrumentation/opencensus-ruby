@@ -278,21 +278,40 @@ module OpenCensus
         @fields.transform_values { |v| v.is_a?(Config) ? v.to_h! : v.value }
       end
 
+      ##
+      # Override the default to_s implementation.
+      #
+      # @private
+      #
       def to_s
         to_s!
       end
 
+      ##
+      # Override the default inspect implementation.
+      #
+      # @private
+      #
       def inspect
         to_s!
       end
 
+      ##
+      # Override the default to_h implementation.
+      #
+      # @private
+      #
       def to_h
         to_h!
       end
 
       private
 
-      ## @private internal structure
+      ##
+      # Internal data structure to hold configuration options
+      #
+      # @private
+      #
       Option = Struct.new :key, :value, :validator
 
       def resolve_validator! initial, opts

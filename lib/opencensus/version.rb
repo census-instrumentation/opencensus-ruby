@@ -13,5 +13,6 @@
 # limitations under the License.
 
 module OpenCensus
+  ## Current OpenCensus version
   VERSION = "0.1.0".freeze
 end

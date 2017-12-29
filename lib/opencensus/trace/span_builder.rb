@@ -18,12 +18,25 @@ module OpenCensus
     # Span represents a single span within a request trace.
     #
     class SpanBuilder
-      ## @private Internal structure for holding annotations.
+      ##
+      # Internal structure for holding annotations.
+      #
+      # @private
+      #
       Annotation = Struct.new :time, :description, :attributes
-      ## @private Internal structure for holding message events.
+
+      ##
+      # Internal structure for holding message events.
+      #
+      # @private
+      #
       MessageEvent = Struct.new :time, :type, :id, :uncompressed_size,
                                 :compressed_size
-      ## @private Internal structure for holding links.
+      ##
+      # Internal structure for holding links.
+      #
+      # @private
+      #
       Link = Struct.new :trace_id, :span_id, :type, :attributes
 
       ## The type of a message event or link is unknown.

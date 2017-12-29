@@ -34,6 +34,12 @@ module OpenCensus
   # for latency trace tools.
   #
   module Trace
+    ##
+    # Internal key for storing the current SpanContext in the thread local
+    # Context
+    #
+    # @private
+    #
     SPAN_CONTEXT_KEY = :__span_context__
 
     class << self

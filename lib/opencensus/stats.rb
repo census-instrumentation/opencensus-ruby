@@ -13,6 +13,14 @@
 # limitations under the License.
 
 module OpenCensus
+  ##
+  # The Stats module contains support for OpenCensus stats collection.
+  #
+  # OpenCensus allows users to create typed measures, record measurements,
+  # aggregate the collected data, and export the aggregated data.
+  #
+  # TODO: implement stats
+  #
   module Stats
   end
 end

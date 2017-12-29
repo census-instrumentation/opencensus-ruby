@@ -15,10 +15,21 @@
 module OpenCensus
   module Trace
     module Exporters
+      ##
+      # The GoogleCloud exporter exports captured spans to Stackdriver Trace.
+      # See {https://cloud.google.com/trace/ Stackdriver Trace documentation}.
+      #
       class GoogleCloud
-        def initialize; end
-
-        def report trace; end
+        ##
+        # Export the captured spans to Stackdriver Trace.
+        #
+        # @param [Array<Span>] spans The captured spans.
+        # @return [Boolean]
+        #
+        def export spans
+          # TODO: implement GoogleCloud exporter
+          false
+        end
       end
     end
   end

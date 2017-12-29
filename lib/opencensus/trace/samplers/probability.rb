@@ -15,7 +15,14 @@
 module OpenCensus
   module Trace
     module Samplers
+      ##
+      # The Probability sampler uses a random number generator against a
+      # configured rate to determine whether or not to sample.
+      #
       class Probability
+        ##
+        # The default sampling probability.
+        #
         DEFAULT_RATE = 0.1
 
         ##

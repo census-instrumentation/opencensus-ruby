@@ -15,6 +15,16 @@
 module OpenCensus
   module Trace
     module Integrations
+      ##
+      # # gRPC Integration
+      #
+      # This is an integration for gRPC clients:
+      #
+      # * It wraps all outgoing requests in spans
+      # * It adds the trace context to outgoing requests.
+      #
+      # TODO: implement gRPC integration
+      #
       class Grpc
       end
     end

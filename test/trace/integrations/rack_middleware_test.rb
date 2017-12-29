@@ -63,7 +63,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
     end
 
     it "parses the request path" do
-      root_span.name.must_equal "/hello/world"
+      root_span.name.value.must_equal "/hello/world"
     end
 
     it "captures the response status code" do
@@ -72,13 +72,13 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
     end
 
     it "adds attributes to the span" do
-      root_span.attributes["/http/method"].must_equal "GET"
-      root_span.attributes["/http/url"].must_equal "https://www.google.com/hello/world"
-      root_span.attributes["/http/host"].must_equal "www.google.com"
-      root_span.attributes["/http/client_protocol"].must_equal "https"
-      root_span.attributes["/http/user_agent"].must_equal "Google Chrome"
-      root_span.attributes["/pid"].wont_be_empty
-      root_span.attributes["/tid"].wont_be_empty
+      root_span.attributes["/http/method"].value.must_equal "GET"
+      root_span.attributes["/http/url"].value.must_equal "https://www.google.com/hello/world"
+      root_span.attributes["/http/host"].value.must_equal "www.google.com"
+      root_span.attributes["/http/client_protocol"].value.must_equal "https"
+      root_span.attributes["/http/user_agent"].value.must_equal "Google Chrome"
+      root_span.attributes["/pid"].value.wont_be_empty
+      root_span.attributes["/tid"].value.wont_be_empty
     end
   end
 

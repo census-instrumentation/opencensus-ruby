@@ -77,11 +77,13 @@ module OpenCensus
       #
       # @private
       #
-      def initialize trace_id, span_id, type: nil, attributes: {}
+      def initialize trace_id, span_id, type: nil,
+                     attributes: {}, dropped_attributes_count: 0
         @trace_id = trace_id
         @span_id = span_id
         @type = type
         @attributes = attributes
+        @dropped_attributes_count = dropped_attributes_count
       end
     end
   end

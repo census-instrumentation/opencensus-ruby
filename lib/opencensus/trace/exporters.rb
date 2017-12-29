@@ -14,6 +14,10 @@
 
 module OpenCensus
   module Trace
+    ##
+    # The Exporters module provides integrations for exporting collected trace
+    # spans to an external or local service.
+    #
     module Exporters
       autoload :GoogleCloud, "opencensus/trace/exporters/google_cloud"
       autoload :Logger, "opencensus/trace/exporters/logger"

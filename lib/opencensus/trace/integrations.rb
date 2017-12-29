@@ -14,6 +14,10 @@
 
 module OpenCensus
   module Trace
+    ##
+    # The Integrations module contains implementations of integrations with
+    # popular gems such as Rails and Faraday.
+    #
     module Integrations
     end
   end

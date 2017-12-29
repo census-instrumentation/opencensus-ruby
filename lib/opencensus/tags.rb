@@ -13,6 +13,13 @@
 # limitations under the License.
 
 module OpenCensus
+  ##
+  # The Tags module contains support for OpenCensus tags. Tags are key-value
+  # pairs. Tags provide additional cardinality to the OpenCensus instrumentation
+  # data.
+  #
+  # TODO: implement tags
+  #
   module Tags
   end
 end

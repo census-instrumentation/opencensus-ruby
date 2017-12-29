@@ -48,6 +48,11 @@ module OpenCensus
         @truncated_byte_count = truncated_byte_count
       end
 
+      ##
+      # Override the default to_s implementation.
+      #
+      # @private
+      #
       def to_s
         @value
       end

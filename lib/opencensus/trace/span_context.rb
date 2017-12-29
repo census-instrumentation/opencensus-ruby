@@ -20,10 +20,25 @@ module OpenCensus
     # or have a parent span, and may have zero or more children.
     #
     class SpanContext
-      ## @private Internal struct that holds trace-wide data.
+      ##
+      # Internal struct that holds trace-wide data.
+      #
+      # @private
+      #
       TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env,
                              :formatter
+      ##
+      # Maximum integer value for a `trace_id`
+      #
+      # @private
+      #
       MAX_TRACE_ID = 0xffffffffffffffffffffffffffffffff
+
+      ##
+      # Maximum integer value for a `span_id`
+      #
+      # @private
+      #
       MAX_SPAN_ID = 0xffffffffffffffff
 
       class << self

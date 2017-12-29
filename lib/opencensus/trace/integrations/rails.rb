@@ -15,7 +15,18 @@
 module OpenCensus
   module Trace
     module Integrations
-      class Railtie < ::Rails::Railtie
+      ##
+      # # Rails Integration
+      #
+      # This Railtie automatically sets up OpenCensus for a Rails server:
+      #
+      # * It wraps all requests in spans
+      # * It wraps common events (ActiveRecord database calls, ActionView
+      #   renders, etc) in subspans.
+      #
+      # TODO: Implement Rails integration
+      #
+      class Rails < ::Rails::Railtie
         ##
         # The default list of ActiveSupport notification types to include in
         # traces.

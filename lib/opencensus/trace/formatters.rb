@@ -18,11 +18,20 @@ require "opencensus/trace/formatters/trace_context"
 
 module OpenCensus
   module Trace
+    ##
+    # The Formatters module contains several implementations of cross-service
+    # SpanContext propagation. Each formatter can serialize and deserialize a
+    # SpanContext instance.
+    #
     module Formatters
       ## The default context formatter
       DEFAULT = TraceContext.new
 
-      ## @private Internal struct that holds parsed trace context data.
+      ##
+      # Internal struct that holds parsed trace context data.
+      #
+      # @private
+      #
       TraceContextData = Struct.new :trace_id, :span_id, :trace_options
     end
   end

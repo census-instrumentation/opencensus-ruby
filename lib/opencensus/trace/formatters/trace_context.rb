@@ -21,10 +21,18 @@ module OpenCensus
       # [documentation](https://github.com/TraceContext/tracecontext-spec/blob/master/trace_context/HTTP_HEADER_FORMAT.md).
       #
       class TraceContext
-        ## @private Internal regex used to identify the TraceContext version
+        ##
+        # Internal regex used to identify the TraceContext version
+        #
+        # @private
+        #
         VERSION_PATTERN = /^([0-9a-fA-F]{2})-(.+)$/
 
-        ## @private Internal regex used to parse fields in version 0
+        ##
+        # Internal regex used to parse fields in version 0
+        #
+        # @private
+        #
         HEADER_V0_PATTERN =
           /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
 

@@ -21,7 +21,11 @@ module OpenCensus
       # [documentation](https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md).
       #
       class Binary
-        ## @private Internal format used to (un)pack binary data
+        ##
+        # Internal format used to (un)pack binary data
+        #
+        # @private
+        #
         BINARY_FORMAT = "CCH32CH16CC".freeze
 
         ##

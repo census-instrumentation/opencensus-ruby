@@ -15,10 +15,21 @@
 module OpenCensus
   module Trace
     module Exporters
+      ##
+      # The Zipkin exporter exports captured spans to Zipkin instance.
+      # See {https://github.com/openzipkin/zipkin-api Zipkin API specification}.
+      #
       class Zipkin
-        def initialize; end
-
-        def report trace; end
+        ##
+        # Export the captured spans to the configured Zipkin instance.
+        #
+        # @param [Array<Span>] _spans The captured spans.
+        # @return [Boolean]
+        #
+        def export _spans
+          # TODO: implement Zipkin exporter
+          false
+        end
       end
     end
   end

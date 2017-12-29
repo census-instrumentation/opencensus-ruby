@@ -23,10 +23,10 @@ module OpenCensus
         ##
         # Export the captured spans to the configured Zipkin instance.
         #
-        # @param [Array<Span>] spans The captured spans.
+        # @param [Array<Span>] _spans The captured spans.
         # @return [Boolean]
         #
-        def export spans
+        def export _spans
           # TODO: implement Zipkin exporter
           false
         end

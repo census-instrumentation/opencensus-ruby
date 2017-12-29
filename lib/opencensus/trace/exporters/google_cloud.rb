@@ -23,10 +23,10 @@ module OpenCensus
         ##
         # Export the captured spans to Stackdriver Trace.
         #
-        # @param [Array<Span>] spans The captured spans.
+        # @param [Array<Span>] _spans The captured spans.
         # @return [Boolean]
         #
-        def export spans
+        def export _spans
           # TODO: implement GoogleCloud exporter
           false
         end

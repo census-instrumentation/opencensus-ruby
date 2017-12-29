@@ -13,6 +13,7 @@
 # limitations under the License.
 
 require "opencensus/trace/samplers"
+require "opencensus/trace/exporters"
 
 module OpenCensus
   module Trace
@@ -24,6 +25,11 @@ module OpenCensus
         Samplers::Probability.new Samplers::Probability::DEFAULT_RATE
       config.add_option! :default_sampler, default_sampler do |value|
         value.respond_to? :call
+      end
+      default_exporter =
+        Exporters::Logger.new ::Logger.new(STDOUT, ::Logger::INFO)
+      config.add_option! :exporter, default_exporter do |value|
+        value.respond_to? :export
       end
       config.add_option! :default_max_attributes, 32
       config.add_option! :default_max_stack_frames, 32

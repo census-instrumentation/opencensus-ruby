@@ -273,7 +273,8 @@ module OpenCensus
         self
       end
 
-      # rubocop:disable Metrics/MethodLength:
+      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/AbcSize
 
       ##
       # Return a read-only version of this span
@@ -299,16 +300,18 @@ module OpenCensus
                                    max_string_length: max_string_length
 
         built_name = builder.truncatable_string name
-        built_attributes, dropped_attributes_count =
-          builder.attribute_pieces @attributes
-        built_stack_trace, dropped_frames_count =
-          builder.stack_trace_pieces @stack_trace
-        built_annotations, dropped_annotations_count =
-          builder.annotation_pieces @annotations
-        built_message_events, dropped_message_events_count =
-          builder.message_event_pieces @message_events
-        built_links, dropped_links_count = builder.link_pieces @links
-        built_status = builder.status_piece @status_code, @status_message
+        built_attributes = builder.convert_attributes @attributes
+        dropped_attributes_count = @attributes.size - built_attributes.size
+        built_stack_trace = builder.truncate_stack_trace @stack_trace
+        dropped_frames_count = @stack_trace.size - built_stack_trace.size
+        built_annotations = builder.convert_annotations @annotations
+        dropped_annotations_count = @annotations.size - built_annotations.size
+        built_message_events = builder.convert_message_events @message_events
+        dropped_message_events_count =
+          @message_events.size - built_message_events.size
+        built_links = builder.convert_links @links
+        dropped_links_count = @links.size - built_links.size
+        built_status = builder.convert_status @status_code, @status_message
 
         Span.new trace_id, span_id, built_name, @start_time, @end_time,
                  parent_span_id: parent_span_id,
@@ -325,7 +328,8 @@ module OpenCensus
                  same_process_as_parent_span: same_process_as_parent_span
       end
 
-      # rubocop:enable Metrics/MethodLength:
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/AbcSize
 
       ##
       # Initializer.
@@ -413,14 +417,13 @@ module OpenCensus
         end
 
         ##
-        # Build a canonical attributes hash and the number of dropped items
+        # Build a canonical attributes hash, truncating if necessary
         # @private
         #
-        def attribute_pieces attrs
+        def convert_attributes attrs
           result = {}
-          count = 0
           attrs.each do |k, v|
-            break if @max_attributes != 0 && count == @max_attributes
+            break if @max_attributes != 0 && result.size >= @max_attributes
             result[k.to_s] =
               case v
               when Integer
@@ -434,34 +437,32 @@ module OpenCensus
               else
                 truncatable_string v.to_s
               end
-            count += 1
           end
-          [result, attrs.size - count]
+          result
         end
 
         ##
-        # Build a canonical stack trace and the number of dropped items
+        # Build a canonical stack trace, truncating if necessary
         # @private
         #
-        def stack_trace_pieces raw_trace
-          orig_size = raw_trace.size
-          if @max_stack_frames.zero? || orig_size <= @max_stack_frames
-            [raw_trace, 0]
+        def truncate_stack_trace raw_trace
+          if @max_stack_frames.zero? || raw_trace.size <= @max_stack_frames
+            raw_trace
           else
-            [raw_trace[0, @max_stack_frames], orig_size - @max_stack_frames]
+            raw_trace[0, @max_stack_frames]
           end
         end
 
         ##
-        # Build a canonical annotations list and the number of dropped items
+        # Build a canonical annotations list, truncating if necessary
         # @private
         #
-        def annotation_pieces raw_annotations
+        def convert_annotations raw_annotations
           result = []
-          count = 0
           raw_annotations.each do |ann|
-            break if @max_annotations != 0 && count == @max_annotations
-            attrs, dropped_attributes_count = attribute_pieces ann.attributes
+            break if @max_annotations != 0 && result.size >= @max_annotations
+            attrs = convert_attributes ann.attributes
+            dropped_attributes_count = ann.attributes.size - attrs.size
             result <<
               OpenCensus::Trace::Annotation.new(
                 truncatable_string(ann.description),
@@ -469,20 +470,19 @@ module OpenCensus
                 dropped_attributes_count: dropped_attributes_count,
                 time: ann.time
               )
-            count += 1
           end
-          [result, raw_annotations.size - count]
+          result
         end
 
         ##
-        # Build a canonical message list and the number of dropped items
+        # Build a canonical message list, truncating if necessary
         # @private
         #
-        def message_event_pieces raw_message_events
+        def convert_message_events raw_message_events
           result = []
-          count = 0
           raw_message_events.each do |evt|
-            break if @max_message_events != 0 && count == @max_message_events
+            break if @max_message_events != 0 &&
+                     result.size >= @max_message_events
             result <<
               OpenCensus::Trace::MessageEvent.new(
                 evt.type,
@@ -491,21 +491,20 @@ module OpenCensus
                 compressed_size: evt.compressed_size,
                 time: evt.time
               )
-            count += 1
           end
-          [result, raw_message_events.size - count]
+          result
         end
 
         ##
-        # Build a canonical links list and the number of dropped items
+        # Build a canonical links list, truncating if necessary
         # @private
         #
-        def link_pieces raw_links
+        def convert_links raw_links
           result = []
-          count = 0
           raw_links.each do |lnk|
-            break if @max_links != 0 && count == @max_links
-            attrs, dropped_attributes_count = attribute_pieces lnk.attributes
+            break if @max_links != 0 && result.size >= @max_links
+            attrs = convert_attributes lnk.attributes
+            dropped_attributes_count = lnk.attributes.size - attrs.size
             result <<
               OpenCensus::Trace::Link.new(
                 lnk.trace_id,
@@ -514,16 +513,15 @@ module OpenCensus
                 attributes: attrs,
                 dropped_attributes_count: dropped_attributes_count
               )
-            count += 1
           end
-          [result, raw_links.size - count]
+          result
         end
 
         ##
         # Build a canonical status object
         # @private
         #
-        def status_piece status_code, status_message
+        def convert_status status_code, status_message
           return nil unless status_code || status_message
           Status.new status_code.to_i, status_message.to_s
         end

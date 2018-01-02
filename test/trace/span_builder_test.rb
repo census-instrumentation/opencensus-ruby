@@ -228,95 +228,86 @@ describe OpenCensus::Trace::SpanBuilder::PieceBuilder do
     end
   end
 
-  describe "attribute_pieces" do
+  describe "convert_attributes" do
     it "should keep an entire hash that is under the max" do
       input = {a: 1, b: 2}
-      result, dropped = builder_with_small_maxes.attribute_pieces input
+      result = builder_with_small_maxes.convert_attributes input
       result.must_equal({"a" => 1, "b" => 2})
-      dropped.must_equal 0
     end
 
     it "should drop hash entries past the max" do
       input = {a: 1, b: 2, c: 3, d: 4, e: 5}
-      result, dropped = builder_with_small_maxes.attribute_pieces input
+      result = builder_with_small_maxes.convert_attributes input
       result.must_equal({"a" => 1, "b" => 2, "c" => 3})
-      dropped.must_equal 2
     end
 
     it "should convert out of range integers to strings" do
       input = {a: 99999999999999999999, b: -99999999999999999999}
-      result, dropped = builder_with_small_maxes.attribute_pieces input
+      result = builder_with_small_maxes.convert_attributes input
       result["a"].value.must_equal "9999999999"
       result["a"].truncated_byte_count.must_equal 10
       result["b"].value.must_equal "-999999999"
       result["b"].truncated_byte_count.must_equal 11
-      dropped.must_equal 0
     end
 
     it "should convert strings to TruncatableStrings" do
       input = {a: "∫∫∫∫∫", b: "hiho"}
-      result, dropped = builder_with_small_maxes.attribute_pieces input
+      result = builder_with_small_maxes.convert_attributes input
       result["a"].value.must_equal "∫∫∫"
       result["a"].truncated_byte_count.must_equal 6
       result["b"].value.must_equal "hiho"
       result["b"].truncated_byte_count.must_equal 0
-      dropped.must_equal 0
     end
 
     it "should keep booleans and TruncatableStrings" do
       ts = OpenCensus::Trace::TruncatableString.new "asdf",
                                                     truncated_byte_count: 20
       input = {a: true, b: false, c: ts}
-      result, dropped = builder_with_small_maxes.attribute_pieces input
+      result = builder_with_small_maxes.convert_attributes input
       result.must_equal({"a" => true, "b" => false, "c" => ts})
-      dropped.must_equal 0
     end
 
     it "should keep an entire hash if there is no max" do
       input = {a: 1, b: 2, c: 3, d: 4, e: 5}
-      result, dropped = builder_with_no_maxes.attribute_pieces input
+      result = builder_with_no_maxes.convert_attributes input
       result.must_equal({"a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5})
-      dropped.must_equal 0
     end
   end
 
-  describe "stack_trace_pieces" do
+  describe "truncate_stack_trace" do
     it "should keep small traces" do
       input = ["a", "b"]
-      result, dropped = builder_with_small_maxes.stack_trace_pieces input
+      result = builder_with_small_maxes.truncate_stack_trace input
       result.must_equal ["a", "b"]
-      dropped.must_equal 0
     end
 
     it "should drop entries in large traces" do
       input = ["a", "b", "c", "d", "e"]
-      result, dropped = builder_with_small_maxes.stack_trace_pieces input
+      result = builder_with_small_maxes.truncate_stack_trace input
       result.must_equal ["a", "b", "c"]
-      dropped.must_equal 2
     end
 
     it "should keep an entire trace if there is no max" do
       input = ["a", "b", "c", "d", "e"]
-      result, dropped = builder_with_no_maxes.stack_trace_pieces input
+      result = builder_with_no_maxes.truncate_stack_trace input
       result.must_equal ["a", "b", "c", "d", "e"]
-      dropped.must_equal 0
     end
   end
 
-  describe "status_piece" do
+  describe "convert_status" do
     it "should be nil if nothing passed in" do
-      result = builder_with_small_maxes.status_piece nil, nil
+      result = builder_with_small_maxes.convert_status nil, nil
       result.must_be_nil
     end
 
     it "should create a status if only a code is passed in" do
-      result = builder_with_small_maxes.status_piece 200, nil
+      result = builder_with_small_maxes.convert_status 200, nil
       result.code.must_equal 200
       result.message.must_equal ""
     end
 
     it "should create a status if only a message is passed in" do
-      result = builder_with_small_maxes.status_piece nil, "hi"
+      result = builder_with_small_maxes.convert_status nil, "hi"
       result.code.must_equal 0
       result.message.must_equal "hi"
     end

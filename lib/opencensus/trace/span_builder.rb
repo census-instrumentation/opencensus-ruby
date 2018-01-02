@@ -547,38 +547,16 @@ module OpenCensus
         private
 
         def truncate_str str, target_bytes
-          hi_bytes = str.bytesize
-          hi_chars = str.size
-          lo_bytes = lo_chars = 0
-          lo_str = ""
-          while hi_chars > lo_chars + 1
-            md_chars = estimate_chars target_bytes, hi_bytes, lo_bytes,
-                                      hi_chars, lo_chars
-            md_str = str.slice 0, md_chars
-            md_bytes = md_str.bytesize
-            return md_str if md_bytes == target_bytes
-            if md_bytes < target_bytes
-              lo_chars = md_chars
-              lo_bytes = md_bytes
-              lo_str = md_str
-            else
-              hi_chars = md_chars
-              hi_bytes = md_bytes
-            end
+          tstr = str.dup
+          tstr.force_encoding Encoding::ASCII_8BIT
+          tstr.slice! target_bytes..-1
+          tstr.force_encoding Encoding::UTF_8
+          until tstr.valid_encoding?
+            tstr.force_encoding Encoding::ASCII_8BIT
+            tstr.slice!(-1..-1)
+            tstr.force_encoding Encoding::UTF_8
           end
-          lo_str
-        end
-
-        def estimate_chars target_bytes, hi_bytes, lo_bytes, hi_chars, lo_chars
-          md_chars =
-            lo_chars +
-            (
-              ((target_bytes - lo_bytes) * (hi_chars - lo_chars)).to_f /
-              (hi_bytes - lo_bytes).to_f
-            ).round
-          md_chars += 1 if md_chars == lo_chars
-          md_chars -= 1 if md_chars == hi_chars
-          md_chars
+          tstr
         end
       end
     end

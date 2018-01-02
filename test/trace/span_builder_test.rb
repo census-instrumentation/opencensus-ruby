@@ -189,22 +189,10 @@ describe OpenCensus::Trace::SpanBuilder::PieceBuilder do
       ts.truncated_byte_count.must_equal 13
     end
 
-    it "should handle a short string with long byte length" do
+    it "should truncate a string that doesn't match char boundary" do
       ts = builder_with_small_maxes.truncatable_string "∫∫∫∫∫"
       ts.value.must_equal "∫∫∫"
       ts.truncated_byte_count.must_equal 6
-    end
-
-    it "should handle a long string beginning with long characters" do
-      ts = builder_with_small_maxes.truncatable_string "∫∫∫aa"
-      ts.value.must_equal "∫∫∫a"
-      ts.truncated_byte_count.must_equal 1
-    end
-
-    it "should handle a long string ending with long characters" do
-      ts = builder_with_small_maxes.truncatable_string "aa∫∫∫"
-      ts.value.must_equal "aa∫∫"
-      ts.truncated_byte_count.must_equal 3
     end
 
     it "should handle a string of exactly the right byte length" do

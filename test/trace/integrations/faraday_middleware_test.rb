@@ -52,7 +52,7 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       spans = root_context.build_contained_spans
 
       spans.size.must_equal 1
-      spans.first.name.must_equal \
+      spans.first.name.value.must_equal \
         OpenCensus::Trace::Integrations::FaradayMiddleware::DEFAULT_SPAN_NAME
     end
 
@@ -64,7 +64,7 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       spans = root_context.build_contained_spans
 
       spans.size.must_equal 1
-      spans.first.name.must_equal "my-span"
+      spans.first.name.value.must_equal "my-span"
     end
 
     it "should honor a callable span name" do
@@ -75,7 +75,7 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       spans = root_context.build_contained_spans
 
       spans.size.must_equal 1
-      spans.first.name.must_equal "bar"
+      spans.first.name.value.must_equal "bar"
     end
 
     it "should honor per-request span name" do
@@ -86,7 +86,7 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       spans = root_context.build_contained_spans
 
       spans.size.must_equal 1
-      spans.first.name.must_equal "my-span"
+      spans.first.name.value.must_equal "my-span"
     end
   end
 
@@ -125,11 +125,11 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
 
       span.status.wont_be_nil
       span.status.code.must_equal 200
-      span.attributes["/http/method"].must_equal "POST"
-      span.attributes["/http/url"].must_equal "https://www.google.com/"
-      span.attributes["/rpc/request/size"].must_equal "5"
-      span.attributes["/rpc/response/size"].must_equal "2"
-      span.attributes["/rpc/status_code"].must_equal "200"
+      span.attributes["/http/method"].value.must_equal "POST"
+      span.attributes["/http/url"].value.must_equal "https://www.google.com/"
+      span.attributes["/rpc/request/size"].must_equal 5
+      span.attributes["/rpc/response/size"].must_equal 2
+      span.attributes["/rpc/status_code"].must_equal 200
     end
 
     it "should not add body attributes if there is no body" do

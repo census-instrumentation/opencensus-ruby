@@ -18,27 +18,6 @@ module OpenCensus
     # Span represents a single span within a request trace.
     #
     class SpanBuilder
-      ##
-      # Internal structure for holding annotations.
-      #
-      # @private
-      #
-      Annotation = Struct.new :time, :description, :attributes
-
-      ##
-      # Internal structure for holding message events.
-      #
-      # @private
-      #
-      MessageEvent = Struct.new :time, :type, :id, :uncompressed_size,
-                                :compressed_size
-      ##
-      # Internal structure for holding links.
-      #
-      # @private
-      #
-      Link = Struct.new :trace_id, :span_id, :type, :attributes
-
       ## The type of a message event or link is unknown.
       TYPE_UNSPECIFIED = :TYPE_UNSPECIFIED
 
@@ -180,7 +159,7 @@ module OpenCensus
       # The valid integer range is 64-bit signed `(-2^63..2^63-1)`.
       #
       # @param [String, Symbol] key
-      # @param [String, TruncatableString, Integer, Boolean] value
+      # @param [String, TruncatableString, Integer, boolean] value
       #
       def put_attribute key, value
         @attributes[key.to_s] = value
@@ -191,7 +170,7 @@ module OpenCensus
       # Add an event annotation with a timestamp.
       #
       # @param [String] description Description of the event
-      # @param [String] attributes Key-value pairs providing additional
+      # @param [Hash] attributes Key-value pairs providing additional
       #     properties of the event. Keys must be strings, and values are
       #     restricted to the same types as attributes (see #put_attribute).
       # @param [Time, nil] time Timestamp of the event. Optional, defaults to
@@ -199,7 +178,7 @@ module OpenCensus
       #
       def put_annotation description, attributes = {}, time: nil
         time ||= Time.now.utc
-        annotation = Annotation.new time, description, attributes
+        annotation = AnnotationBuilder.new time, description, attributes
         @annotations << annotation
         self
       end
@@ -225,8 +204,9 @@ module OpenCensus
       def put_message_event type, id, uncompressed_size,
                             compressed_size: nil, time: nil
         time ||= Time.now.utc
-        message_event = MessageEvent.new time, type, id, uncompressed_size,
-                                         compressed_size
+        message_event =
+          MessageEventBuilder.new time, type, id, uncompressed_size,
+                                  compressed_size
         @message_events << message_event
         self
       end
@@ -251,7 +231,7 @@ module OpenCensus
       #     restricted to the same types as attributes (see #put_attribute).
       #
       def put_link trace_id, span_id, type, attributes = {}
-        link = Link.new trace_id, span_id, type, attributes
+        link = LinkBuilder.new trace_id, span_id, type, attributes
         @links << link
         self
       end
@@ -293,6 +273,64 @@ module OpenCensus
         self
       end
 
+      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/AbcSize
+
+      ##
+      # Return a read-only version of this span
+      #
+      # @return [Span]
+      #
+      def to_span max_attributes: nil,
+                  max_stack_frames: nil,
+                  max_annotations: nil,
+                  max_message_events: nil,
+                  max_links: nil,
+                  max_string_length: nil,
+                  same_process_as_parent_span: nil
+
+        raise "Span must have start_time" unless @start_time
+        raise "Span must have end_time" unless @end_time
+
+        builder = PieceBuilder.new max_attributes: max_attributes,
+                                   max_stack_frames: max_stack_frames,
+                                   max_annotations: max_annotations,
+                                   max_message_events: max_message_events,
+                                   max_links: max_links,
+                                   max_string_length: max_string_length
+
+        built_name = builder.truncatable_string name
+        built_attributes = builder.convert_attributes @attributes
+        dropped_attributes_count = @attributes.size - built_attributes.size
+        built_stack_trace = builder.truncate_stack_trace @stack_trace
+        dropped_frames_count = @stack_trace.size - built_stack_trace.size
+        built_annotations = builder.convert_annotations @annotations
+        dropped_annotations_count = @annotations.size - built_annotations.size
+        built_message_events = builder.convert_message_events @message_events
+        dropped_message_events_count =
+          @message_events.size - built_message_events.size
+        built_links = builder.convert_links @links
+        dropped_links_count = @links.size - built_links.size
+        built_status = builder.convert_status @status_code, @status_message
+
+        Span.new trace_id, span_id, built_name, @start_time, @end_time,
+                 parent_span_id: parent_span_id,
+                 attributes: built_attributes,
+                 dropped_attributes_count: dropped_attributes_count,
+                 stack_trace: built_stack_trace,
+                 dropped_frames_count: dropped_frames_count,
+                 time_events: built_annotations + built_message_events,
+                 dropped_annotations_count: dropped_annotations_count,
+                 dropped_message_events_count: dropped_message_events_count,
+                 links: built_links,
+                 dropped_links_count: dropped_links_count,
+                 status: built_status,
+                 same_process_as_parent_span: same_process_as_parent_span
+      end
+
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/AbcSize
+
       ##
       # Initializer.
       #
@@ -314,52 +352,212 @@ module OpenCensus
       end
 
       ##
-      # Return a read-only version of this span
+      # Internal structure for holding annotations.
       #
-      # @return [Span]
+      # @private
       #
-      def to_span
-        raise "Span must have start_time" unless @start_time
-        raise "Span must have end_time" unless @end_time
+      AnnotationBuilder = Struct.new :time, :description, :attributes
 
-        Span.new trace_id, span_id, name, @start_time, @end_time,
-                 parent_span_id: parent_span_id, attributes: @attributes,
-                 stack_trace: @stack_trace, time_events: time_events,
-                 links: links, status: status
-      end
+      ##
+      # Internal structure for holding message events.
+      #
+      # @private
+      #
+      MessageEventBuilder = Struct.new :time, :type, :id, :uncompressed_size,
+                                       :compressed_size
+      ##
+      # Internal structure for holding links.
+      #
+      # @private
+      #
+      LinkBuilder = Struct.new :trace_id, :span_id, :type, :attributes
 
-      private
+      ##
+      # Internal class that builds pieces of a span, honoring limits.
+      #
+      # @private
+      #
+      class PieceBuilder
+        ##
+        # Minimum value of int64
+        # @private
+        #
+        MIN_INT = -0x10000000000000000
 
-      def time_events
-        @annotations.map do |annotation|
-          OpenCensus::Trace::Annotation.new \
-            annotation.description,
-            attributes: annotation.attributes,
-            time: annotation.time
-        end + @message_events.map do |message_event|
-          OpenCensus::Trace::MessageEvent.new \
-            message_event.type,
-            message_event.id,
-            message_event.uncompressed_size,
-            compressed_size: message_event.compressed_size,
-            time: message_event.time
+        ##
+        # Maximum value of int64
+        # @private
+        #
+        MAX_INT = 0xffffffffffffffff
+
+        ##
+        # Initializer for PieceBuilder
+        # @private
+        #
+        def initialize max_attributes: nil,
+                       max_stack_frames: nil,
+                       max_annotations: nil,
+                       max_message_events: nil,
+                       max_links: nil,
+                       max_string_length: nil
+          @max_attributes =
+            max_attributes || OpenCensus::Trace::Config.default_max_attributes
+          @max_stack_frames =
+            max_stack_frames ||
+            OpenCensus::Trace::Config.default_max_stack_frames
+          @max_annotations =
+            max_annotations || OpenCensus::Trace::Config.default_max_annotations
+          @max_message_events =
+            max_message_events ||
+            OpenCensus::Trace::Config.default_max_message_events
+          @max_links = max_links || OpenCensus::Trace::Config.default_max_links
+          @max_string_length =
+            max_string_length ||
+            OpenCensus::Trace::Config.default_max_string_length
         end
-      end
 
-      def links
-        @links.map do |link|
-          OpenCensus::Trace::Link.new \
-            link.trace_id,
-            link.span_id,
-            type: link.type,
-            attributes: link.attributes
+        ##
+        # Build a canonical attributes hash, truncating if necessary
+        # @private
+        #
+        def convert_attributes attrs
+          result = {}
+          attrs.each do |k, v|
+            break if @max_attributes != 0 && result.size >= @max_attributes
+            result[k.to_s] =
+              case v
+              when Integer
+                if v >= MIN_INT && v <= MAX_INT
+                  v
+                else
+                  truncatable_string v.to_s
+                end
+              when true, false, TruncatableString
+                v
+              else
+                truncatable_string v.to_s
+              end
+          end
+          result
         end
-      end
 
-      def status
-        return nil unless @status_code || @status_message
+        ##
+        # Build a canonical stack trace, truncating if necessary
+        # @private
+        #
+        def truncate_stack_trace raw_trace
+          if @max_stack_frames.zero? || raw_trace.size <= @max_stack_frames
+            raw_trace
+          else
+            raw_trace[0, @max_stack_frames]
+          end
+        end
 
-        Status.new @status_code, @status_message
+        ##
+        # Build a canonical annotations list, truncating if necessary
+        # @private
+        #
+        def convert_annotations raw_annotations
+          result = []
+          raw_annotations.each do |ann|
+            break if @max_annotations != 0 && result.size >= @max_annotations
+            attrs = convert_attributes ann.attributes
+            dropped_attributes_count = ann.attributes.size - attrs.size
+            result <<
+              OpenCensus::Trace::Annotation.new(
+                truncatable_string(ann.description),
+                attributes: attrs,
+                dropped_attributes_count: dropped_attributes_count,
+                time: ann.time
+              )
+          end
+          result
+        end
+
+        ##
+        # Build a canonical message list, truncating if necessary
+        # @private
+        #
+        def convert_message_events raw_message_events
+          result = []
+          raw_message_events.each do |evt|
+            break if @max_message_events != 0 &&
+                     result.size >= @max_message_events
+            result <<
+              OpenCensus::Trace::MessageEvent.new(
+                evt.type,
+                evt.id,
+                evt.uncompressed_size,
+                compressed_size: evt.compressed_size,
+                time: evt.time
+              )
+          end
+          result
+        end
+
+        ##
+        # Build a canonical links list, truncating if necessary
+        # @private
+        #
+        def convert_links raw_links
+          result = []
+          raw_links.each do |lnk|
+            break if @max_links != 0 && result.size >= @max_links
+            attrs = convert_attributes lnk.attributes
+            dropped_attributes_count = lnk.attributes.size - attrs.size
+            result <<
+              OpenCensus::Trace::Link.new(
+                lnk.trace_id,
+                lnk.span_id,
+                type: lnk.type,
+                attributes: attrs,
+                dropped_attributes_count: dropped_attributes_count
+              )
+          end
+          result
+        end
+
+        ##
+        # Build a canonical status object
+        # @private
+        #
+        def convert_status status_code, status_message
+          return nil unless status_code || status_message
+          Status.new status_code.to_i, status_message.to_s
+        end
+
+        ##
+        # Build a truncatable string
+        # @private
+        #
+        def truncatable_string str
+          return str if str.is_a? TruncatableString
+          orig_str = str.encode Encoding::UTF_8,
+                                invalid: :replace,
+                                undef: :replace
+          if @max_string_length != 0 && @max_string_length < str.bytesize
+            str = truncate_str orig_str, @max_string_length
+            truncated_bytes = orig_str.bytesize - str.bytesize
+            TruncatableString.new str, truncated_byte_count: truncated_bytes
+          else
+            TruncatableString.new orig_str
+          end
+        end
+
+        private
+
+        def truncate_str str, target_bytes
+          tstr = str.dup
+          tstr.force_encoding Encoding::ASCII_8BIT
+          tstr.slice! target_bytes..-1
+          tstr.force_encoding Encoding::UTF_8
+          until tstr.valid_encoding?
+            tstr.force_encoding Encoding::ASCII_8BIT
+            tstr.slice!(-1..-1)
+            tstr.force_encoding Encoding::UTF_8
+          end
+          tstr
+        end
       end
     end
   end

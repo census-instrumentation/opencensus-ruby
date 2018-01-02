@@ -66,7 +66,7 @@ describe OpenCensus::Trace::SpanBuilder do
 
     it "should be captured" do
       span = ret.to_span
-      span.attributes["foo"].must_equal "bar"
+      span.attributes["foo"].value.must_equal "bar"
     end
   end
 
@@ -83,7 +83,7 @@ describe OpenCensus::Trace::SpanBuilder do
       span.time_events.size.must_equal 1
       annotation = span.time_events.first
       annotation.must_be_instance_of OpenCensus::Trace::Annotation
-      annotation.description.must_equal "some message"
+      annotation.description.value.must_equal "some message"
     end
   end
 
@@ -149,6 +149,155 @@ describe OpenCensus::Trace::SpanBuilder do
       status = span.status
       status.code.must_equal 200
       status.message.must_equal "OK"
+    end
+  end
+end
+
+describe OpenCensus::Trace::SpanBuilder::PieceBuilder do
+  let(:builder_with_small_maxes) {
+    OpenCensus::Trace::SpanBuilder::PieceBuilder.new \
+      max_attributes: 3,
+      max_stack_frames: 3,
+      max_annotations: 3,
+      max_message_events: 3,
+      max_links: 3,
+      max_string_length: 10
+  }
+  let(:builder_with_no_maxes) {
+    OpenCensus::Trace::SpanBuilder::PieceBuilder.new \
+      max_attributes: 0,
+      max_stack_frames: 0,
+      max_annotations: 0,
+      max_message_events: 0,
+      max_links: 0,
+      max_string_length: 0
+  }
+  let(:builder_with_default_maxes) {
+    OpenCensus::Trace::SpanBuilder::PieceBuilder.new
+  }
+
+  describe "truncatable_string" do
+    it "should return the whole string for a short ascii string" do
+      ts = builder_with_small_maxes.truncatable_string "hello"
+      ts.value.must_equal "hello"
+      ts.truncated_byte_count.must_equal 0
+    end
+
+    it "should return a truncated long ascii string" do
+      ts = builder_with_small_maxes.truncatable_string "this is a longer string"
+      ts.value.must_equal "this is a "
+      ts.truncated_byte_count.must_equal 13
+    end
+
+    it "should truncate a string that doesn't match char boundary" do
+      ts = builder_with_small_maxes.truncatable_string "∫∫∫∫∫"
+      ts.value.must_equal "∫∫∫"
+      ts.truncated_byte_count.must_equal 6
+    end
+
+    it "should handle a string of exactly the right byte length" do
+      ts = builder_with_small_maxes.truncatable_string "∫∫a∫"
+      ts.value.must_equal "∫∫a∫"
+      ts.truncated_byte_count.must_equal 0
+    end
+
+    it "should not truncate when no maxes are in place" do
+      ts = builder_with_no_maxes.truncatable_string "this is a longer string"
+      ts.value.must_equal "this is a longer string"
+      ts.truncated_byte_count.must_equal 0
+    end
+
+    it "should honor default maxes" do
+      default_max = OpenCensus::Trace::Config.default_max_string_length
+      str = "*" * (default_max + 10)
+      ts = builder_with_default_maxes.truncatable_string str
+      ts.value.must_equal("*" * default_max)
+      ts.truncated_byte_count.must_equal 10
+    end
+  end
+
+  describe "convert_attributes" do
+    it "should keep an entire hash that is under the max" do
+      input = {a: 1, b: 2}
+      result = builder_with_small_maxes.convert_attributes input
+      result.must_equal({"a" => 1, "b" => 2})
+    end
+
+    it "should drop hash entries past the max" do
+      input = {a: 1, b: 2, c: 3, d: 4, e: 5}
+      result = builder_with_small_maxes.convert_attributes input
+      result.must_equal({"a" => 1, "b" => 2, "c" => 3})
+    end
+
+    it "should convert out of range integers to strings" do
+      input = {a: 99999999999999999999, b: -99999999999999999999}
+      result = builder_with_small_maxes.convert_attributes input
+      result["a"].value.must_equal "9999999999"
+      result["a"].truncated_byte_count.must_equal 10
+      result["b"].value.must_equal "-999999999"
+      result["b"].truncated_byte_count.must_equal 11
+    end
+
+    it "should convert strings to TruncatableStrings" do
+      input = {a: "∫∫∫∫∫", b: "hiho"}
+      result = builder_with_small_maxes.convert_attributes input
+      result["a"].value.must_equal "∫∫∫"
+      result["a"].truncated_byte_count.must_equal 6
+      result["b"].value.must_equal "hiho"
+      result["b"].truncated_byte_count.must_equal 0
+    end
+
+    it "should keep booleans and TruncatableStrings" do
+      ts = OpenCensus::Trace::TruncatableString.new "asdf",
+                                                    truncated_byte_count: 20
+      input = {a: true, b: false, c: ts}
+      result = builder_with_small_maxes.convert_attributes input
+      result.must_equal({"a" => true, "b" => false, "c" => ts})
+    end
+
+    it "should keep an entire hash if there is no max" do
+      input = {a: 1, b: 2, c: 3, d: 4, e: 5}
+      result = builder_with_no_maxes.convert_attributes input
+      result.must_equal({"a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5})
+    end
+  end
+
+  describe "truncate_stack_trace" do
+    it "should keep small traces" do
+      input = ["a", "b"]
+      result = builder_with_small_maxes.truncate_stack_trace input
+      result.must_equal ["a", "b"]
+    end
+
+    it "should drop entries in large traces" do
+      input = ["a", "b", "c", "d", "e"]
+      result = builder_with_small_maxes.truncate_stack_trace input
+      result.must_equal ["a", "b", "c"]
+    end
+
+    it "should keep an entire trace if there is no max" do
+      input = ["a", "b", "c", "d", "e"]
+      result = builder_with_no_maxes.truncate_stack_trace input
+      result.must_equal ["a", "b", "c", "d", "e"]
+    end
+  end
+
+  describe "convert_status" do
+    it "should be nil if nothing passed in" do
+      result = builder_with_small_maxes.convert_status nil, nil
+      result.must_be_nil
+    end
+
+    it "should create a status if only a code is passed in" do
+      result = builder_with_small_maxes.convert_status 200, nil
+      result.code.must_equal 200
+      result.message.must_equal ""
+    end
+
+    it "should create a status if only a message is passed in" do
+      result = builder_with_small_maxes.convert_status nil, "hi"
+      result.code.must_equal 0
+      result.message.must_equal "hi"
     end
   end
 end

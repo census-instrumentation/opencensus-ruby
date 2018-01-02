@@ -127,7 +127,7 @@ module OpenCensus
           url = env[:url]
           span.put_attribute "/http/url", url if url
           body = env[:body]
-          body_size = body.bytesize.to_s if body.respond_to? :bytesize
+          body_size = body.bytesize if body.respond_to? :bytesize
           span.put_attribute "/rpc/request/size", body_size if body_size
 
           trace_context = span.context.to_trace_context_header
@@ -142,10 +142,10 @@ module OpenCensus
           status = env[:status].to_i
           if status > 0
             span.set_status status
-            span.put_attribute "/rpc/status_code", status.to_s
+            span.put_attribute "/rpc/status_code", status
           end
           body = env[:body]
-          body_size = body.bytesize.to_s if body.respond_to? :bytesize
+          body_size = body.bytesize if body.respond_to? :bytesize
           span.put_attribute "/rpc/response/size", body_size if body_size
         end
       end

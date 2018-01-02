@@ -209,7 +209,7 @@ describe OpenCensus::Trace::SpanContext do
       span1.finish!
       spans = root_context.build_contained_spans
       spans.size.must_equal 1
-      spans.first.name.must_equal "hello"
+      spans.first.name.value.must_equal "hello"
     end
 
     it "omits spans not contained in the context" do
@@ -217,7 +217,7 @@ describe OpenCensus::Trace::SpanContext do
       span1.finish!
       spans = context1.build_contained_spans
       spans.size.must_equal 1
-      spans.first.name.must_equal "world"
+      spans.first.name.value.must_equal "world"
     end
   end
 end

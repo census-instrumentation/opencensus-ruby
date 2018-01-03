@@ -27,16 +27,39 @@ module OpenCensus
         #
         HEADER_FORMAT = %r{([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?}
 
-        DEFAULT_HEADER_NAME = "X-Cloud-Trace".freeze
+        ##
+        # The outgoing header used for the Google Cloud Trace header
+        # specification.
+        #
+        # @private
+        #
+        HEADER_NAME = "X-Cloud-Trace".freeze
 
-        attr_reader :header_name
+        ##
+        # The rack environment header used the the Google Cloud Trace header
+        # specification.
+        #
+        # @private
+        #
+        RACK_HEADER_NAME = "HTTP_X_CLOUD_TRACE".freeze
 
-        def initialize header_name = nil
-          @header_name = header_name || DEFAULT_HEADER_NAME
+        ##
+        # Returns the name of the header used for context propagation.
+        #
+        # @return [String]
+        #
+        def header_name
+          HEADER_NAME
         end
 
+        ##
+        # Returns the name of the rack_environment header to use when parsing
+        # context from an incoming request.
+        #
+        # @return [String]
+        #
         def rack_header_name
-          "HTTP_" + @header_name.gsub("-", "_").upcase
+          RACK_HEADER_NAME
         end
 
         ##

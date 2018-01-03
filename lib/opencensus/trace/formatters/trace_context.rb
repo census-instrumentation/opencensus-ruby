@@ -36,16 +36,38 @@ module OpenCensus
         HEADER_V0_PATTERN =
           /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
 
-        DEFAULT_HEADER_NAME = "Trace-Context".freeze
+        ##
+        # The outgoing header used for the TraceContext header specification.
+        #
+        # @private
+        #
+        HEADER_NAME = "Trace-Context".freeze
 
-        attr_reader :header_name
+        ##
+        # The rack environment header used for the TraceContext header
+        # specification
+        #
+        # @private
+        #
+        RACK_HEADER_NAME = "HTTP_TRACE_CONTEXT".freeze
 
-        def initialize header_name = nil
-          @header_name = header_name || DEFAULT_HEADER_NAME
+        ##
+        # Returns the name of the header used for context propagation.
+        #
+        # @return [String]
+        #
+        def header_name
+          HEADER_NAME
         end
 
+        ##
+        # Returns the name of the rack_environment header to use when parsing
+        # context from an incoming request.
+        #
+        # @return [String]
+        #
         def rack_header_name
-          "HTTP_" + @header_name.gsub("-", "_").upcase
+          RACK_HEADER_NAME
         end
 
         ##

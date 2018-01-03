@@ -28,7 +28,20 @@ module OpenCensus
         #
         BINARY_FORMAT = "CCH32CH16CC".freeze
 
+        ##
+        # The outgoing header used for the Binary format. There is no
+        # specified header.
+        #
+        # @return [nil]
+        #
         def header_name; end
+
+        ##
+        # The rack environment header used for the Binary format. There is no
+        # specified header.
+        #
+        # @return [nil]
+        #
         def rack_header_name; end
 
         ##

@@ -25,8 +25,8 @@ module OpenCensus
       #
       # @private
       #
-      TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env,
-                             :formatter
+      TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env
+
       ##
       # Maximum integer value for a `trace_id`
       #
@@ -69,21 +69,19 @@ module OpenCensus
         # @return [SpanContext]
         #
         def create_root header: nil, rack_env: nil, formatter: nil
-          detected_formatter = detect_formatter rack_env
-          formatter ||= detected_formatter || Formatters::DEFAULT
+          formatter ||= detect_formatter(rack_env) || Formatters::DEFAULT
           header ||= rack_env[formatter.rack_header_name] if rack_env
           trace_context = formatter.deserialize header if header
 
           if trace_context
             trace_data = TraceData.new \
-              trace_context.trace_id, trace_context.trace_options, {}, rack_env,
-              detected_formatter
+              trace_context.trace_id, trace_context.trace_options, {}, rack_env
             new trace_data, nil, trace_context.span_id
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
             trace_data = TraceData.new \
-              trace_id, 0, {}, rack_env, detected_formatter
+              trace_id, 0, {}, rack_env
             new trace_data, nil, ""
           end
         end
@@ -144,15 +142,6 @@ module OpenCensus
       #
       def trace_options
         @trace_data.trace_options
-      end
-
-      ##
-      # Returns the formatter detected when creating the root span context.
-      #
-      # @return [#serialize,nil]
-      #
-      def detected_formatter
-        @trace_data.formatter
       end
 
       ##

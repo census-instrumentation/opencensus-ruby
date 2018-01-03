@@ -65,8 +65,7 @@ module OpenCensus
       #
       # This currently adds a header to each outgoing request, propagating the
       # trace context for distributed tracing. By default, this uses the
-      # detected formatter from the incoming request or else defaults to
-      # the TraceContext formatter.
+      # TraceContext formatter.
       #
       # You may provide your own implementation of the formatter by configuring
       # it in the middleware options hash. For example:
@@ -105,9 +104,8 @@ module OpenCensus
         # @param [#call] sampler The sampler to use when creating spans.
         #     Optional: If omitted, uses the sampler in the current config.
         # @param [#serialize,#header_name] formatter The formatter to use when
-        #     propagating span context. Optional: If omitted, uses the formatter
-        #     detected by the span context. If no formatter was detected,
-        #     defaults to the TraceContext formatter.
+        #     propagating span context. Optional: If omitted, defaults to the
+        #     TraceContext formatter.
         #
         def initialize app, span_context: nil, span_name: nil, sampler: nil,
                        formatter: nil
@@ -131,12 +129,8 @@ module OpenCensus
           span_name = request_env[:span_name] || @span_name
           span_name = span_name.call request_env if span_name.respond_to? :call
 
-          formatter = request_env[:formatter]
-          formatter ||= span_context.detected_formatter if span_context
-          formatter ||= @formatter
-
           span = span_context.start_span span_name, sampler: @sampler
-          start_request span, request_env, formatter
+          start_request span, request_env
           @app.call(request_env).on_complete do |response_env|
             finish_request span, response_env
             span_context.end_span span
@@ -148,7 +142,7 @@ module OpenCensus
         ##
         # @private Set span attributes from request object
         #
-        def start_request span, env, formatter
+        def start_request span, env
           req_method = env[:method]
           span.put_attribute "/http/method", req_method if req_method
           url = env[:url]
@@ -157,6 +151,7 @@ module OpenCensus
           body_size = body.bytesize if body.respond_to? :bytesize
           span.put_attribute "/rpc/request/size", body_size if body_size
 
+          formatter = env[:formatter] || @formatter
           trace_context = formatter.serialize span.context
           headers = env[:request_headers] ||= {}
           headers[formatter.header_name] = trace_context

@@ -88,11 +88,13 @@ module OpenCensus
         # @param [#call] sampler The sampler to use when creating spans.
         #     Optional: If omitted, uses the sampler in the current config.
         #
-        def initialize app, span_context: nil, span_name: nil, sampler: nil
+        def initialize app, span_context: nil, span_name: nil, sampler: nil,
+                       formatter: nil
           @app = app
           @span_context = span_context || OpenCensus::Trace
           @span_name = span_name || DEFAULT_SPAN_NAME
           @sampler = sampler
+          @formatter = formatter || Formatters::DEFAULT
         end
 
         ##
@@ -130,9 +132,9 @@ module OpenCensus
           body_size = body.bytesize if body.respond_to? :bytesize
           span.put_attribute "/rpc/request/size", body_size if body_size
 
-          trace_context = span.context.to_trace_context_header
+          trace_context = @formatter.serialize span.context
           headers = env[:request_headers] ||= {}
-          headers["Trace-Context"] = trace_context
+          headers[@formatter.header_name] = trace_context
         end
 
         ##

@@ -87,7 +87,7 @@ module OpenCensus
         # @return [String]
         #
         def serialize span_context
-          span_context.trace_id.tap do |ret|
+          span_context.trace_id.dup.tap do |ret|
             if span_context.span_id
               ret << "/" << span_context.span_id.to_i(16).to_s
             end

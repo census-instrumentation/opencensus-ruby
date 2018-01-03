@@ -159,5 +159,20 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       header = env[:request_headers]["Trace-Context"]
       header.must_match %r{^00-#{span.trace_id}-#{span.span_id}}
     end
+
+    it "should allow specific trace context formats" do
+      middleware = OpenCensus::Trace::Integrations::FaradayMiddleware.new \
+        app(code: 200, body: nil), span_context: root_context,
+        formatter: OpenCensus::Trace::Formatters::CloudTrace.new
+      env = {
+        method: "POST",
+        url: "https://www.google.com/"
+      }
+      middleware.call env
+      span = root_context.build_contained_spans.first
+
+      header = env[:request_headers]["X-Cloud-Trace"]
+      header.must_match %r{^#{span.trace_id}/#{span.span_id.to_i(16)};o=}
+    end
   end
 end

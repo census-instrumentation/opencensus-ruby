@@ -42,7 +42,6 @@ describe OpenCensus::Trace::Formatters::TraceContext do
       OpenCensus::Trace::SpanContext::TraceData.new(
         "0123456789abcdef0123456789abcdef",
         1,
-        {},
         {}
       )
     end

@@ -17,6 +17,10 @@ require "test_helper"
 describe OpenCensus::Trace do
   let(:simple_context) { OpenCensus::Trace::SpanContext.create_root }
   let(:header) { "00-0123456789abcdef0123456789abcdef-0123456789abcdef-00" }
+  let(:trace_context) do
+    OpenCensus::Trace::Formatters::TraceContextData.new \
+      "0123456789abcdef0123456789abcdef", "0123456789abcdef", 1
+  end
 
   describe "span context" do
     after {
@@ -32,7 +36,7 @@ describe OpenCensus::Trace do
     end
 
     it "is initialized when a request trace starts" do
-      OpenCensus::Trace.start_request_trace header: header
+      OpenCensus::Trace.start_request_trace trace_context: trace_context
       OpenCensus::Trace.span_context.trace_id.must_equal \
         "0123456789abcdef0123456789abcdef"
       OpenCensus::Trace.span_context.span_id.must_equal \
@@ -41,7 +45,7 @@ describe OpenCensus::Trace do
     end
 
     it "is cleared after a request trace block" do
-      OpenCensus::Trace.start_request_trace header: header do |ctx|
+      OpenCensus::Trace.start_request_trace trace_context: trace_context do |ctx|
         OpenCensus::Trace.span_context.must_equal ctx
       end
       OpenCensus::Trace.span_context.must_be_nil
@@ -50,7 +54,7 @@ describe OpenCensus::Trace do
 
   describe "default context" do
     before {
-      OpenCensus::Trace.start_request_trace header: header
+      OpenCensus::Trace.start_request_trace trace_context: trace_context
     }
     after {
       OpenCensus::Trace.unset_span_context

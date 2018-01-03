@@ -25,7 +25,7 @@ module OpenCensus
       #
       # @private
       #
-      TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env
+      TraceData = Struct.new :trace_id, :trace_options, :span_map
 
       ##
       # Maximum integer value for a `trace_id`
@@ -41,17 +41,6 @@ module OpenCensus
       #
       MAX_SPAN_ID = 0xffffffffffffffff
 
-      ##
-      # List of trace context formatters we use to parse the parent span
-      # context.
-      #
-      # @private
-      #
-      AUTODETECTABLE_FORMATTERS = [
-        Formatters::CloudTrace.new,
-        Formatters::TraceContext.new
-      ].freeze
-
       class << self
         ##
         # Create a new root SpanContext object, given either a Trace-Context
@@ -60,38 +49,21 @@ module OpenCensus
         # to generate the SpanContext. Otherwise, a new root context with a
         # unique `trace_id` and a root `span_id` of "" is used.
         #
-        # @param [String] header A Trace-Context header (optional)
-        # @param [Hash] rack_env The Rack environment hash (optional)
-        # @param [#serialize,#rack_header_name] formatter The formatter to use
-        #     when propagating span context. Optional: If omitted, uses the
-        #     TraceContext formatter.
+        # @param [TraceContextData] trace_context The request's incoming trace
+        #      context (optional)
         #
         # @return [SpanContext]
         #
-        def create_root header: nil, rack_env: nil, formatter: nil
-          formatter ||= detect_formatter(rack_env) || Config.http_formatter
-          header ||= rack_env[formatter.rack_header_name] if rack_env
-          trace_context = formatter.deserialize header if header
-
+        def create_root trace_context: nil
           if trace_context
             trace_data = TraceData.new \
-              trace_context.trace_id, trace_context.trace_options, {}, rack_env
+              trace_context.trace_id, trace_context.trace_options, {}
             new trace_data, nil, trace_context.span_id
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
-            trace_data = TraceData.new trace_id, 0, {}, rack_env
+            trace_data = TraceData.new trace_id, 0, {}
             new trace_data, nil, ""
-          end
-        end
-
-        private
-
-        def detect_formatter rack_env
-          return nil unless rack_env
-
-          AUTODETECTABLE_FORMATTERS.detect do |formatter|
-            rack_env.key? formatter.rack_header_name
           end
         end
       end
@@ -183,8 +155,7 @@ module OpenCensus
       def start_span name, skip_frames: 0, sampler: nil
         child_context = create_child
         sampler ||= OpenCensus::Trace::Config.default_sampler
-        sampled = sampler.call span_context: self,
-                               rack_env: @trace_data.rack_env
+        sampled = sampler.call span_context: self
         span = SpanBuilder.new child_context, sampled,
                                skip_frames: skip_frames + 1
         span.name = name

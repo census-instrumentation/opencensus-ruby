@@ -36,6 +36,18 @@ module OpenCensus
         HEADER_V0_PATTERN =
           /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
 
+        DEFAULT_HEADER_NAME = "Trace-Context".freeze
+
+        attr_reader :header_name
+
+        def initialize header_name = nil
+          @header_name = header_name || DEFAULT_HEADER_NAME
+        end
+
+        def rack_header_name
+          "HTTP_" + @header_name.gsub("-", "_").upcase
+        end
+
         ##
         # Deserialize a trace context header into a TraceContext object.
         #

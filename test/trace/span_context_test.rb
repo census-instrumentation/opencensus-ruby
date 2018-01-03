@@ -33,8 +33,6 @@ describe OpenCensus::Trace::SpanContext do
       span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
-      span_context.to_trace_context_header.must_equal \
-        "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
     end
 
     it "parses trace-context header from rack environment" do
@@ -48,8 +46,19 @@ describe OpenCensus::Trace::SpanContext do
       span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
-      span_context.to_trace_context_header.must_equal \
-        "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
+    end
+
+    it "parses x-cloud-trace header from rack environment" do
+      env = {
+        "HTTP_X_CLOUD_TRACE" =>
+          "0123456789ABCDEF0123456789abcdef/81985529216486895;o=1"
+      }
+      span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
+      span_context.parent.must_be_nil
+      span_context.root.must_be_same_as span_context
+      span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
+      span_context.span_id.must_equal "0123456789abcdef"
+      span_context.trace_options.must_equal 1
     end
 
     it "falls back to default for a missing header" do

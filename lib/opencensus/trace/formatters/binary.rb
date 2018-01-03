@@ -28,6 +28,9 @@ module OpenCensus
         #
         BINARY_FORMAT = "CCH32CH16CC".freeze
 
+        def header_name; end
+        def rack_header_name; end
+
         ##
         # Deserialize a trace context header into a TraceContext object.
         #

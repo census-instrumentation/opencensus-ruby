@@ -41,6 +41,11 @@ module OpenCensus
       #
       MAX_SPAN_ID = 0xffffffffffffffff
 
+      AUTODETECTABLE_FORMATTERS = [
+        Formatters::CloudTrace.new,
+        Formatters::TraceContext.new
+      ]
+
       class << self
         ##
         # Create a new root SpanContext object, given either a Trace-Context
@@ -55,8 +60,9 @@ module OpenCensus
         # @return [SpanContext]
         #
         def create_root header: nil, rack_env: nil, formatter: nil
-          formatter ||= Formatters::DEFAULT
-          header ||= rack_env["HTTP_TRACE_CONTEXT"] if rack_env
+          detected_formatter = detect_formatter rack_env
+          formatter = detected_formatter || Formatters::DEFAULT
+          header ||= rack_env[formatter.rack_header_name] if rack_env
           trace_context = formatter.deserialize header if header
 
           if trace_context
@@ -67,8 +73,19 @@ module OpenCensus
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
-            trace_data = TraceData.new trace_id, 0, {}, rack_env, formatter
+            trace_data = TraceData.new \
+              trace_id, 0, {}, rack_env, formatter
             new trace_data, nil, ""
+          end
+        end
+
+        private
+
+        def detect_formatter rack_env
+          return nil unless rack_env
+
+          AUTODETECTABLE_FORMATTERS.detect do |formatter|
+            rack_env.key? formatter.rack_header_name
           end
         end
       end
@@ -141,17 +158,6 @@ module OpenCensus
         else
           trace_options & 0x01 != 0
         end
-      end
-
-      ##
-      # Generate and return a Trace-Context header value corresponding to
-      # this context. This header may be passed as a Trace-Context to
-      # downstream remote API calls.
-      #
-      # @return [String]
-      #
-      def to_trace_context_header
-        @trace_data.formatter.serialize self
       end
 
       ##

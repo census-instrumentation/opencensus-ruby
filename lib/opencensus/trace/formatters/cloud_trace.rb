@@ -27,6 +27,18 @@ module OpenCensus
         #
         HEADER_FORMAT = %r{([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?}
 
+        DEFAULT_HEADER_NAME = "X-Cloud-Trace".freeze
+
+        attr_reader :header_name
+
+        def initialize header_name = nil
+          @header_name = header_name || DEFAULT_HEADER_NAME
+        end
+
+        def rack_header_name
+          "HTTP_" + @header_name.gsub("-", "_").upcase
+        end
+
         ##
         # Deserialize a trace context header into a TraceContext object.
         #
@@ -36,7 +48,7 @@ module OpenCensus
         def deserialize header
           match = HEADER_FORMAT.match(header)
           if match
-            trace_id = match[1]
+            trace_id = match[1].downcase
             span_id = format("%016x", match[2].to_i)
             trace_options = match[3].to_i
             TraceContextData.new trace_id, span_id, trace_options

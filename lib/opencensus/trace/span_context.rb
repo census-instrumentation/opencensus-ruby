@@ -41,10 +41,16 @@ module OpenCensus
       #
       MAX_SPAN_ID = 0xffffffffffffffff
 
+      ##
+      # List of trace context formatters we use to parse the parent span
+      # context.
+      #
+      # @private
+      #
       AUTODETECTABLE_FORMATTERS = [
         Formatters::CloudTrace.new,
         Formatters::TraceContext.new
-      ]
+      ].freeze
 
       class << self
         ##
@@ -61,7 +67,7 @@ module OpenCensus
         #
         def create_root header: nil, rack_env: nil, formatter: nil
           detected_formatter = detect_formatter rack_env
-          formatter = detected_formatter || Formatters::DEFAULT
+          formatter ||= detected_formatter || Formatters::DEFAULT
           header ||= rack_env[formatter.rack_header_name] if rack_env
           trace_context = formatter.deserialize header if header
 

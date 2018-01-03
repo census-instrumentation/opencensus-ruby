@@ -24,9 +24,6 @@ module OpenCensus
     # SpanContext instance.
     #
     module Formatters
-      ## The default context formatter
-      DEFAULT = TraceContext.new
-
       ##
       # Internal struct that holds parsed trace context data.
       #

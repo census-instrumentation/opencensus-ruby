@@ -69,7 +69,7 @@ module OpenCensus
         # @return [SpanContext]
         #
         def create_root header: nil, rack_env: nil, formatter: nil
-          formatter ||= detect_formatter(rack_env) || Formatters::DEFAULT
+          formatter ||= detect_formatter(rack_env) || Config.formatter
           header ||= rack_env[formatter.rack_header_name] if rack_env
           trace_context = formatter.deserialize header if header
 

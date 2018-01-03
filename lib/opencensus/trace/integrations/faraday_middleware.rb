@@ -65,7 +65,7 @@ module OpenCensus
       #
       # This currently adds a header to each outgoing request, propagating the
       # trace context for distributed tracing. By default, this uses the
-      # TraceContext formatter.
+      # formatter in the current config.
       #
       # You may provide your own implementation of the formatter by configuring
       # it in the middleware options hash. For example:
@@ -104,8 +104,8 @@ module OpenCensus
         # @param [#call] sampler The sampler to use when creating spans.
         #     Optional: If omitted, uses the sampler in the current config.
         # @param [#serialize,#header_name] formatter The formatter to use when
-        #     propagating span context. Optional: If omitted, defaults to the
-        #     TraceContext formatter.
+        #     propagating span context. Optional: If omitted, use the formatter
+        #     in the current config.
         #
         def initialize app, span_context: nil, span_name: nil, sampler: nil,
                        formatter: nil
@@ -113,7 +113,7 @@ module OpenCensus
           @span_context = span_context || OpenCensus::Trace
           @span_name = span_name || DEFAULT_SPAN_NAME
           @sampler = sampler
-          @formatter = formatter || Formatters::DEFAULT
+          @formatter = formatter || OpenCensus::Trace::Config.formatter
         end
 
         ##

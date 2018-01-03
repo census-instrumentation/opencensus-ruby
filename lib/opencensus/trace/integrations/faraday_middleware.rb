@@ -105,8 +105,9 @@ module OpenCensus
         # @param [#call] sampler The sampler to use when creating spans.
         #     Optional: If omitted, uses the sampler in the current config.
         # @param [#serialize,#header_name] formatter The formatter to use when
-        #     propagating span context. Optional: If omitted, uses the
-        #     TraceContext formatter.
+        #     propagating span context. Optional: If omitted, uses the formatter
+        #     detected by the span context. If no formatter was detected,
+        #     defaults to the TraceContext formatter.
         #
         def initialize app, span_context: nil, span_name: nil, sampler: nil,
                        formatter: nil

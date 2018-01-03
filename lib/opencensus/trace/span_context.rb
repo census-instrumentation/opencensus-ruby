@@ -62,6 +62,9 @@ module OpenCensus
         #
         # @param [String] header A Trace-Context header (optional)
         # @param [Hash] rack_env The Rack environment hash (optional)
+        # @param [#serialize,#rack_header_name] formatter The formatter to use
+        #     when propagating span context. Optional: If omitted, uses the
+        #     TraceContext formatter.
         #
         # @return [SpanContext]
         #
@@ -74,13 +77,13 @@ module OpenCensus
           if trace_context
             trace_data = TraceData.new \
               trace_context.trace_id, trace_context.trace_options, {}, rack_env,
-              formatter
+              detected_formatter
             new trace_data, nil, trace_context.span_id
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
             trace_data = TraceData.new \
-              trace_id, 0, {}, rack_env, formatter
+              trace_id, 0, {}, rack_env, detected_formatter
             new trace_data, nil, ""
           end
         end
@@ -141,6 +144,15 @@ module OpenCensus
       #
       def trace_options
         @trace_data.trace_options
+      end
+
+      ##
+      # Returns the formatter detected when creating the root span context.
+      #
+      # @return [#serialize,nil]
+      #
+      def detected_formatter
+        @trace_data.formatter
       end
 
       ##

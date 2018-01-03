@@ -33,6 +33,7 @@ describe OpenCensus::Trace::SpanContext do
       span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
+      span_context.detected_formatter.must_be_nil
     end
 
     it "parses trace-context header from rack environment" do
@@ -46,6 +47,8 @@ describe OpenCensus::Trace::SpanContext do
       span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
+      span_context.detected_formatter.must_be_kind_of \
+        OpenCensus::Trace::Formatters::TraceContext
     end
 
     it "parses x-cloud-trace header from rack environment" do
@@ -59,6 +62,8 @@ describe OpenCensus::Trace::SpanContext do
       span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
+      span_context.detected_formatter.must_be_kind_of \
+        OpenCensus::Trace::Formatters::CloudTrace
     end
 
     it "falls back to default for a missing header" do

@@ -176,6 +176,15 @@ module OpenCensus
         self.span_context = context.parent
         span
       end
+
+      ##
+      # Returns the formatter detected when creating the root span context.
+      #
+      # @return [#serialize,nil]
+      #
+      def detected_formatter
+        span_context.detected_formatter if span_context
+      end
     end
   end
 end

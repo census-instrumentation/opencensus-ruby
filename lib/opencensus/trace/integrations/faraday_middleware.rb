@@ -63,12 +63,29 @@ module OpenCensus
       #
       # ## Trace context
       #
-      # This currently adds a "Trace-Context" header to each outgoing request,
-      # propagating the trace context for distributed tracing. See
-      # https://github.com/TraceContext/tracecontext-spec for more information
-      # on the trace context.
+      # This currently adds a header to each outgoing request, propagating the
+      # trace context for distributed tracing. By default, this uses the
+      # detected formatter from the incoming request or else defaults to
+      # the TraceContext formatter.
       #
-      # TODO: Support other trace context formats.
+      # You may provide your own implementation of the formatter by configuring
+      # it in the middleware options hash. For example:
+      #
+      #     conn = Faraday.new(url: "http://www.example.com") do |c|
+      #       c.use OpenCensus::Trace::Integrations::FaradayMiddleware,
+      #             formatter: OpenCensus::Trace::Formatters::CloudTrace.new
+      #       c.adapter Faraday.default_adapter
+      #     end
+      #
+      # You many also override the formatter for a particular request by
+      # including it in the options:
+      #
+      #     conn.get do |req|
+      #       req.url "/"
+      #       req.options.context = {
+      #         formatter: OpenCensus::Trace::Formatters::CloudTrace.new
+      #       }
+      #     end
       #
       class FaradayMiddleware < Faraday::Middleware
         ## The default name for Faraday spans
@@ -97,9 +114,7 @@ module OpenCensus
           @span_context = span_context || OpenCensus::Trace
           @span_name = span_name || DEFAULT_SPAN_NAME
           @sampler = sampler
-          @formatter = formatter
-          @formatter ||= span_context.detected_formatter if span_context
-          @formatter ||= Formatters::DEFAULT
+          @formatter = formatter || Formatters::DEFAULT
         end
 
         ##
@@ -115,8 +130,12 @@ module OpenCensus
           span_name = request_env[:span_name] || @span_name
           span_name = span_name.call request_env if span_name.respond_to? :call
 
+          formatter = request_env[:formatter]
+          formatter ||= span_context.detected_formatter if span_context
+          formatter ||= @formatter
+
           span = span_context.start_span span_name, sampler: @sampler
-          start_request span, request_env
+          start_request span, request_env, formatter
           @app.call(request_env).on_complete do |response_env|
             finish_request span, response_env
             span_context.end_span span
@@ -128,7 +147,7 @@ module OpenCensus
         ##
         # @private Set span attributes from request object
         #
-        def start_request span, env
+        def start_request span, env, formatter
           req_method = env[:method]
           span.put_attribute "/http/method", req_method if req_method
           url = env[:url]
@@ -137,9 +156,11 @@ module OpenCensus
           body_size = body.bytesize if body.respond_to? :bytesize
           span.put_attribute "/rpc/request/size", body_size if body_size
 
-          trace_context = @formatter.serialize span.context
+          formatter = env[:formatter] || @formatter
+
+          trace_context = formatter.serialize span.context
           headers = env[:request_headers] ||= {}
-          headers[@formatter.header_name] = trace_context
+          headers[formatter.header_name] = trace_context
         end
 
         ##

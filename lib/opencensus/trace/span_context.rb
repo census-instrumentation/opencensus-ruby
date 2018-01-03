@@ -69,7 +69,7 @@ module OpenCensus
         # @return [SpanContext]
         #
         def create_root header: nil, rack_env: nil, formatter: nil
-          formatter ||= detect_formatter(rack_env) || Config.formatter
+          formatter ||= detect_formatter(rack_env) || Config.http_formatter
           header ||= rack_env[formatter.rack_header_name] if rack_env
           trace_context = formatter.deserialize header if header
 
@@ -80,8 +80,7 @@ module OpenCensus
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
-            trace_data = TraceData.new \
-              trace_id, 0, {}, rack_env
+            trace_data = TraceData.new trace_id, 0, {}, rack_env
             new trace_data, nil, ""
           end
         end

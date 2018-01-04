@@ -24,6 +24,7 @@ require "opencensus/trace/span_builder"
 require "opencensus/trace/span_context"
 require "opencensus/trace/span"
 require "opencensus/trace/status"
+require "opencensus/trace/trace_context_data"
 require "opencensus/trace/truncatable_string"
 
 module OpenCensus

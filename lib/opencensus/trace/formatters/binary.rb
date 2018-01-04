@@ -44,20 +44,20 @@ module OpenCensus
         end
 
         ##
-        # Serialize a SpanContext object.
+        # Serialize a TraceContextData object.
         #
-        # @param [SpanContext] span_context
+        # @param [TraceContextData] trace_context
         # @return [String]
         #
-        def serialize span_context
+        def serialize trace_context
           [
             0, # version
             0, # field 0
-            span_context.trace_id,
+            trace_context.trace_id,
             1, # field 1
-            span_context.span_id,
+            trace_context.span_id,
             2, # field 2
-            span_context.trace_options
+            trace_context.trace_options
           ].pack(BINARY_FORMAT)
         end
       end

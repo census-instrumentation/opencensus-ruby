@@ -81,18 +81,18 @@ module OpenCensus
         end
 
         ##
-        # Serialize a SpanContext object.
+        # Serialize a TraceContextData object.
         #
-        # @param [SpanContext] span_context
+        # @param [TraceContextData] trace_context
         # @return [String]
         #
-        def serialize span_context
-          span_context.trace_id.dup.tap do |ret|
-            if span_context.span_id
-              ret << "/" << span_context.span_id.to_i(16).to_s
+        def serialize trace_context
+          trace_context.trace_id.dup.tap do |ret|
+            if trace_context.span_id
+              ret << "/" << trace_context.span_id.to_i(16).to_s
             end
-            if span_context.trace_options
-              ret << ";o=" << span_context.trace_options.to_s
+            if trace_context.trace_options
+              ret << ";o=" << trace_context.trace_options.to_s
             end
           end
         end

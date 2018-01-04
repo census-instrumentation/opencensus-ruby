@@ -98,6 +98,15 @@ module OpenCensus
       end
 
       ##
+      # Returns the trace context for this span.
+      #
+      # @return [TraceContextData]
+      #
+      def trace_context
+        TraceContextData.new trace_id, @span_id, trace_options
+      end
+
+      ##
       # The trace ID, as a 32-character hex string.
       #
       # @return [String]
@@ -207,7 +216,7 @@ module OpenCensus
       # @return [SpanBuilder, nil] The span defining this context.
       #
       def this_span
-        get_span span_id
+        get_span @span_id
       end
 
       ##

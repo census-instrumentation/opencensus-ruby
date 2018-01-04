@@ -152,7 +152,7 @@ module OpenCensus
           span.put_attribute "/rpc/request/size", body_size if body_size
 
           formatter = env[:formatter] || @formatter
-          trace_context = formatter.serialize span.context
+          trace_context = formatter.serialize span.context.trace_context
           headers = env[:request_headers] ||= {}
           headers[formatter.header_name] = trace_context
         end

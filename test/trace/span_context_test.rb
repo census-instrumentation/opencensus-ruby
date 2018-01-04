@@ -17,7 +17,7 @@ require "test_helper"
 describe OpenCensus::Trace::SpanContext do
   describe "create_root" do
     let(:trace_context) do
-      OpenCensus::Trace::Formatters::TraceContextData.new \
+      OpenCensus::Trace::TraceContextData.new \
         "0123456789abcdef0123456789abcdef", "0123456789abcdef", 1
     end
     it "populates defaults" do

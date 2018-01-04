@@ -18,7 +18,7 @@ describe OpenCensus::Trace do
   let(:simple_context) { OpenCensus::Trace::SpanContext.create_root }
   let(:header) { "00-0123456789abcdef0123456789abcdef-0123456789abcdef-00" }
   let(:trace_context) do
-    OpenCensus::Trace::Formatters::TraceContextData.new \
+    OpenCensus::Trace::TraceContextData.new \
       "0123456789abcdef0123456789abcdef", "0123456789abcdef", 1
   end
 

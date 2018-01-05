@@ -24,6 +24,7 @@ require "opencensus/trace/span_builder"
 require "opencensus/trace/span_context"
 require "opencensus/trace/span"
 require "opencensus/trace/status"
+require "opencensus/trace/trace_context_data"
 require "opencensus/trace/truncatable_string"
 
 module OpenCensus
@@ -83,14 +84,13 @@ module OpenCensus
       # block. When the block finishes, the span context will automatically
       # be unset. If you do not pass a block, this method will return the
       # SpanContext. You must then call `unset_span_context` yourself at the
-      # end of the request.
+      # end of the request
       #
-      # @param [String] header A Trace-Context header (optional)
-      # @param [Hash] rack_env The Rack environment hash (optional)
+      # @param [TraceContextData] trace_context The request's incoming trace
+      #      context (optional)
       #
-      def start_request_trace header: nil, rack_env: nil
-        span_context = SpanContext.create_root \
-          header: header, rack_env: rack_env
+      def start_request_trace trace_context: nil
+        span_context = SpanContext.create_root trace_context: trace_context
         self.span_context = span_context
         if block_given?
           begin

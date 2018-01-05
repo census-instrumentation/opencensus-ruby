@@ -16,6 +16,10 @@ require "test_helper"
 
 describe OpenCensus::Trace::SpanContext do
   describe "create_root" do
+    let(:trace_context) do
+      OpenCensus::Trace::TraceContextData.new \
+        "0123456789abcdef0123456789abcdef", "0123456789abcdef", 1
+    end
     it "populates defaults" do
       span_context = OpenCensus::Trace::SpanContext.create_root
       span_context.parent.must_be_nil
@@ -25,57 +29,13 @@ describe OpenCensus::Trace::SpanContext do
       span_context.trace_options.must_equal 0
     end
 
-    it "parses a directly given Trace-Context header" do
-      header = "00-0123456789ABCDEF0123456789abcdef-0123456789ABCdef-01"
-      span_context = OpenCensus::Trace::SpanContext.create_root header: header
+    it "uses a parsed trace context" do
+      span_context = OpenCensus::Trace::SpanContext.create_root trace_context: trace_context
       span_context.parent.must_be_nil
       span_context.root.must_be_same_as span_context
       span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       span_context.span_id.must_equal "0123456789abcdef"
       span_context.trace_options.must_equal 1
-      span_context.to_trace_context_header.must_equal \
-        "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
-    end
-
-    it "parses trace-context header from rack environment" do
-      env = {
-        "HTTP_TRACE_CONTEXT" =>
-          "00-0123456789ABCDEF0123456789abcdef-0123456789ABCdef-01"
-      }
-      span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
-      span_context.parent.must_be_nil
-      span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_equal "0123456789abcdef0123456789abcdef"
-      span_context.span_id.must_equal "0123456789abcdef"
-      span_context.trace_options.must_equal 1
-      span_context.to_trace_context_header.must_equal \
-        "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
-    end
-
-    it "falls back to default for a missing header" do
-      env = {
-        "HTTP_TRACE_CONTEXT1" =>
-          "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
-      }
-      span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
-      span_context.parent.must_be_nil
-      span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_match %r{^[0-9a-f]{32}$}
-      span_context.span_id.must_equal ""
-      span_context.trace_options.must_equal 0
-    end
-
-    it "falls back to default for an invalid version" do
-      env = {
-        "HTTP_TRACE_CONTEXT" =>
-          "ff-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
-      }
-      span_context = OpenCensus::Trace::SpanContext.create_root rack_env: env
-      span_context.parent.must_be_nil
-      span_context.root.must_be_same_as span_context
-      span_context.trace_id.must_match %r{^[0-9a-f]{32}$}
-      span_context.span_id.must_equal ""
-      span_context.trace_options.must_equal 0
     end
   end
 

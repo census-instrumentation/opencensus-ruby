@@ -25,8 +25,8 @@ module OpenCensus
       #
       # @private
       #
-      TraceData = Struct.new :trace_id, :trace_options, :span_map, :rack_env,
-                             :formatter
+      TraceData = Struct.new :trace_id, :trace_options, :span_map
+
       ##
       # Maximum integer value for a `trace_id`
       #
@@ -49,25 +49,20 @@ module OpenCensus
         # to generate the SpanContext. Otherwise, a new root context with a
         # unique `trace_id` and a root `span_id` of "" is used.
         #
-        # @param [String] header A Trace-Context header (optional)
-        # @param [Hash] rack_env The Rack environment hash (optional)
+        # @param [TraceContextData] trace_context The request's incoming trace
+        #      context (optional)
         #
         # @return [SpanContext]
         #
-        def create_root header: nil, rack_env: nil, formatter: nil
-          formatter ||= Formatters::DEFAULT
-          header ||= rack_env["HTTP_TRACE_CONTEXT"] if rack_env
-          trace_context = formatter.deserialize header if header
-
+        def create_root trace_context: nil
           if trace_context
             trace_data = TraceData.new \
-              trace_context.trace_id, trace_context.trace_options, {}, rack_env,
-              formatter
+              trace_context.trace_id, trace_context.trace_options, {}
             new trace_data, nil, trace_context.span_id
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
-            trace_data = TraceData.new trace_id, 0, {}, rack_env, formatter
+            trace_data = TraceData.new trace_id, 0, {}
             new trace_data, nil, ""
           end
         end
@@ -100,6 +95,15 @@ module OpenCensus
           root = parent
         end
         root
+      end
+
+      ##
+      # Returns the trace context for this span.
+      #
+      # @return [TraceContextData]
+      #
+      def trace_context
+        TraceContextData.new trace_id, @span_id, trace_options
       end
 
       ##
@@ -144,17 +148,6 @@ module OpenCensus
       end
 
       ##
-      # Generate and return a Trace-Context header value corresponding to
-      # this context. This header may be passed as a Trace-Context to
-      # downstream remote API calls.
-      #
-      # @return [String]
-      #
-      def to_trace_context_header
-        @trace_data.formatter.serialize self
-      end
-
-      ##
       # Create a new span in this context.
       # You must pass a name for the span. All other span attributes should
       # be set using the SpanBuilder methods.
@@ -171,8 +164,7 @@ module OpenCensus
       def start_span name, skip_frames: 0, sampler: nil
         child_context = create_child
         sampler ||= OpenCensus::Trace::Config.default_sampler
-        sampled = sampler.call span_context: self,
-                               rack_env: @trace_data.rack_env
+        sampled = sampler.call span_context: self
         span = SpanBuilder.new child_context, sampled,
                                skip_frames: skip_frames + 1
         span.name = name
@@ -224,7 +216,7 @@ module OpenCensus
       # @return [SpanBuilder, nil] The span defining this context.
       #
       def this_span
-        get_span span_id
+        get_span @span_id
       end
 
       ##

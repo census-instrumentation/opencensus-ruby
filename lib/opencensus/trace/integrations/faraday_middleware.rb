@@ -63,12 +63,28 @@ module OpenCensus
       #
       # ## Trace context
       #
-      # This currently adds a "Trace-Context" header to each outgoing request,
-      # propagating the trace context for distributed tracing. See
-      # https://github.com/TraceContext/tracecontext-spec for more information
-      # on the trace context.
+      # This currently adds a header to each outgoing request, propagating the
+      # trace context for distributed tracing. By default, this uses the
+      # formatter in the current config.
       #
-      # TODO: Support other trace context formats.
+      # You may provide your own implementation of the formatter by configuring
+      # it in the middleware options hash. For example:
+      #
+      #     conn = Faraday.new(url: "http://www.example.com") do |c|
+      #       c.use OpenCensus::Trace::Integrations::FaradayMiddleware,
+      #             formatter: OpenCensus::Trace::Formatters::CloudTrace.new
+      #       c.adapter Faraday.default_adapter
+      #     end
+      #
+      # You many also override the formatter for a particular request by
+      # including it in the options:
+      #
+      #     conn.get do |req|
+      #       req.url "/"
+      #       req.options.context = {
+      #         formatter: OpenCensus::Trace::Formatters::CloudTrace.new
+      #       }
+      #     end
       #
       class FaradayMiddleware < Faraday::Middleware
         ## The default name for Faraday spans
@@ -87,12 +103,17 @@ module OpenCensus
         #     `DEFAULT_SPAN_NAME`
         # @param [#call] sampler The sampler to use when creating spans.
         #     Optional: If omitted, uses the sampler in the current config.
+        # @param [#serialize,#header_name] formatter The formatter to use when
+        #     propagating span context. Optional: If omitted, use the formatter
+        #     in the current config.
         #
-        def initialize app, span_context: nil, span_name: nil, sampler: nil
+        def initialize app, span_context: nil, span_name: nil, sampler: nil,
+                       formatter: nil
           @app = app
           @span_context = span_context || OpenCensus::Trace
           @span_name = span_name || DEFAULT_SPAN_NAME
           @sampler = sampler
+          @formatter = formatter || OpenCensus::Trace::Config.http_formatter
         end
 
         ##
@@ -130,9 +151,10 @@ module OpenCensus
           body_size = body.bytesize if body.respond_to? :bytesize
           span.put_attribute "/rpc/request/size", body_size if body_size
 
-          trace_context = span.context.to_trace_context_header
+          formatter = env[:formatter] || @formatter
+          trace_context = formatter.serialize span.context.trace_context
           headers = env[:request_headers] ||= {}
-          headers["Trace-Context"] = trace_context
+          headers[formatter.header_name] = trace_context
         end
 
         ##

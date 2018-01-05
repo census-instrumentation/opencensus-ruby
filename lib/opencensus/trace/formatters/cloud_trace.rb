@@ -28,6 +28,41 @@ module OpenCensus
         HEADER_FORMAT = %r{([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?}
 
         ##
+        # The outgoing header used for the Google Cloud Trace header
+        # specification.
+        #
+        # @private
+        #
+        HEADER_NAME = "X-Cloud-Trace".freeze
+
+        ##
+        # The rack environment header used the the Google Cloud Trace header
+        # specification.
+        #
+        # @private
+        #
+        RACK_HEADER_NAME = "HTTP_X_CLOUD_TRACE".freeze
+
+        ##
+        # Returns the name of the header used for context propagation.
+        #
+        # @return [String]
+        #
+        def header_name
+          HEADER_NAME
+        end
+
+        ##
+        # Returns the name of the rack_environment header to use when parsing
+        # context from an incoming request.
+        #
+        # @return [String]
+        #
+        def rack_header_name
+          RACK_HEADER_NAME
+        end
+
+        ##
         # Deserialize a trace context header into a TraceContext object.
         #
         # @param [String] header
@@ -36,7 +71,7 @@ module OpenCensus
         def deserialize header
           match = HEADER_FORMAT.match(header)
           if match
-            trace_id = match[1]
+            trace_id = match[1].downcase
             span_id = format("%016x", match[2].to_i)
             trace_options = match[3].to_i
             TraceContextData.new trace_id, span_id, trace_options
@@ -46,18 +81,18 @@ module OpenCensus
         end
 
         ##
-        # Serialize a SpanContext object.
+        # Serialize a TraceContextData object.
         #
-        # @param [SpanContext] span_context
+        # @param [TraceContextData] trace_context
         # @return [String]
         #
-        def serialize span_context
-          span_context.trace_id.tap do |ret|
-            if span_context.span_id
-              ret << "/" << span_context.span_id.to_i(16).to_s
+        def serialize trace_context
+          trace_context.trace_id.dup.tap do |ret|
+            if trace_context.span_id
+              ret << "/" << trace_context.span_id.to_i(16).to_s
             end
-            if span_context.trace_options
-              ret << ";o=" << span_context.trace_options.to_s
+            if trace_context.trace_options
+              ret << ";o=" << trace_context.trace_options.to_s
             end
           end
         end

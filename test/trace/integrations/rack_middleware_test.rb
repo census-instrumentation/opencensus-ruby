@@ -119,4 +119,55 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
       end
     end
   end
+
+  describe "trace context formatting" do
+    let(:middleware) { OpenCensus::Trace::Integrations::RackMiddleware.new app, exporter: exporter }
+    it "parses trace-context header from rack environment" do
+      env = {
+        "HTTP_TRACE_CONTEXT" =>
+          "00-0123456789ABCDEF0123456789abcdef-0123456789ABCdef-01"
+      }
+      resp = middleware.call env
+      root_span = exporter.spans.first
+
+      root_span.trace_id.must_equal "0123456789abcdef0123456789abcdef"
+      root_span.parent_span_id.must_equal "0123456789abcdef"
+    end
+
+    it "parses x-cloud-trace header from rack environment" do
+      env = {
+        "HTTP_X_CLOUD_TRACE" =>
+          "0123456789ABCDEF0123456789abcdef/81985529216486895;o=1"
+      }
+      resp = middleware.call env
+      root_span = exporter.spans.first
+
+      root_span.trace_id.must_equal "0123456789abcdef0123456789abcdef"
+      root_span.parent_span_id.must_equal "0123456789abcdef"
+    end
+
+    it "falls back to default for missing header" do
+      env = {
+        "HTTP_TRACE_CONTEXT1" =>
+          "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
+      }
+      resp = middleware.call env
+      root_span = exporter.spans.first
+
+      root_span.trace_id.must_match %r{^[0-9a-f]{32}$}
+      root_span.parent_span_id.must_be_empty
+    end
+
+    it "falls back to default for invalid trace-context version" do
+      env = {
+        "HTTP_TRACE_CONTEXT" =>
+          "ff-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
+      }
+      resp = middleware.call env
+      root_span = exporter.spans.first
+
+      root_span.trace_id.must_match %r{^[0-9a-f]{32}$}
+      root_span.parent_span_id.must_be_empty
+    end
+  end
 end

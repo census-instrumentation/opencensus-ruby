@@ -1,4 +1,4 @@
-# Copyright 2017 OpenCensus Authors
+# Copyright 2018 OpenCensus Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "opencensus/trace/formatters/binary"
-require "opencensus/trace/formatters/cloud_trace"
-require "opencensus/trace/formatters/trace_context"
-
 module OpenCensus
   module Trace
     ##
-    # The Formatters module contains several implementations of cross-service
-    # SpanContext propagation. Each formatter can serialize and deserialize a
-    # TraceContextData instance.
+    # Struct that holds parsed trace context data.
     #
-    module Formatters
-    end
+    TraceContextData = Struct.new :trace_id, :span_id, :trace_options
   end
 end

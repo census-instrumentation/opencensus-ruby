@@ -37,6 +37,40 @@ module OpenCensus
           /^([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(-([0-9a-fA-F]{2}))?$/
 
         ##
+        # The outgoing header used for the TraceContext header specification.
+        #
+        # @private
+        #
+        HEADER_NAME = "Trace-Context".freeze
+
+        ##
+        # The rack environment header used for the TraceContext header
+        # specification
+        #
+        # @private
+        #
+        RACK_HEADER_NAME = "HTTP_TRACE_CONTEXT".freeze
+
+        ##
+        # Returns the name of the header used for context propagation.
+        #
+        # @return [String]
+        #
+        def header_name
+          HEADER_NAME
+        end
+
+        ##
+        # Returns the name of the rack_environment header to use when parsing
+        # context from an incoming request.
+        #
+        # @return [String]
+        #
+        def rack_header_name
+          RACK_HEADER_NAME
+        end
+
+        ##
         # Deserialize a trace context header into a TraceContext object.
         #
         # @param [String] header
@@ -59,18 +93,18 @@ module OpenCensus
         end
 
         ##
-        # Serialize a SpanContext object.
+        # Serialize a TraceContextData object.
         #
-        # @param [SpanContext] span_context
+        # @param [TraceContextData] trace_context
         # @return [String]
         #
-        def serialize span_context
+        def serialize trace_context
           format(
             "%02<version>d-%<trace_id>s-%<span_id>s-%02<trace_options>d",
             version: 0, # version 0,
-            trace_id: span_context.trace_id,
-            span_id: span_context.span_id,
-            trace_options: span_context.trace_options
+            trace_id: trace_context.trace_id,
+            span_id: trace_context.span_id,
+            trace_options: trace_context.trace_options
           )
         end
 

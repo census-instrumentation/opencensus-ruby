@@ -31,6 +31,17 @@ module OpenCensus
       #
       class RackMiddleware
         ##
+        # List of trace context formatters we use to parse the parent span
+        # context.
+        #
+        # @private
+        #
+        AUTODETECTABLE_FORMATTERS = [
+          Formatters::CloudTrace.new,
+          Formatters::TraceContext.new
+        ].freeze
+
+        ##
         # Create the Rack middleware.
         #
         # @param [#call] app Next item on the middleware stack
@@ -52,7 +63,14 @@ module OpenCensus
         #     body which must respond to `each`.
         #
         def call env
-          OpenCensus::Trace.start_request_trace rack_env: env do |span_context|
+          formatter = AUTODETECTABLE_FORMATTERS.detect do |f|
+            env.key? f.rack_header_name
+          end
+          if formatter
+            context = formatter.deserialize env[formatter.rack_header_name]
+          end
+
+          Trace.start_request_trace trace_context: context do |span_context|
             begin
               span_context.in_span get_path(env) do |span|
                 start_request span, env

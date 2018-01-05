@@ -37,7 +37,6 @@ describe OpenCensus::Trace::Formatters::CloudTrace do
       OpenCensus::Trace::SpanContext::TraceData.new(
         "123456789012345678901234567890ab",
         1,
-        {},
         {}
       )
     end

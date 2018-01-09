@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "opencensus/trace/exporters/logger"
+
 module OpenCensus
   module Trace
     ##
@@ -19,9 +21,6 @@ module OpenCensus
     # spans to an external or local service.
     #
     module Exporters
-      autoload :GoogleCloud, "opencensus/trace/exporters/google_cloud"
-      autoload :Logger, "opencensus/trace/exporters/logger"
-      autoload :Zipkin, "opencensus/trace/exporters/zipkin"
     end
   end
 end

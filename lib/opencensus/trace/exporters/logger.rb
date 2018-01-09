@@ -50,13 +50,13 @@ module OpenCensus
 
         def format_span span
           {
-            name: span.name,
+            name: format_value(span.name),
             trace_id: span.trace_id,
             span_id: span.span_id,
             parent_span_id: span.parent_span_id,
             start_time: span.start_time,
             end_time: span.end_time,
-            attributes: span.attributes,
+            attributes: format_attributes(span.attributes),
             dropped_attributes_count: span.dropped_attributes_count,
             stack_trace: span.stack_trace,
             dropped_frames_count: span.dropped_frames_count,
@@ -82,8 +82,9 @@ module OpenCensus
 
         def format_annotation annotation
           {
-            description: annotation.description,
-            attributes: annotation.attributes,
+            description: format_value(annotation.description),
+            attributes: format_attributes(annotation.attributes),
+            dropped_attributes_count: annotation.dropped_attributes_count,
             time: annotation.time
           }
         end
@@ -103,7 +104,8 @@ module OpenCensus
             trace_id: link.trace_id,
             span_id: link.span_id,
             type: link.type,
-            attributes: link.attributes
+            attributes: format_attributes(link.attributes),
+            dropped_attributes_count: link.dropped_attributes_count
           }
         end
 
@@ -114,6 +116,32 @@ module OpenCensus
             code: status.code,
             message: status.message
           }
+        end
+
+        def format_attributes attrs
+          result = {}
+          attrs.each do |k, v|
+            result[k] = format_value v
+          end
+          result
+        end
+
+        def format_value value
+          case value
+          when String, Integer, true, false
+            value
+          when TruncatableString
+            if value.truncated_byte_count.zero?
+              value.value
+            else
+              {
+                value: value.value,
+                truncated_byte_count: value.truncated_byte_count
+              }
+            end
+          else
+            nil
+          end
         end
       end
     end

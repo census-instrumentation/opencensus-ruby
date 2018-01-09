@@ -48,10 +48,20 @@ module OpenCensus
       config.add_option! :default_max_string_length, 1024
     end
 
+    # Expose the trace config as a subconfig under the main config.
+    OpenCensus.configure do |config|
+      config.add_config! :trace, Config
+    end
+
     class << self
       ##
-      # Configure OpenCensus Trace. These configuration fields included
+      # Configure OpenCensus Trace. These configuration fields include
       # parameters governing sampling, span creation, and exporting.
+      #
+      # This configuration is also available as the `trace` subconfig under the
+      # main configuration `OpenCensus.configure`. If the OpenCensus Railtie is
+      # installed in a Rails application, the configuration object is also
+      # exposed as `config.opencensus.trace`.
       #
       # Generally, you should configure this once at process initialization,
       # but it can be modified at any time.
@@ -63,9 +73,6 @@ module OpenCensus
       #         OpenCensus::Trace::Samplers::AlwaysSample.new
       #       config.default_max_attributes = 16
       #     end
-      #
-      # The configuration object is also exposed in the Rails configuration
-      # in a Rails application that installs the OpenCensus railtie.
       #
       # Supported fields are:
       #

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 require "opencensus/common"
+require "opencensus/config"
 require "opencensus/context"
 require "opencensus/stats"
 require "opencensus/tags"

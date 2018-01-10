@@ -69,6 +69,8 @@ describe OpenCensus::Common::Config do
     it "appears in the options list" do
       config.options!.must_equal [:option1]
       config.option?(:option1).must_equal true
+      config.keys!.must_equal [:option1]
+      config.key?(:option1).must_equal true
     end
 
     it "won't appear in the subconfigs list" do
@@ -332,6 +334,13 @@ describe OpenCensus::Common::Config do
       end
     }
 
+    it "appears in the subconfigs list" do
+      config.subconfigs!.must_equal [:sub]
+      config.subconfig?(:sub).must_equal true
+      config.keys!.must_equal [:option1, :sub]
+      config.key?(:sub).must_equal true
+    end
+
     it "provides access to its suboptions via []" do
       config[:sub].option2 = "hi"
       config["sub"].option2.must_equal "hi"
@@ -355,4 +364,129 @@ describe OpenCensus::Common::Config do
     end
   end
 
+  describe "an alias" do
+    let(:config1) {
+      OpenCensus::Common::Config.new do |config|
+        config.add_option! :option1
+        config.add_config! :sub do |config2|
+          config2.add_option! :option2
+        end
+      end
+    }
+
+    it "refers to a foreign option" do
+      config2 = OpenCensus::Common::Config.new do |config|
+        config.add_alias! :option1, config: config1, key: :option1
+      end
+      config2.option1 = 2
+      config1.option1.must_equal 2
+      config1.option1 = 3
+      config2.option1.must_equal 3
+    end
+
+    it "refers to a local option" do
+      config1.add_alias! :option1a, key: :option1
+      config1.option1a = 2
+      config1.option1.must_equal 2
+      config1.option1 = 3
+      config1.option1a.must_equal 3
+    end
+
+    it "refers to a foreign subconfig" do
+      config2 = OpenCensus::Common::Config.new do |config|
+        config.add_alias! :sub, config: config1, key: :sub
+      end
+      config2.sub.must_be_same_as config1.sub
+      ->{
+        config2.sub = "hi"
+      }.must_raise "Key :sub is a subconfig"
+    end
+
+    it "refers directly to a config" do
+      config2 = OpenCensus::Common::Config.new do |config|
+        config.add_alias! :sub, config: config1
+      end
+      config2.sub.must_be_same_as config1
+      ->{
+        config2.sub = "hi"
+      }.must_raise "Key :sub is a subconfig"
+    end
+  end
+
+  describe "#reset!" do
+    let(:config) {
+      OpenCensus::Common::Config.new do |config|
+        config.add_option! :option1, 0
+        config.add_config! :sub do |config2|
+          config2.add_option! :option2, :foo
+        end
+      end
+    }
+
+    it "resets a single option" do
+      config.option1 = 1
+      config.sub.option2 = :bar
+      config.reset! :option1
+      config.option1.must_equal 0
+      config.sub.option2.must_equal :bar
+    end
+
+    it "resets a subconfig" do
+      config.option1 = 1
+      config.sub.option2 = :bar
+      config.reset! :sub
+      config.option1.must_equal 1
+      config.sub.option2.must_equal :foo
+    end
+
+    it "resets everything recursively" do
+      config.option1 = 1
+      config.sub.option2 = :bar
+      config.reset!
+      config.option1.must_equal 0
+      config.sub.option2.must_equal :foo
+    end
+  end
+
+  describe "#delete!" do
+    let(:config) {
+      OpenCensus::Common::Config.new do |config|
+        config.add_option! :option1, 0
+        config.add_config! :sub do |config2|
+          config2.add_option! :option2, :foo
+        end
+      end
+    }
+
+    it "deletes a single option" do
+      config.delete! :option1
+      config.option?(:option1).must_equal false
+      ->{
+        config.option1
+      }.must_raise "Key :sub does not exist"
+      ->{
+        config.option1 = 1
+      }.must_raise "Key :sub does not exist"
+    end
+
+    it "deletes a subconfig" do
+      config.delete! :sub
+      config.subconfig?(:sub).must_equal false
+      ->{
+        config.sub
+      }.must_raise "Key :sub does not exist"
+    end
+
+    it "retains access from other paths" do
+      config2 = OpenCensus::Common::Config.new do |c|
+        c.add_alias! :conf, config: config
+      end
+      config2.conf.option1.must_equal 0
+      config2.delete! :conf
+      ->{
+        config2.conf.option1
+      }.must_raise "Key :conf does not exist"
+      config.option1.must_equal 0
+    end
+  end
 end

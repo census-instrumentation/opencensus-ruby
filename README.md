@@ -2,10 +2,17 @@
 
 This is the open-source release of Census for Ruby. Census provides a
 framework to measure a server's resource usage and collect performance stats.
-This repository contains Ruby related utilities and supporting software needed
-by OpenCensus.
+
+This repository contains the source to the `opencensus` Rubygem, which contains
+the core OpenCensus APIs and basic integrations with Rails, Faraday, and GRPC.
+Additional integrations, including exporters to popular analytics services,
+will be available in separate gems.
+
+The library is in alpha stage, and the API is subject to change.
 
 ## Quick Start
+
+### Installation
 
 Install the gem directly:
 
@@ -27,41 +34,60 @@ gem "opencensus"
 $ bundle install
 ```
 
-## Tracing on Rack-based frameworks
+### Getting started with Ruby on Rails
 
-The OpenCensus library for Ruby makes it easy to integrate OpenCensus tracing
-into popular Rack-based Ruby web frameworks such as Ruby on Rails and
-Sinatra. When the library integration is enabled, it automatically traces
-incoming requests in the application.
+The OpenCensus library provides a Railtie that integrates with Ruby On Rails,
+automatically tracing incoming requests in the application. It also
+automatically traces key processes in your application such as database queries
+and view rendering.
 
-### With Ruby on Rails
-
-You can load the Railtie that comes with the library into your Ruby
-on Rails application by explicitly requiring it during the application startup:
+To enable Rails integration, require this file during application startup:
 
 ```ruby
 # In config/application.rb
 require "opencensus/trace/integrations/rails"
 ```
 
-If you're using the `opencensus` gem, it automatically loads the Railtie into
-your application when it starts.
-
-### With other Rack-based frameworks
+### Getting started with other Rack-based frameworks
 
 Other Rack-based frameworks, such as Sinatra, can use the Rack Middleware
-provided by the library:
+integration, which automatically traces incoming requests. To enable the
+integration for a non-Rails Rack framework, add the middleware to your
+middleware stack.
 
 ```ruby
-require "opencensus/trace"
+# In config.ru or similar Rack configuration file
+require "opencensus/trace/integrations/rack_middleware"
 use OpenCensus::Trace::Integrations::RackMiddleware
 ```
 
+## Instrumentation features
+
+### Tracing outgoing HTTP requests
+
+If you request uses the [Faraday](https://github.com/lostisland/faraday)
+library to make outgoing HTTP requests, consider installing the Faraday
+Middleware integration. This creates a span for each outgoing Faraday request,
+tracking the latency of that request, and it propagates distributed trace
+headers into the request so you can potentially connect your request trace with
+that of the remote service. Here is an example:
+
+```ruby
+conn = Faraday.new(url: "http://www.example.com") do |c|
+  c.use OpenCensus::Trace::Integrations::FaradayMiddleware
+  c.adapter Faraday.default_adapter
+  end
+conn.get "/"
+```
+
+See the documentation for the
+`OpenCensus::Trace::Integrations::FaradayMiddleware` class for more info.
+
 ### Adding Custom Trace Spans
 
-The OpenCensus Rack Middleware automatically creates a trace record for
-incoming requests. You can add additional custom trace spans within each
-request:
+In addition to the spans added by the Rails integration (e.g. for database
+queries) and by Faraday integration for outgoing HTTP requests, you can add
+additional custom spans to the request trace:
 
 ```ruby
 OpenCensus::Trace.in_span "my_task" do |span|
@@ -73,20 +99,60 @@ OpenCensus::Trace.in_span "my_task" do |span|
 end
 ```
 
+See the documentation for the `OpenCensus::Trace` module for more info.
+
+### Exporting traces
+
+By default, OpenCensus will log request trace data as JSON. To export traces to
+your favorite analytics backend, install an export plugin. There are plugins
+currently being developed for Stackdriver, Zipkin, and other services.
+
 ### Configuring the library
 
-FIXME
+OpenCensus allows configuration of a number of aspects via the configuration
+class. The following example illustrates how that looks:
 
-## Supported Ruby Versions
+```ruby
+OpenCensus.configure do |c|
+  c.trace.default_sampler = OpenCensus::Trace::Samplers::AlwaysSample.new
+  c.trace.default_max_attributes = 16
+end
+```
+
+If you are using Rails, you can equivalently use the Rails config:
+
+```ruby
+config.opencensus.trace.default_sampler =
+  OpenCensus::Trace::Samplers::AlwaysSample.new
+config.opencensus.trace.default_max_attributes = 16
+```
+
+You can configure a variety of core OpenCensuys options, including:
+
+* Sampling, which controls how often a request is traced.
+* Exporting, which controls how trace information is reported.
+* Formatting, which controls how distributed request trace headers are
+  constructed
+* Size maximums, which control when trace data is truncated.
+
+Additionally, integrations and other plugins might have their own
+configurations.
+
+For more information, consult the documentation for `OpenCensus.configure` and
+`OpenCensus::Trace.configure`.
+
+## About the library
+
+### Supported Ruby Versions
 
 This library is supported on Ruby 2.0+.
 
-## Versioning
+### Versioning
 
 This library follows [Semantic Versioning](http://semver.org/).
 
 It is currently in major version zero (0.y.z), which means that anything may
-change at any time and the public API should not be considered stable.
+change at any time, and the public API should not be considered stable.
 
 ## Contributing
 
@@ -102,8 +168,8 @@ participating in this project you agree to abide by its terms. See
 ## License
 
 This library is licensed under Apache 2.0. Full license text is available in
- [LICENSE](LICENSE).
+[LICENSE](LICENSE).
 
- ## Disclaimer
+## Disclaimer
 
- This is not an official Google product.
+This is not an official Google product.

@@ -65,12 +65,12 @@ use OpenCensus::Trace::Integrations::RackMiddleware
 
 ### Tracing outgoing HTTP requests
 
-If you request uses the [Faraday](https://github.com/lostisland/faraday)
-library to make outgoing HTTP requests, consider installing the Faraday
-Middleware integration. This creates a span for each outgoing Faraday request,
-tracking the latency of that request, and it propagates distributed trace
-headers into the request so you can potentially connect your request trace with
-that of the remote service. Here is an example:
+If your app uses the [Faraday](https://github.com/lostisland/faraday) library
+to make outgoing HTTP requests, consider installing the Faraday Middleware
+integration. This integration creates a span for each outgoing Faraday request,
+tracking the latency of that request, and propagates distributed trace headers
+into the request so you can potentially connect your request trace with that of
+the remote service. Here is an example:
 
 ```ruby
 conn = Faraday.new(url: "http://www.example.com") do |c|
@@ -81,7 +81,8 @@ conn.get "/"
 ```
 
 See the documentation for the
-`OpenCensus::Trace::Integrations::FaradayMiddleware` class for more info.
+[FaradayMiddleware](http://opencensus.io/opencensus-ruby/api/OpenCensus/Trace/Integrations/FaradayMiddleware.html)
+class for more info.
 
 ### Adding Custom Trace Spans
 
@@ -99,7 +100,9 @@ OpenCensus::Trace.in_span "my_task" do |span|
 end
 ```
 
-See the documentation for the `OpenCensus::Trace` module for more info.
+See the documentation for the
+[OpenCensus::Trace](http://opencensus.io/opencensus-ruby/api/OpenCensus/Trace.html)
+module for more info.
 
 ### Exporting traces
 
@@ -138,8 +141,10 @@ You can configure a variety of core OpenCensuys options, including:
 Additionally, integrations and other plugins might have their own
 configurations.
 
-For more information, consult the documentation for `OpenCensus.configure` and
-`OpenCensus::Trace.configure`.
+For more information, consult the documentation for
+[OpenCensus.configure](http://opencensus.io/opencensus-ruby/api/OpenCensus.html#configure-class_method)
+and
+[OpenCensus::Trace.configure](http://opencensus.io/opencensus-ruby/api/OpenCensus/Trace.html#configure-class_method).
 
 ## About the library
 

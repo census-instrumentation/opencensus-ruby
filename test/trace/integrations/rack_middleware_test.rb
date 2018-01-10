@@ -17,9 +17,11 @@ require "test_helper"
 require "opencensus/trace/integrations/rack_middleware"
 
 describe OpenCensus::Trace::Integrations::RackMiddleware do
+  RACK_APP_RESPONSE = [200, {}, ["Hello World!"]]
+
   class TestRackApp
     def call env
-      [200, {}, ["Hello World!"]]
+      RACK_APP_RESPONSE
     end
   end
 
@@ -130,6 +132,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
       resp = middleware.call env
       root_span = exporter.spans.first
 
+      resp.must_equal RACK_APP_RESPONSE
       root_span.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       root_span.parent_span_id.must_equal "0123456789abcdef"
     end
@@ -142,6 +145,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
       resp = middleware.call env
       root_span = exporter.spans.first
 
+      resp.must_equal RACK_APP_RESPONSE
       root_span.trace_id.must_equal "0123456789abcdef0123456789abcdef"
       root_span.parent_span_id.must_equal "0123456789abcdef"
     end
@@ -154,6 +158,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
       resp = middleware.call env
       root_span = exporter.spans.first
 
+      resp.must_equal RACK_APP_RESPONSE
       root_span.trace_id.must_match %r{^[0-9a-f]{32}$}
       root_span.parent_span_id.must_be_empty
     end
@@ -166,6 +171,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
       resp = middleware.call env
       root_span = exporter.spans.first
 
+      resp.must_equal RACK_APP_RESPONSE
       root_span.trace_id.must_match %r{^[0-9a-f]{32}$}
       root_span.parent_span_id.must_be_empty
     end

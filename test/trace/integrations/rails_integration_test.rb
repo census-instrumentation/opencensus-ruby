@@ -15,14 +15,16 @@
 require "fileutils"
 require "open3"
 require "timeout"
+
+require "faraday"
 require "test_helper"
 require "opencensus/trace/integrations/rails"
-require "faraday"
 
 describe "Rails integration" do
   module RailsTestHelper
     APP_NAME = "railstest"
-    BASE_DIR = File.absolute_path File.dirname File.dirname File.dirname __dir__
+    TEMPLATE_PATH = File.absolute_path(File.join __dir__, "rails51_app_template.rb")
+    BASE_DIR = File.dirname File.dirname File.dirname __dir__
     TMP_DIR = File.join BASE_DIR, "tmp"
     APP_DIR = File.join TMP_DIR, APP_NAME
     RAILS_OPTIONS = %w(
@@ -48,46 +50,20 @@ describe "Rails integration" do
         FileUtils.mkdir_p TMP_DIR
         FileUtils.rm_rf APP_DIR
         Dir.chdir TMP_DIR do
-          system "bundle exec rails new #{APP_NAME} #{RAILS_OPTIONS}"
+          system "bundle exec rails new #{APP_NAME} #{RAILS_OPTIONS} -m #{TEMPLATE_PATH}"
         end
         Dir.chdir APP_DIR do
-          File.open "Gemfile", "a" do |f|
-            f.puts "gem 'opencensus', path: '#{BASE_DIR}'"
-          end
-          insert_after "config/application.rb", /Bundler\.require/,
-                       ["require 'opencensus/trace/integrations/rails'",
-                        "OpenCensus::Trace.configure.exporter = ",
-                        "  OpenCensus::Trace::Exporters::Logger.new(",
-                        "    ::Logger.new(STDERR, ::Logger::INFO))"]
-          insert_after "config/routes.rb", /routes\.draw/, "  root 'home#index'"
-          File.open "app/controllers/home_controller.rb", "w" do |f|
-            f.puts "class HomeController < ApplicationController"
-            f.puts "  def index; render plain: 'OK'; end"
-            f.puts "end"
-          end
           Bundler.with_original_env do
-            system "pwd"
-            system "env"
-            system "bundle config"
-            system "bundle lock"
-            system "bundle install --deployment"
-          end
-        end
-        puts "**** Finished creating test Rails app"
-      end
-
-      def insert_after path, regex, new_lines
-        data = File.read path
-        File.open path, "w" do |file|
-          data.each_line do |line|
-            file.puts line
-            if regex && regex =~ line
-              Array(new_lines).each { |new_line| file.puts new_line }
-              regex = nil
+            original_gemfile = ENV.delete "BUNDLE_GEMFILE"
+            begin
+              system "bundle lock"
+              system "bundle install --deployment"
+            ensure
+              ENV["BUNDLE_GEMFILE"] = original_gemfile if original_gemfile
             end
           end
         end
-        raise "Unable to find #{regex.inspect} in #{path.inspect}" if regex
+        puts "**** Finished creating test Rails app"
       end
 
       def run_rails_app timeout: 5
@@ -95,7 +71,7 @@ describe "Rails integration" do
           Bundler.with_original_env do
             Open3.popen2e "bundle exec rails s -p 3000" do |_in, out, thr|
               begin
-                Timeout.timeout 5 do
+                Timeout.timeout timeout do
                   loop do
                     line = out.gets
                     break if !line || line =~ /WEBrick::HTTPServer#start/

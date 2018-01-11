@@ -66,7 +66,7 @@ describe "Rails integration" do
             f.puts "end"
           end
           Bundler.with_original_env do
-            system "bundle check"
+            system "bundle lock"
             system "bundle install --deployment --gemfile Gemfile"
           end
         end

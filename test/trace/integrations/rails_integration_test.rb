@@ -66,8 +66,11 @@ describe "Rails integration" do
             f.puts "end"
           end
           Bundler.with_original_env do
+            system "pwd"
+            system "env"
+            system "bundle config"
             system "bundle lock"
-            system "bundle install --deployment --gemfile Gemfile"
+            system "bundle install --deployment"
           end
         end
         puts "**** Finished creating test Rails app"

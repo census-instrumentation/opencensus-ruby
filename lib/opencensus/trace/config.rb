@@ -50,7 +50,7 @@ module OpenCensus
 
     # Expose the trace config as a subconfig under the main config.
     OpenCensus.configure do |config|
-      config.add_config! :trace, Config
+      config.add_alias! :trace, config: Config
     end
 
     class << self

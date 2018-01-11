@@ -78,7 +78,8 @@ module OpenCensus
       ##
       # Constructs a Configuration object. If a block is given, yields `self`
       # to the block, which makes it convenient to initialize the structure by
-      # making calls to `add_config!`, `add_option!`, and `add_block_option!`.
+      # making calls to {Config#add_option!}, {Config#add_config!}, and
+      # {Config#add_alias!}.
       #
       def initialize
         @fields = {}
@@ -86,7 +87,7 @@ module OpenCensus
       end
 
       ##
-      # Add a named option to this configuration.
+      # Add an option field to this configuration.
       #
       # You must provide a key, which becomes the field name in this config.
       # Field names may comprise only letters, numerals, and underscores, and
@@ -105,19 +106,21 @@ module OpenCensus
       #     value using the `===` operator. You may, for example, provide a
       #     class, a regular expression, or a range. If you pass an array,
       #     the value is accepted if _any_ of the elements match.
-      # *   If you provide an `:enum` option, it should be an Enumerable, and
-      #     values are accepted if they are included.
+      # *   If you provide an `:enum` option, it should be an `Enumerable`.
+      #     A proposed value is accepted if it is included.
       # *   Otherwise if you do not provide any of the above options, then a
       #     default validation strategy is inferred from the initial value:
       #     *   If the initial is `true` or `false`, then either boolean value
       #         is considered valid. This is the same as `enum: [true, false]`.
       #     *   If the initial is `nil`, then any object is considered valid.
-      #         This is the same as `match: Object`.
       #     *   Otherwise, any object of the same class as the initial value is
       #         considered valid. This is effectively the same as
       #         `match: initial.class`.
       # *   You may also provide the `:allow_nil` option, which, if set to
       #     true, alters any of the above validators to allow `nil` values.
+      #     If the initial value is `nil` but a specific validator is provided
+      #     via `:match` or `:enum`, then `:allow_nil` defaults to true,
+      #     otherwise it defaults to false.
       #
       # In many cases, you may find that the default validation behavior
       # (interpreted from the initial value) is sufficient. If you want to
@@ -130,45 +133,132 @@ module OpenCensus
       # @return [Config] self for chaining
       #
       def add_option! key, initial = nil, opts = {}, &block
-        key = validate_key! key
+        key = validate_new_key! key
         opts[:validator] = block if block
         validator = resolve_validator! initial, opts
-        option = Option.new key, initial, validator
-        validate_value! option, initial
-        @fields[key] = option
+        validate_value! key, validator, initial
+        @fields[key] = Option.new initial, initial, validator
         define_getter_method! key
         define_setter_method! key
         self
       end
 
       ##
-      # Add a named subconfiguration to this configuration.
+      # Add a subconfiguration field to this configuration.
       #
       # You must provide a key, which becomes the method name that you use to
       # navigate to the subconfig. Names may comprise only letters, numerals,
       # and underscores, and must begin with a letter.
       #
       # If you provide a block, the subconfig object is passed to the block,
-      # so you can easily add fields to the subconfig.
-      #
-      # You may also pass in a config object that already exists. This will
-      # "attach" that configuration in this location.
+      # so you can easily add fields.
       #
       # @param [String, Symbol] key The name of the subconfig
-      # @param [Config] config A config object to attach here. If not provided,
-      #     creates a new config.
       #
       # @return [Config] self for chaining
       #
-      def add_config! key, config = nil, &block
-        key = validate_key! key
-        if config.nil?
-          config = Config.new(&block)
-        elsif block
-          yield config
-        end
-        @fields[key] = config
+      def add_config! key, &block
+        key = validate_new_key! key
+        @fields[key] = Config.new(&block)
         define_getter_method! key
+        self
+      end
+
+      ##
+      # Add a field to this configuration that is an alias of some other
+      # object, which may be another field or another configuration. This will
+      # effectively become an alternate "path" to that same object.
+      #
+      # The following cases are supported:
+      #
+      # * Alias another configuration at this key by providing a `config`
+      #   parameter but not a `key`. The given configuration is effectively
+      #   "attached" as a subconfiguration; both the original configuration
+      #   path, and this new key, point to the same configuration object and
+      #   share configuration data.
+      # * Alias another field of this current configuration by providing a
+      #   `key` parameter but not a `config`. The new key simply refers to the
+      #   same object (which may be an option or a subconfig) as the original
+      #   key, and shares the same data.
+      # * Alias another field or another configuration, by providing both a
+      #   `config` parameter and a `key` parameter.
+      #
+      # @param [String, Symbol] new_key The key to alias.
+      # @param [Config, nil] config The original configuration.
+      # @param [String, Symbol, nil] key The original field name.
+      #
+      # @return [Config] self for chaining
+      #
+      def add_alias! new_key, config: nil, key: nil
+        new_key = validate_new_key! new_key
+        if config.nil? && key.nil?
+          raise ArgumentError, "You must provide a config and/or key."
+        end
+        field =
+          if key.nil?
+            config
+          else
+            (config || self).raw_field! key
+          end
+        @fields[new_key] = field
+        define_getter_method! new_key
+        define_setter_method! new_key if field.is_a? Option
+        self
+      end
+
+      ##
+      # Restore the original default value of the given key.
+      # If the key refers to a subconfiguration, restore its contents,
+      # recursively. If the key is omitted, restore the original defaults for
+      # all keys, including subconfigurations recursively.
+      #
+      # @param [Symbol, nil] key The key to reset. If omitted or `nil`,
+      #     recursively reset all fields and subconfigs.
+      #
+      def reset! key = nil
+        if key.nil?
+          # rubocop:disable Performance/HashEachMethods
+          @fields.keys.each { |k| reset! k }
+          # rubocop:enable Performance/HashEachMethods
+        else
+          key = key.to_sym
+          unless @fields.key? key
+            raise ArgumentError, "Key #{key.inspect} does not exist"
+          end
+          field = @fields[key]
+          if field.is_a? Config
+            field.reset!
+          else
+            field.value = field.default
+          end
+        end
+        self
+      end
+
+      ##
+      # Remove the given key from the configuration.
+      # If the key is omitted, deletes all keys.
+      #
+      # Note the actual object being referenced is not touched. So if a deleted
+      # option is an alias of some other option, the other option will remain
+      # and retain the setting. Similarly, if a subconfig is referenced
+      # elsewhere, it will remain accessible from that other location.
+      #
+      # @param [Symbol, nil] key The key to delete. If omitted or `nil`,
+      #     delete all fields and subconfigs.
+      #
+      def delete! key = nil
+        if key.nil?
+          @fields.clear
+        else
+          key = key.to_sym
+          unless @fields.key? key
+            raise ArgumentError, "Key #{key.inspect} does not exist"
+          end
+          field = @fields.delete key
+          singleton_class.send :remove_method, :"#{key}"
+          singleton_class.send :remove_method, :"#{key}=" if field.is_a? Option
+        end
         self
       end
 
@@ -187,7 +277,7 @@ module OpenCensus
         if field.is_a? Config
           raise ArgumentError, "Key #{key.inspect} is a subconfig"
         end
-        validate_value! field, value
+        validate_value! key, field.validator, value
         field.value = value
       end
 
@@ -233,6 +323,17 @@ module OpenCensus
       end
 
       ##
+      # Check if this Config object has a key of the given name, regardless of
+      # whether it is an option or a subconfig.
+      #
+      # @param [Symbol] key The key to check for.
+      # @return [boolean] true if the key exists.
+      #
+      def key? key
+        @fields.key? key.to_sym
+      end
+
+      ##
       # Return a list of valid option names.
       #
       # @return [Array<Symbol>] a list of option names as symbols.
@@ -248,6 +349,15 @@ module OpenCensus
       #
       def subconfigs!
         @fields.keys.find_all { |key| @fields[key].is_a? Config }
+      end
+
+      ##
+      # Return a list of valid keys, including both options and subconfigs.
+      #
+      # @return [Array<Symbol>] a list of keys as symbols.
+      #
+      def keys!
+        @fields.keys
       end
 
       ##
@@ -305,6 +415,21 @@ module OpenCensus
         to_h!
       end
 
+      protected
+
+      ##
+      # Get the raw value of the field hash for the given key.
+      #
+      # @private
+      #
+      def raw_field! key
+        key = key.to_sym
+        unless @fields.key? key
+          raise ArgumentError, "Key #{key.inspect} does not exist"
+        end
+        @fields[key]
+      end
+
       private
 
       ##
@@ -312,26 +437,16 @@ module OpenCensus
       #
       # @private
       #
-      Option = Struct.new :key, :value, :validator
+      Option = Struct.new :value, :default, :validator
 
-      def resolve_validator! initial, opts
-        allow_nil = opts[:allow_nil]
-        if opts.key? :validator
-          build_proc_validator! opts[:validator], allow_nil
-        elsif opts.key? :match
-          build_match_validator! opts[:match], allow_nil
-        elsif opts.key? :enum
-          build_enum_validator! opts[:enum], allow_nil
-        elsif [true, false].include? initial
-          build_enum_validator! [true, false], allow_nil
-        elsif initial.nil?
-          build_match_validator! Object, false
-        else
-          build_match_validator! initial.class, allow_nil
-        end
-      end
+      ##
+      # A validator that allows all values
+      #
+      # @private
+      #
+      OPEN_VALIDATOR = ::Proc.new { true }
 
-      def validate_key! key
+      def validate_new_key! key
         key_str = key.to_s
         unless key_str =~ /^\w+$/
           raise ArgumentError, "Illegal key: #{key_str.inspect}"
@@ -341,6 +456,23 @@ module OpenCensus
           raise ArgumentError, "Key #{key.inspect} already exists"
         end
         key
+      end
+
+      def resolve_validator! initial, opts
+        allow_nil = initial.nil? || opts[:allow_nil]
+        if opts.key? :validator
+          build_proc_validator! opts[:validator], allow_nil
+        elsif opts.key? :match
+          build_match_validator! opts[:match], allow_nil
+        elsif opts.key? :enum
+          build_enum_validator! opts[:enum], allow_nil
+        elsif [true, false].include? initial
+          build_enum_validator! [true, false], allow_nil
+        elsif initial.nil?
+          OPEN_VALIDATOR
+        else
+          build_match_validator! initial.class, allow_nil
+        end
       end
 
       def build_match_validator! matches, allow_nil
@@ -359,10 +491,10 @@ module OpenCensus
         ->(val) { proc.call(val) || allow_nil && val.nil? }
       end
 
-      def validate_value! option, value
-        unless option.validator.call value
+      def validate_value! key, validator, value
+        unless validator.call value
           raise ArgumentError,
-                "Invalid value #{value.inspect} for key #{option.key.inspect}"
+                "Invalid value #{value.inspect} for key #{key.inspect}"
         end
       end
 
@@ -380,7 +512,7 @@ module OpenCensus
       def define_setter_method! key
         define_singleton_method :"#{key}=" do |value|
           field = @fields[key]
-          validate_value! field, value
+          validate_value! key, field.validator, value
           field.value = value
         end
       end

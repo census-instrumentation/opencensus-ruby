@@ -7,6 +7,7 @@ AllCops:
     - "support/**/*"
     - "test/**/*"
     - "docs/**/*"
+    - "tmp/**/*"
 
 Documentation:
   Enabled: false

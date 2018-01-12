@@ -14,6 +14,7 @@
 
 require "active_support"
 require "rails/railtie"
+require "opencensus/trace/integrations/rack_middleware"
 
 module OpenCensus
   module Trace

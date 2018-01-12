@@ -18,10 +18,8 @@ require "opencensus/trace/samplers"
 
 module OpenCensus
   module Trace
-    ##
-    # The OpenCensus Trace configuration. See Trace#configure for more info.
-    #
-    Config = Common::Config.new do |config|
+    # Schema of the Trace configuration. See Trace#configure for more info.
+    @config = Common::Config.new do |config|
       default_sampler =
         Samplers::Probability.new Samplers::Probability::DEFAULT_RATE
       config.add_option! :default_sampler, default_sampler do |value|
@@ -50,7 +48,7 @@ module OpenCensus
 
     # Expose the trace config as a subconfig under the main config.
     OpenCensus.configure do |config|
-      config.add_alias! :trace, config: Config
+      config.add_alias! :trace, config: @config
     end
 
     class << self
@@ -105,9 +103,9 @@ module OpenCensus
       #
       def configure
         if block_given?
-          yield Config
+          yield @config
         else
-          Config
+          @config
         end
       end
     end

@@ -400,7 +400,7 @@ module OpenCensus
                        max_message_events: nil,
                        max_links: nil,
                        max_string_length: nil
-          config = OpenCensus::Trace.configure
+          config = OpenCensus::Trace.config
           @max_attributes = max_attributes || config.default_max_attributes
           @max_stack_frames =
             max_stack_frames || config.default_max_stack_frames

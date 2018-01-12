@@ -108,6 +108,12 @@ module OpenCensus
           @config
         end
       end
+
+      ##
+      # Get the current configuration
+      # @private
+      #
+      attr_reader :config
     end
   end
 end

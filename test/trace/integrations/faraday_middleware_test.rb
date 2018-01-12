@@ -177,12 +177,12 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
 
     describe "global configuration" do
       before do
-        @original_formatter = OpenCensus::Trace.configure.http_formatter
-        OpenCensus::Trace.configure.http_formatter =
+        @original_formatter = OpenCensus::Trace.config.http_formatter
+        OpenCensus::Trace.config.http_formatter =
           OpenCensus::Trace::Formatters::CloudTrace.new
       end
       after do
-        OpenCensus::Trace.configure.http_formatter = @original_formatter
+        OpenCensus::Trace.config.http_formatter = @original_formatter
       end
 
       it "should allow trace context formats" do

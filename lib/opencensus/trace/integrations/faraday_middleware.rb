@@ -113,7 +113,7 @@ module OpenCensus
           @span_context = span_context || OpenCensus::Trace
           @span_name = span_name || DEFAULT_SPAN_NAME
           @sampler = sampler
-          @formatter = formatter || OpenCensus::Trace.configure.http_formatter
+          @formatter = formatter || OpenCensus::Trace.config.http_formatter
         end
 
         ##

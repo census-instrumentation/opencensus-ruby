@@ -51,7 +51,7 @@ module OpenCensus
         #
         def initialize app, exporter: nil
           @app = app
-          @exporter = exporter || OpenCensus::Trace.configure.exporter
+          @exporter = exporter || OpenCensus::Trace.config.exporter
         end
 
         ##

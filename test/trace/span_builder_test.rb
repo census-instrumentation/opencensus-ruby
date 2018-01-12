@@ -208,7 +208,7 @@ describe OpenCensus::Trace::SpanBuilder::PieceBuilder do
     end
 
     it "should honor default maxes" do
-      default_max = OpenCensus::Trace::Config.default_max_string_length
+      default_max = OpenCensus::Trace.config.default_max_string_length
       str = "*" * (default_max + 10)
       ts = builder_with_default_maxes.truncatable_string str
       ts.value.must_equal("*" * default_max)

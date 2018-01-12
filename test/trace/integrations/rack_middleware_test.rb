@@ -102,10 +102,12 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
 
     describe "custom exporter" do
       before do
-        @original_exporter = OpenCensus::Trace::Config.exporter
-        OpenCensus::Trace::Config.exporter = exporter
+        @original_exporter = OpenCensus::Trace.config.exporter
+        OpenCensus::Trace.config.exporter = exporter
       end
-      after { OpenCensus::Trace::Config.exporter = @original_exporter }
+      after do
+        OpenCensus::Trace.config.exporter = @original_exporter
+      end
       let(:middleware) { OpenCensus::Trace::Integrations::RackMiddleware.new app }
 
       it "should capture the request" do

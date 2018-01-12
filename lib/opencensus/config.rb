@@ -15,34 +15,40 @@
 require "opencensus/common/config"
 
 module OpenCensus
-  ##
   # The OpenCensus overall configuration.
-  #
-  Config = Common::Config.new
+  @config = Common::Config.new
 
-  ##
-  # Configure OpenCensus. Most configuration parameters are part of
-  # subconfigurations that live under this main configuration.
-  #
-  # If the OpenCensus Railtie is installed in a Rails application, the toplevel
-  # configuration object is also exposed as `config.opencensus`.
-  #
-  # Generally, you should configure this once at process initialization,
-  # but it can be modified at any time.
-  #
-  # Example:
-  #
-  #     OpenCensus.configure do |config|
-  #       config.trace.default_sampler =
-  #         OpenCensus::Trace::Samplers::AlwaysSample.new
-  #       config.trace.default_max_attributes = 16
-  #     end
-  #
-  def self.configure
-    if block_given?
-      yield Config
-    else
-      Config
+  class << self
+    ##
+    # Configure OpenCensus. Most configuration parameters are part of
+    # subconfigurations that live under this main configuration.
+    #
+    # If the OpenCensus Railtie is installed in a Rails application, the
+    # toplevel configuration object is also exposed as `config.opencensus`.
+    #
+    # Generally, you should configure this once at process initialization,
+    # but it can be modified at any time.
+    #
+    # Example:
+    #
+    #     OpenCensus.configure do |config|
+    #       config.trace.default_sampler =
+    #         OpenCensus::Trace::Samplers::AlwaysSample.new
+    #       config.trace.default_max_attributes = 16
+    #     end
+    #
+    def configure
+      if block_given?
+        yield @config
+      else
+        @config
+      end
     end
+
+    ##
+    # Get the current configuration.
+    # @private
+    #
+    attr_reader :config
   end
 end

@@ -400,20 +400,16 @@ module OpenCensus
                        max_message_events: nil,
                        max_links: nil,
                        max_string_length: nil
-          @max_attributes =
-            max_attributes || OpenCensus::Trace::Config.default_max_attributes
+          config = OpenCensus::Trace.config
+          @max_attributes = max_attributes || config.default_max_attributes
           @max_stack_frames =
-            max_stack_frames ||
-            OpenCensus::Trace::Config.default_max_stack_frames
-          @max_annotations =
-            max_annotations || OpenCensus::Trace::Config.default_max_annotations
+            max_stack_frames || config.default_max_stack_frames
+          @max_annotations = max_annotations || config.default_max_annotations
           @max_message_events =
-            max_message_events ||
-            OpenCensus::Trace::Config.default_max_message_events
-          @max_links = max_links || OpenCensus::Trace::Config.default_max_links
+            max_message_events || config.default_max_message_events
+          @max_links = max_links || config.default_max_links
           @max_string_length =
-            max_string_length ||
-            OpenCensus::Trace::Config.default_max_string_length
+            max_string_length || config.default_max_string_length
         end
 
         ##

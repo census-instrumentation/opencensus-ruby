@@ -30,7 +30,7 @@ module OpenCensus
     #
     # Example:
     #
-    #     config = OpenCensus::Config.new do |c|
+    #     config = OpenCensus::Common::Config.new do |c|
     #       c.add_option! :opt1, 10
     #       c.add_option! :opt2, :one, enum: [:one, :two, :three]
     #       c.add_option! :opt3, "hi", match: [String, Symbol]
@@ -64,7 +64,7 @@ module OpenCensus
     #     config.opt4 = 3.14      #=> exception (not in allowed types)
     #     config.opt4 = nil       #=> nil  (nil explicitly allowed)
     #
-    #     config.sub              #=> <OpenCensus::Config>
+    #     config.sub              #=> <OpenCensus::Common::Config>
     #
     #     config.sub.opt5         #=> false
     #     config.sub.opt5 = true  #=> true  (true and false allowed)

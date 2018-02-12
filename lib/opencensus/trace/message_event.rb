@@ -58,7 +58,7 @@ module OpenCensus
       # The number of compressed bytes sent or received. If zero, assumed to
       # be the same size as uncompressed.
       #
-      # @return [Integer, nil]
+      # @return [Integer]
       #
       attr_reader :compressed_size
 
@@ -67,7 +67,7 @@ module OpenCensus
       #
       # @private
       #
-      def initialize type, id, uncompressed_size, compressed_size: nil,
+      def initialize type, id, uncompressed_size, compressed_size: 0,
                      time: nil
         super time: time
         @type = type

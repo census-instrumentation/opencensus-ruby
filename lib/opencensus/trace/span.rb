@@ -158,7 +158,7 @@ module OpenCensus
       # crosses a process boundary. True when the parent_span belongs to the
       # same process as the current span.
       #
-      # @return [Boolean]
+      # @return [boolean, nil]
       #
       attr_reader :same_process_as_parent_span
 
@@ -183,7 +183,7 @@ module OpenCensus
                      dropped_annotations_count: 0,
                      dropped_message_events_count: 0, links: [],
                      dropped_links_count: 0, status: nil,
-                     same_process_as_parent_span: true,
+                     same_process_as_parent_span: nil,
                      child_span_count: nil
         @name = name
         @trace_id = trace_id

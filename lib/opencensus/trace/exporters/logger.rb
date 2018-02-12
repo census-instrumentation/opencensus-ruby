@@ -48,6 +48,9 @@ module OpenCensus
 
         private
 
+        # rubocop:disable Metrics/MethodLength
+        # rubocop:disable Metrics/AbcSize
+
         def format_span span
           {
             name: format_value(span.name),
@@ -60,6 +63,7 @@ module OpenCensus
             dropped_attributes_count: span.dropped_attributes_count,
             stack_trace: span.stack_trace,
             dropped_frames_count: span.dropped_frames_count,
+            stack_trace_hash_id: span.stack_trace_hash_id,
             time_events: span.time_events.map { |te| format_time_event(te) },
             dropped_annotations_count: span.dropped_annotations_count,
             dropped_message_events_count: span.dropped_message_events_count,
@@ -70,6 +74,9 @@ module OpenCensus
             child_span_count: span.child_span_count
           }
         end
+
+        # rubocop:enable Metrics/MethodLength
+        # rubocop:enable Metrics/AbcSize
 
         def format_time_event time_event
           case time_event

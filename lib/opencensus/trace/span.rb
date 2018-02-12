@@ -79,6 +79,9 @@ module OpenCensus
       # The number of attributes that were discarded. Attributes can be
       # discarded because their keys are too long or because there are too
       # many attributes. If this value is 0, then no attributes were dropped.
+      #
+      # @return [Integer]
+      #
       attr_reader :dropped_attributes_count
 
       ##
@@ -87,6 +90,15 @@ module OpenCensus
       # @return [Array<Thread::Backtrace::Location>]
       #
       attr_reader :stack_trace
+
+      ##
+      # A hash of the stack trace. This may be used by exporters to identify
+      # duplicate stack traces transmitted in the same request; only one copy
+      # of the actual data needs to be sent.
+      #
+      # @return [Integer]
+      #
+      attr_reader :stack_trace_hash_id
 
       ##
       # The number of stack frames that were dropped because there were too many
@@ -138,6 +150,7 @@ module OpenCensus
       # An optional final status for this span.
       #
       # @return [Status, nil]
+      #
       attr_reader :status
 
       ##
@@ -181,6 +194,8 @@ module OpenCensus
         @attributes = attributes
         @dropped_attributes_count = dropped_attributes_count
         @stack_trace = stack_trace
+        @stack_trace_hash_id = [stack_trace, dropped_frames_count].hash
+        @stack_trace_hash_id = -1 if @stack_trace_hash_id.zero?
         @dropped_frames_count = dropped_frames_count
         @time_events = time_events
         @dropped_annotations_count = dropped_annotations_count

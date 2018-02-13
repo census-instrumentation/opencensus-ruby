@@ -6,8 +6,8 @@ require "opencensus/version"
 Gem::Specification.new do |spec|
   spec.name          = "opencensus"
   spec.version       = OpenCensus::VERSION
-  spec.authors       = ["Jeff Ching"]
-  spec.email         = ["chingor@google.com"]
+  spec.authors       = ["Jeff Ching", "Daniel Azuma"]
+  spec.email         = ["chingor@google.com", "dazuma@google.com"]
 
   spec.summary       = %q{A stats collection and distributed tracing framework}
   spec.description   = %q{A stats collection and distributed tracing framework}

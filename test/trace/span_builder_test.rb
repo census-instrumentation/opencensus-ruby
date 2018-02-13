@@ -49,8 +49,8 @@ describe OpenCensus::Trace::SpanBuilder do
     end
   end
 
-  describe "end!" do
-    it "should not allow you to start more than once" do
+  describe "finish!" do
+    it "should not allow you to finish more than once" do
       err = -> { span_builder.finish! }.must_raise RuntimeError
       err.message.must_match "already finished"
     end
@@ -149,6 +149,31 @@ describe OpenCensus::Trace::SpanBuilder do
       status = span.status
       status.code.must_equal 200
       status.message.must_equal "OK"
+    end
+  end
+
+  describe "same_process_as_parent_span calculation" do
+    it "defaults to nil" do
+      sb1 = span_context.start_span "span1"
+      sb1.finish!
+      sb1.to_span.same_process_as_parent_span.must_be_nil
+    end
+
+    it "results in true for a child span" do
+      sb1 = span_context.start_span "span1"
+      sb2 = sb1.context.start_span "span2"
+      sb2.finish!
+      sb2.to_span.same_process_as_parent_span.must_equal true
+    end
+
+    it "results in false when the context says so" do
+      trace_context = OpenCensus::Trace::TraceContextData.new \
+        "0123456789abcdef0123456789abcdef", "0123456789abcdef", 1
+      remote_context = OpenCensus::Trace::SpanContext.create_root \
+        is_local_context: false, trace_context: trace_context
+      sb1 = remote_context.start_span "span1"
+      sb1.finish!
+      sb1.to_span.same_process_as_parent_span.must_equal false
     end
   end
 end

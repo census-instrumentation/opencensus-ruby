@@ -279,6 +279,21 @@ module OpenCensus
       ##
       # Return a read-only version of this span
       #
+      # @param [Integer, nil] max_attributes The maximum number of attributes
+      #     to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_stack_frames The maximum number of stack
+      #     frames to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_annotations The maximum number of annotations
+      #     to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_message_events The maximum number of message
+      #     events to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_links The maximum number of links to save,
+      #     or `nil` to use the config value.
+      # @param [Integer, nil] max_string_length The maximum length in bytes for
+      #     truncated strings, or `nil` to use the config value.
+      # @param [Integer, nil] child_span_count The number of child spans to
+      #     declare, or `nil` to omit the `child_span_count` field.
+      #
       # @return [Span]
       #
       def to_span max_attributes: nil,
@@ -287,7 +302,7 @@ module OpenCensus
                   max_message_events: nil,
                   max_links: nil,
                   max_string_length: nil,
-                  same_process_as_parent_span: nil
+                  child_span_count: nil
 
         raise "Span must have start_time" unless @start_time
         raise "Span must have end_time" unless @end_time
@@ -312,6 +327,7 @@ module OpenCensus
         built_links = builder.convert_links @links
         dropped_links_count = @links.size - built_links.size
         built_status = builder.convert_status @status_code, @status_message
+        same_process_as_parent_span = context.parent.local?
 
         Span.new trace_id, span_id, built_name, @start_time, @end_time,
                  parent_span_id: parent_span_id,
@@ -325,7 +341,8 @@ module OpenCensus
                  links: built_links,
                  dropped_links_count: dropped_links_count,
                  status: built_status,
-                 same_process_as_parent_span: same_process_as_parent_span
+                 same_process_as_parent_span: same_process_as_parent_span,
+                 child_span_count: child_span_count
       end
 
       # rubocop:enable Metrics/MethodLength

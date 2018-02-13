@@ -41,7 +41,7 @@ describe OpenCensus::Trace::Formatters::CloudTrace do
       )
     end
     let(:span_context) do
-      OpenCensus::Trace::SpanContext.new trace_data, nil, "00000000000004d2"
+      OpenCensus::Trace::SpanContext.new trace_data, nil, "00000000000004d2", nil
     end
 
     it "should serialize a SpanContext object" do

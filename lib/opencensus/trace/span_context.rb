@@ -15,9 +15,9 @@
 module OpenCensus
   module Trace
     ##
-    # Span represents a span in a trace record. Spans are contained in
-    # a trace and arranged in a forest. That is, each span may be a root span
-    # or have a parent span, and may have zero or more children.
+    # SpanContext represents the context within which a span may be created.
+    # It includes the ID of the parent trace, the ID of the parent span, and
+    # sampling state.
     #
     class SpanContext
       ##
@@ -51,19 +51,23 @@ module OpenCensus
         #
         # @param [TraceContextData] trace_context The request's incoming trace
         #      context (optional)
+        # @param [boolean, nil] is_local_context Set to `true` if the parent
+        #      span is local, `false` if it is remote, or `nil` if there is no
+        #      parent span or this information is not available.
         #
         # @return [SpanContext]
         #
-        def create_root trace_context: nil
+        def create_root trace_context: nil, is_local_context: nil
           if trace_context
             trace_data = TraceData.new \
               trace_context.trace_id, trace_context.trace_options, {}
-            new trace_data, nil, trace_context.span_id
+            new trace_data, nil, trace_context.span_id,
+                is_local_context
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
             trace_data = TraceData.new trace_id, 0, {}
-            new trace_data, nil, ""
+            new trace_data, nil, "", nil
           end
         end
       end
@@ -131,6 +135,16 @@ module OpenCensus
       # @return [String]
       #
       attr_reader :span_id
+
+      ##
+      # Whether the parent of spans created by this context is local, or `nil`
+      # if this context creates root spans or this information is unknown.
+      #
+      # @return [boolean, nil]
+      #
+      def local?
+        @is_local_context
+      end
 
       ##
       # Whether the context (e.g. the parent span) has been sampled. This
@@ -227,10 +241,35 @@ module OpenCensus
       # Does not build any ancestor spans. If you want the entire span tree
       # built, call this method on the `#root` context.
       #
+      # @param [Integer, nil] max_attributes The maximum number of attributes
+      #     to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_stack_frames The maximum number of stack
+      #     frames to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_annotations The maximum number of annotations
+      #     to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_message_events The maximum number of message
+      #     events to save, or `nil` to use the config value.
+      # @param [Integer, nil] max_links The maximum number of links to save,
+      #     or `nil` to use the config value.
+      # @param [Integer, nil] max_string_length The maximum length in bytes for
+      #     truncated strings, or `nil` to use the config value.
+      #
       # @return [Array<Span>] Built Span objects
       #
-      def build_contained_spans
-        contained_span_builders.find_all(&:finished?).map(&:to_span)
+      def build_contained_spans max_attributes: nil,
+                                max_stack_frames: nil,
+                                max_annotations: nil,
+                                max_message_events: nil,
+                                max_links: nil,
+                                max_string_length: nil
+        contained_span_builders.find_all(&:finished?).map do |sb|
+          sb.to_span max_attributes: max_attributes,
+                     max_stack_frames: max_stack_frames,
+                     max_annotations: max_annotations,
+                     max_message_events: max_message_events,
+                     max_links: max_links,
+                     max_string_length: max_string_length
+        end
       end
 
       ##
@@ -240,10 +279,11 @@ module OpenCensus
       #
       # @private
       #
-      def initialize trace_data, parent, span_id
+      def initialize trace_data, parent, span_id, is_local_context
         @trace_data = trace_data
         @parent = parent
         @span_id = span_id
+        @is_local_context = is_local_context
       end
 
       ##
@@ -289,7 +329,7 @@ module OpenCensus
           child_span_id = rand 1..MAX_SPAN_ID
           child_span_id = child_span_id.to_s(16).rjust(16, "0")
           unless @trace_data.span_map.key? child_span_id
-            return SpanContext.new @trace_data, self, child_span_id
+            return SpanContext.new @trace_data, self, child_span_id, true
           end
         end
       end

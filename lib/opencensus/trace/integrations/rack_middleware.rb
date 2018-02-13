@@ -70,7 +70,8 @@ module OpenCensus
             context = formatter.deserialize env[formatter.rack_header_name]
           end
 
-          Trace.start_request_trace trace_context: context do |span_context|
+          Trace.start_request_trace trace_context: context,
+                                    is_local_context: false do |span_context|
             begin
               span_context.in_span get_path(env) do |span|
                 start_request span, env

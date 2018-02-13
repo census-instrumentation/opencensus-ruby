@@ -17,4 +17,8 @@ YARD::Rake::YardocTask.new do |t|
  t.stats_options = ['--list-undoc']         # optional
 end
 
+task :faster do
+  ENV["FASTER_TESTS"] = "true"
+end
+
 task :default => [:test, :rubocop, :yard]

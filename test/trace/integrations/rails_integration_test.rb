@@ -93,9 +93,10 @@ describe "Rails integration" do
     end
   end
 
-  RailsTestHelper.create_rails_app
+  RailsTestHelper.create_rails_app unless ENV["FASTER_TESTS"]
 
   it "traces incoming requests" do
+    skip if ENV["FASTER_TESTS"]
     RailsTestHelper.run_rails_app do |stream|
       result = RailsTestHelper.rails_request "/"
       result.must_equal "OK"

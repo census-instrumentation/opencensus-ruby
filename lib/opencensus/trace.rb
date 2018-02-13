@@ -88,9 +88,14 @@ module OpenCensus
       #
       # @param [TraceContextData] trace_context The request's incoming trace
       #      context (optional)
+      # @param [boolean, nil] same_process_as_parent Set to `true` if the parent
+      #      span is local, `false` if it is remote, or `nil` if there is no
+      #      parent span or this information is not available.
       #
-      def start_request_trace trace_context: nil
-        span_context = SpanContext.create_root trace_context: trace_context
+      def start_request_trace trace_context: nil, same_process_as_parent: nil
+        span_context = SpanContext.create_root \
+          trace_context: trace_context,
+          same_process_as_parent: same_process_as_parent
         self.span_context = span_context
         if block_given?
           begin

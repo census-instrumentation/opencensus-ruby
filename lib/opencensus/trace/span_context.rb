@@ -51,18 +51,18 @@ module OpenCensus
         #
         # @param [TraceContextData] trace_context The request's incoming trace
         #      context (optional)
-        # @param [boolean, nil] is_local_context Set to `true` if the parent
-        #      span is local, `false` if it is remote, or `nil` if there is no
-        #      parent span or this information is not available.
+        # @param [boolean, nil] same_process_as_parent Set to `true` if the
+        #      parent span is local, `false` if it is remote, or `nil` if there
+        #      is no parent span or this information is not available.
         #
         # @return [SpanContext]
         #
-        def create_root trace_context: nil, is_local_context: nil
+        def create_root trace_context: nil, same_process_as_parent: nil
           if trace_context
             trace_data = TraceData.new \
               trace_context.trace_id, trace_context.trace_options, {}
             new trace_data, nil, trace_context.span_id,
-                is_local_context
+                same_process_as_parent
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
@@ -142,9 +142,7 @@ module OpenCensus
       #
       # @return [boolean, nil]
       #
-      def local?
-        @is_local_context
-      end
+      attr_reader :same_process_as_parent
 
       ##
       # Whether the context (e.g. the parent span) has been sampled. This
@@ -279,11 +277,11 @@ module OpenCensus
       #
       # @private
       #
-      def initialize trace_data, parent, span_id, is_local_context
+      def initialize trace_data, parent, span_id, same_process_as_parent
         @trace_data = trace_data
         @parent = parent
         @span_id = span_id
-        @is_local_context = is_local_context
+        @same_process_as_parent = same_process_as_parent
       end
 
       ##

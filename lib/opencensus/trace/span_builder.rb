@@ -327,7 +327,7 @@ module OpenCensus
         built_links = builder.convert_links @links
         dropped_links_count = @links.size - built_links.size
         built_status = builder.convert_status @status_code, @status_message
-        same_process_as_parent_span = context.parent.local?
+        same_process_as_parent_span = context.parent.same_process_as_parent
 
         Span.new trace_id, span_id, built_name, @start_time, @end_time,
                  parent_span_id: parent_span_id,

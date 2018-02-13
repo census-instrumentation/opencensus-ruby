@@ -170,7 +170,7 @@ describe OpenCensus::Trace::SpanBuilder do
       trace_context = OpenCensus::Trace::TraceContextData.new \
         "0123456789abcdef0123456789abcdef", "0123456789abcdef", 1
       remote_context = OpenCensus::Trace::SpanContext.create_root \
-        is_local_context: false, trace_context: trace_context
+        same_process_as_parent: false, trace_context: trace_context
       sb1 = remote_context.start_span "span1"
       sb1.finish!
       sb1.to_span.same_process_as_parent_span.must_equal false

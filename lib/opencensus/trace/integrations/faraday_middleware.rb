@@ -14,6 +14,8 @@
 
 require "faraday"
 
+require "opencensus"
+
 module OpenCensus
   module Trace
     module Integrations

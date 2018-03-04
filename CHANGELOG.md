@@ -1,5 +1,9 @@
 # Release History
 
+### 0.2.1 / 2018-03-03
+
+* Automatically require opencensus base library from standard integrations.
+
 ### 0.2.0 / 2018-02-13
 
 * Span creation sets the "same_process_as_parent_span" field if possible.

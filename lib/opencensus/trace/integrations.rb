@@ -18,6 +18,11 @@ module OpenCensus
     # The Integrations module contains implementations of integrations with
     # popular gems such as Rails and Faraday.
     #
+    # Integrations are not loaded by default. To use an integration,
+    # require it explicitly. e.g.:
+    #
+    #     require "opencensus/trace/integrations/rack_middleware"
+    #
     module Integrations
     end
   end

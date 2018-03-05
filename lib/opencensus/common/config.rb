@@ -217,9 +217,7 @@ module OpenCensus
       #
       def reset! key = nil
         if key.nil?
-          # rubocop:disable Performance/HashEachMethods
           @fields.keys.each { |k| reset! k }
-          # rubocop:enable Performance/HashEachMethods
         else
           key = key.to_sym
           unless @fields.key? key
@@ -385,7 +383,11 @@ module OpenCensus
       # @return [Hash]
       #
       def to_h!
-        @fields.transform_values { |v| v.is_a?(Config) ? v.to_h! : v.value }
+        result = {}
+        @fields.each do |k, v|
+          result[k] = v.is_a?(Config) ? v.to_h! : v.value
+        end
+        result
       end
 
       ##

@@ -150,7 +150,7 @@ and
 
 ### Supported Ruby Versions
 
-This library is supported on Ruby 2.0+.
+This library is supported on Ruby 2.2+.
 
 ### Versioning
 

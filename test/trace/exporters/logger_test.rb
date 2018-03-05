@@ -15,7 +15,12 @@
 require "test_helper"
 
 describe OpenCensus::Trace::Exporters::Logger do
-  let(:logger) { ::Logger.new(STDOUT, level: ::Logger::INFO, formatter: -> (_, _, _, msg) { msg }) }
+  let(:logger) {
+    logger = ::Logger.new STDOUT
+    logger.level = ::Logger::INFO
+    logger.formatter = -> (_, _, _, msg) { msg }
+    logger
+  }
 
   describe "export" do
     let(:spans) { [OpenCensus::Trace::Span.new("traceid", "spanid", "name", Time.new, Time.new)] }

@@ -1,7 +1,9 @@
 # Release History
 
-### 0.2.1 / 2018-03-03
+### 0.2.1 / 2018-03-05
 
+* Clarify Ruby version requirement (2.2+)
+* Fix exceptions in the config library on Ruby 2.2 and 2.3.
 * Automatically require opencensus base library from standard integrations.
 
 ### 0.2.0 / 2018-02-13

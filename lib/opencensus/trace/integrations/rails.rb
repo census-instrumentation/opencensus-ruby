@@ -36,6 +36,8 @@ module OpenCensus
       #
       #     config.opencensus.trace.default_max_attributes = 64
       #
+      # ### Configuring ActiveSupport Notifications
+      #
       # This Railtie also provides a `notifications` configuration that
       # supports the following fields:
       #
@@ -56,6 +58,37 @@ module OpenCensus
       #
       #     config.opencensus.trace.notifications.attribute_namespace = "myapp/"
       #
+      # ### Configuring Middleware Placement
+      #
+      # By default, the Railtie places the OpenCensus middleware at the end of
+      # the middleware stack. This means it will measure your application code
+      # but not the effect of other middleware, including middlware that is
+      # part of the Rails stack or any custom middleware you have installed.
+      # If you would rather place the middleware at the beginning of the stack
+      # where it surrounds all other middleware, set the this configuration:
+      #
+      #     OpenCensus::Trace.config do |config|
+      #       config.middleware_placement = :begin
+      #     end
+      #
+      # Or, using Rails:
+      #
+      #     config.opencensus.trace.middleware_placement = :begin
+      #
+      # This effectively causes the Railtie to use `unshift` rather than `use`
+      # to add the OpenCensus middleware to the middleware stack.
+      # You may also set this configuration to an existing middleware class to
+      # cause the OpenCensus middleware to be inserted before that middleware
+      # in the stack. For example:
+      #
+      #     OpenCensus::Trace.config do |config|
+      #       config.middleware_placement = ::Rails::Rack::Logger
+      #     end
+      #
+      # Or, using Rails:
+      #
+      #     config.opencensus.trace.middleware_placement = ::Rails::Rack::Logger
+      #
       class Rails < ::Rails::Railtie
         ##
         # The ActiveSupport notifications that will be reported as spans by
@@ -75,6 +108,8 @@ module OpenCensus
             rc.add_option! :events, DEFAULT_NOTIFICATION_EVENTS.dup
             rc.add_option! :attribute_namespace, "rails/"
           end
+          c.add_option! :middleware_placement, :end,
+                        match: [:begin, :end, Class]
         end
 
         unless config.respond_to? :opencensus
@@ -82,8 +117,24 @@ module OpenCensus
         end
 
         initializer "opencensus.trace" do |app|
-          app.middleware.insert_before ::Rack::Runtime, RackMiddleware
+          setup_middleware app.middleware
           setup_notifications
+        end
+
+        ##
+        # Insert middleware into the middleware stack
+        # @private
+        #
+        def setup_middleware middleware_stack
+          where = OpenCensus::Trace.configure.middleware_placement
+          case where
+          when Class
+            middleware_stack.insert where, RackMiddleware
+          when :begin
+            middleware_stack.unshift RackMiddleware
+          else
+            middleware_stack.use RackMiddleware
+          end
         end
 
         ##

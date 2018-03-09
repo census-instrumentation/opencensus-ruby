@@ -86,6 +86,18 @@ describe "Rails integration" do
         end
       end
 
+      def capture_in_rails_context cmd, timeout: 5
+        result = nil
+        Dir.chdir APP_DIR do
+          Bundler.with_original_env do
+            Timeout.timeout timeout do
+              result = `#{cmd}`
+            end
+          end
+        end
+        result
+      end
+
       def rails_request path
         resp = Faraday.get "http://localhost:3000#{path}"
         resp.body
@@ -105,5 +117,12 @@ describe "Rails integration" do
         break if !line || line =~ /"trace_id":"\w{32}"/
       end
     end
+  end
+
+  it "inserts middleware at the end" do
+    skip if ENV["FASTER_TESTS"]
+    result = RailsTestHelper.capture_in_rails_context "bundle exec bin/rails middleware"
+    result = result.split("\n")
+    result[-2].must_equal "use OpenCensus::Trace::Integrations::RackMiddleware"
   end
 end

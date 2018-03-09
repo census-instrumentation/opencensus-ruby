@@ -43,6 +43,7 @@ module OpenCensus
         #
         def export spans
           @logger.log @level, spans.map { |span| format_span(span) }.to_json
+          nil
         end
 
         private

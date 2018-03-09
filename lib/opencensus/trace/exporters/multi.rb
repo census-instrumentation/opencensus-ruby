@@ -48,7 +48,7 @@ module OpenCensus
         #
         def export spans
           each { |delegate| delegate.export spans }
-          true
+          nil
         end
       end
     end

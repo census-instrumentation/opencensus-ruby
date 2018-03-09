@@ -16,3 +16,4 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "opencensus"
 
 require "minitest/autorun"
+require "minitest/focus"

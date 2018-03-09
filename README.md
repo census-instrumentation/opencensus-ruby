@@ -48,6 +48,10 @@ To enable Rails integration, require this file during application startup:
 require "opencensus/trace/integrations/rails"
 ```
 
+See the documentation for the
+[Rails integration class](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/Rails)
+for more information.
+
 ### Getting started with other Rack-based frameworks
 
 Other Rack-based frameworks, such as Sinatra, can use the Rack Middleware
@@ -81,7 +85,7 @@ conn.get "/"
 ```
 
 See the documentation for the
-[FaradayMiddleware](http://opencensus.io/opencensus-ruby/api/OpenCensus/Trace/Integrations/FaradayMiddleware.html)
+[FaradayMiddleware](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/FaradayMiddleware)
 class for more info.
 
 ### Adding Custom Trace Spans
@@ -101,14 +105,17 @@ end
 ```
 
 See the documentation for the
-[OpenCensus::Trace](http://opencensus.io/opencensus-ruby/api/OpenCensus/Trace.html)
+[OpenCensus::Trace](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace)
 module for more info.
 
 ### Exporting traces
 
 By default, OpenCensus will log request trace data as JSON. To export traces to
-your favorite analytics backend, install an export plugin. There are plugins
+your favorite analytics backend, install an export plugin. Plugins are
 currently being developed for Stackdriver, Zipkin, and other services.
+
+You may also create your own
+[Exporter](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Exporters)
 
 ### Configuring the library
 
@@ -142,15 +149,22 @@ Additionally, integrations and other plugins might have their own
 configurations.
 
 For more information, consult the documentation for
-[OpenCensus.configure](http://opencensus.io/opencensus-ruby/api/OpenCensus.html#configure-class_method)
+[OpenCensus.configure](http://www.rubydoc.info/gems/opencensus/OpenCensus#configure-class_method)
 and
-[OpenCensus::Trace.configure](http://opencensus.io/opencensus-ruby/api/OpenCensus/Trace.html#configure-class_method).
+[OpenCensus::Trace.configure](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace#configure-class_method).
 
 ## About the library
 
 ### Supported Ruby Versions
 
 This library is supported on Ruby 2.2+.
+
+However, Ruby 2.3 or later is strongly recommended, as earlier releases have
+reached or are nearing end-of-life. After June 1, 2018, OpenCensus will provide
+official support only for Ruby versions that are considered current and
+supported by Ruby Core (that is, Ruby versions that are either in normal
+maintenance or in security maintenance).
+See https://www.ruby-lang.org/en/downloads/branches/ for further details.
 
 ### Versioning
 

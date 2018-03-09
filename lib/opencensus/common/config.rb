@@ -217,7 +217,7 @@ module OpenCensus
       #
       def reset! key = nil
         if key.nil?
-          @fields.keys.each { |k| reset! k }
+          @fields.each_key { |k| reset! k }
         else
           key = key.to_sym
           unless @fields.key? key

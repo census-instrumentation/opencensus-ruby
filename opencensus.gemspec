@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 12.0"
   spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "minitest-focus", "~> 1.1"
   spec.add_development_dependency "faraday", "~> 0.13"
   spec.add_development_dependency "rails", "~> 5.1.4"
   spec.add_development_dependency "rubocop", "~> 0.52"

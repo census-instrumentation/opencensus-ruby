@@ -25,21 +25,19 @@ describe OpenCensus::Trace::Exporters::Logger do
   describe "export" do
     let(:spans) { [OpenCensus::Trace::Span.new("traceid", "spanid", "name", Time.new, Time.new)] }
 
-    it "should return true on successful log" do
+    it "should emit data for a covered log level" do
       exporter = OpenCensus::Trace::Exporters::Logger.new logger, level: ::Logger::INFO
       out, _err = capture_subprocess_io do
-        res = exporter.export spans
-        res.must_equal true
+        exporter.export spans
       end
 
       out.wont_be_empty
     end
 
-    it "should return true on skipped log" do
+    it "should not emit data for a low log level" do
       exporter = OpenCensus::Trace::Exporters::Logger.new logger, level: ::Logger::DEBUG
       out, _err = capture_subprocess_io do
-        res = exporter.export spans
-        res.must_equal true
+        exporter.export spans
       end
 
       out.must_be_empty

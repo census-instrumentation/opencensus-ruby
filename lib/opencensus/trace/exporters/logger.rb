@@ -40,10 +40,10 @@ module OpenCensus
         # Export the captured spans to the configured logger.
         #
         # @param [Array<Span>] spans The captured spans.
-        # @return [Boolean]
         #
         def export spans
           @logger.log @level, spans.map { |span| format_span(span) }.to_json
+          nil
         end
 
         private

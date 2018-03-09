@@ -1,5 +1,12 @@
 # Release History
 
+### 0.2.2 / 2018-03-09
+
+* Railtie now adds the middleware at the end of the stack by default, and provides a config that can customize the position
+* Provided a multi exporter
+* Document exporter interface
+* Fix some broken links in the documentation
+
 ### 0.2.1 / 2018-03-05
 
 * Clarify Ruby version requirement (2.2+)

@@ -129,7 +129,7 @@ module OpenCensus
           where = OpenCensus::Trace.configure.middleware_placement
           case where
           when Class
-            middleware_stack.insert where, RackMiddleware
+            middleware_stack.insert_before where, RackMiddleware
           when :begin
             middleware_stack.unshift RackMiddleware
           else

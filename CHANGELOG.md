@@ -1,5 +1,11 @@
 # Release History
 
+### 0.3.0 / 2018-03-26
+
+* SpanContext#build_contained_spans honors sampling bit.
+* Use AlwaysSample as the default sampler.
+* Support the Span.kind field.
+
 ### 0.2.2 / 2018-03-09
 
 * Railtie now adds the middleware at the end of the stack by default, and provides a config that can customize the position

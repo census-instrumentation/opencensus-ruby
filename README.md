@@ -77,10 +77,11 @@ into the request so you can potentially connect your request trace with that of
 the remote service. Here is an example:
 
 ```ruby
+require "opencensus/trace/integrations/rack_middleware"
 conn = Faraday.new(url: "http://www.example.com") do |c|
   c.use OpenCensus::Trace::Integrations::FaradayMiddleware
   c.adapter Faraday.default_adapter
-  end
+end
 conn.get "/"
 ```
 

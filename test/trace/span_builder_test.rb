@@ -31,6 +31,23 @@ describe OpenCensus::Trace::SpanBuilder do
     end
   end
 
+  describe "kind" do
+    it "should default to unspecified" do
+      span_builder.kind.must_equal :SPAN_KIND_UNSPECIFIED
+    end
+
+    it "should be settable" do
+      span_builder.kind = :SERVER
+      span_builder.kind.must_equal :SERVER
+    end
+
+    it "should be captured" do
+      span_builder.kind = :CLIENT
+      span = span_builder.to_span
+      span.kind.must_equal :CLIENT
+    end
+  end
+
   describe "parent_span_id" do
     it "should be empty for root span" do
       span_builder.parent_span_id.must_be_empty

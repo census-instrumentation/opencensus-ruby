@@ -33,6 +33,21 @@ module OpenCensus
       ## The linked span is a parent of the current span.
       PARENT_LINKED_SPAN = :PARENT_LINKED_SPAN
 
+      ## The span kind is unspecified
+      SPAN_KIND_UNSPECIFIED = :SPAN_KIND_UNSPECIFIED
+
+      ##
+      # Indicates that the span covers server-side handling of an RPC or other
+      # remote network request.
+      #
+      SERVER = :SERVER
+
+      ##
+      # Indicates that the span covers the client-side wrapper around an RPC
+      # or other remote request.
+      #
+      CLIENT = :CLIENT
+
       ##
       # The context that can build children of this span.
       #
@@ -89,6 +104,18 @@ module OpenCensus
       # @return [String, TruncatableString]
       #
       attr_accessor :name
+
+      ##
+      # The kind of span. Can be used to specify additional relationships
+      # between spans in addition to a parent/child relationship.
+      # Valid values are `SpanBuilder::CLIENT`, `SpanBuilder::SERVER`, and
+      # `SpanBuilder::SPAN_KIND_UNSPECIFIED`.
+      #
+      # This field is required.
+      #
+      # @return [Symbol]
+      #
+      attr_accessor :kind
 
       ##
       # The start time of the span. On the client side, this is the time kept
@@ -330,6 +357,7 @@ module OpenCensus
         same_process_as_parent_span = context.parent.same_process_as_parent
 
         Span.new trace_id, span_id, built_name, @start_time, @end_time,
+                 kind: @kind,
                  parent_span_id: parent_span_id,
                  attributes: built_attributes,
                  dropped_attributes_count: dropped_attributes_count,
@@ -357,6 +385,7 @@ module OpenCensus
         @context = span_context
         @sampled = sampled
         @name = ""
+        @kind = SPAN_KIND_UNSPECIFIED
         @start_time = nil
         @end_time = nil
         @attributes = {}

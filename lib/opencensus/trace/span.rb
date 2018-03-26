@@ -20,6 +20,21 @@ module OpenCensus
     # or have a parent span, and may have zero or more children.
     #
     class Span
+      ## The span kind is unspecified
+      SPAN_KIND_UNSPECIFIED = :SPAN_KIND_UNSPECIFIED
+
+      ##
+      # Indicates that the span covers server-side handling of an RPC or other
+      # remote network request.
+      #
+      SERVER = :SERVER
+
+      ##
+      # Indicates that the span covers the client-side wrapper around an RPC
+      # or other remote request.
+      #
+      CLIENT = :CLIENT
+
       ##
       # A unique identifier for a trace. All spans from the same trace share
       # the same `trace_id`. The ID is a 16-byte value represented as a
@@ -53,6 +68,15 @@ module OpenCensus
       # @return [TruncatableString]
       #
       attr_reader :name
+
+      ##
+      # The kind of span. Can be used to specify additional relationships
+      # between spans in addition to a parent/child relationship.
+      # You should use the kind constants provided by this class.
+      #
+      # @return [Symbol]
+      #
+      attr_reader :kind
 
       ##
       # The starting timestamp of this span in UTC.
@@ -177,6 +201,7 @@ module OpenCensus
       # @private
       #
       def initialize trace_id, span_id, name, start_time, end_time,
+                     kind: SPAN_KIND_UNSPECIFIED,
                      parent_span_id: "", attributes: {},
                      dropped_attributes_count: 0, stack_trace: [],
                      dropped_frames_count: 0, time_events: [],
@@ -186,6 +211,7 @@ module OpenCensus
                      same_process_as_parent_span: nil,
                      child_span_count: nil
         @name = name
+        @kind = kind
         @trace_id = trace_id
         @span_id = span_id
         @parent_span_id = parent_span_id

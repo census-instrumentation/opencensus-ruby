@@ -54,6 +54,7 @@ module OpenCensus
         def format_span span
           {
             name: format_value(span.name),
+            kind: span.kind,
             trace_id: span.trace_id,
             span_id: span.span_id,
             parent_span_id: span.parent_span_id,

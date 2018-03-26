@@ -111,6 +111,7 @@ module OpenCensus
         end
 
         def start_request span, env
+          span.kind = SpanBuilder::SERVER
           span.put_attribute "/http/host", get_host(env)
           span.put_attribute "/http/url", get_url(env)
           span.put_attribute "/http/method", env["REQUEST_METHOD"]

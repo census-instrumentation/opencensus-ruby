@@ -123,6 +123,7 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       middleware.call env
       span = root_context.build_contained_spans.first
 
+      span.kind.must_equal :CLIENT
       span.status.wont_be_nil
       span.status.code.must_equal 200
       span.attributes["/http/method"].value.must_equal "POST"

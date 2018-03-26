@@ -167,19 +167,21 @@ module OpenCensus
       # However, you are responsible for finishing the span yourself.
       #
       # @param [String] name Name of the span
+      # @param [Symbol] kind Kind of span. Defaults to unspecified.
       # @param [Sampler] sampler Span-scoped sampler. If not provided,
       #     defaults to the trace configuration's default sampler.
       #
       # @return [SpanBuilder] A SpanBuilder object that you can use to
       #     set span attributes and create children.
       #
-      def start_span name, skip_frames: 0, sampler: nil
+      def start_span name, kind: nil, skip_frames: 0, sampler: nil
         child_context = create_child
         sampler ||= OpenCensus::Trace.config.default_sampler
         sampled = sampler.call span_context: self
         span = SpanBuilder.new child_context, sampled,
                                skip_frames: skip_frames + 1
         span.name = name
+        span.kind = kind if kind
         span.start!
         @trace_data.span_map[child_context.span_id] = span
       end
@@ -194,11 +196,13 @@ module OpenCensus
       # be finished automatically at the end of the block.
       #
       # @param [String] name Name of the span
+      # @param [Symbol] kind Kind of span. Defaults to unspecified.
       # @param [Sampler] sampler Span-scoped sampler. If not provided,
       #     defaults to the trace configuration's default sampler.
       #
-      def in_span name, skip_frames: 0, sampler: nil
-        span = start_span name, skip_frames: skip_frames + 1, sampler: sampler
+      def in_span name, kind: nil, skip_frames: 0, sampler: nil
+        span = start_span name, kind: kind, skip_frames: skip_frames + 1,
+                                sampler: sampler
         begin
           yield span
         ensure

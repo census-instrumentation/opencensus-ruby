@@ -48,7 +48,7 @@ describe OpenCensus::Trace::Exporters::Logger do
     let(:root_context) { OpenCensus::Trace::SpanContext.create_root }
     let(:span1) do
       root_context
-        .start_span("hello")
+        .start_span("hello", kind: OpenCensus::Trace::SpanBuilder::SERVER)
         .put_attribute("foo", "bar")
         .put_annotation("some annotation", {"key" => "value"})
         .put_message_event(OpenCensus::Trace::SpanBuilder::SENT, 1234, 2345)
@@ -68,6 +68,11 @@ describe OpenCensus::Trace::Exporters::Logger do
     it "should serialize name" do
       output["name"].wont_be_empty
       output["name"].must_equal "hello"
+    end
+
+    it "should serialize kind" do
+      output["kind"].wont_be_empty
+      output["kind"].must_equal "SERVER"
     end
 
     it "should serialize attributes" do

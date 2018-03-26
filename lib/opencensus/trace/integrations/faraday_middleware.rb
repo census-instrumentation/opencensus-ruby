@@ -145,6 +145,7 @@ module OpenCensus
         # @private Set span attributes from request object
         #
         def start_request span, env
+          span.kind = SpanBuilder::CLIENT
           req_method = env[:method]
           span.put_attribute "/http/method", req_method if req_method
           url = env[:url]

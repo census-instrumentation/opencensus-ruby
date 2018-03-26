@@ -74,6 +74,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
     end
 
     it "adds attributes to the span" do
+      root_span.kind.must_equal :SERVER
       root_span.attributes["/http/method"].value.must_equal "GET"
       root_span.attributes["/http/url"].value.must_equal "https://www.google.com/hello/world"
       root_span.attributes["/http/host"].value.must_equal "www.google.com"

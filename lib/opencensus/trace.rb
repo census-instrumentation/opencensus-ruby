@@ -124,16 +124,18 @@ module OpenCensus
       # Will throw an exception if there is no current SpanContext.
       #
       # @param [String] name Name of the span
+      # @param [Symbol] kind Kind of span. Defaults to unspecified.
       # @param [Sampler] sampler Span-scoped sampler. If not provided,
       #     defaults to the trace configuration's default sampler.
       #
       # @return [SpanBuilder] A SpanBuilder object that you can use to
       #     set span attributes and create children.
       #
-      def start_span name, skip_frames: 0, sampler: nil
+      def start_span name, kind: nil, skip_frames: 0, sampler: nil
         context = span_context
         raise "No currently active span context" unless context
-        span = context.start_span name, skip_frames: skip_frames + 1,
+        span = context.start_span name, kind: kind,
+                                        skip_frames: skip_frames + 1,
                                         sampler: sampler
         self.span_context = span.context
         span
@@ -151,11 +153,13 @@ module OpenCensus
       # will create subspans.
       #
       # @param [String] name Name of the span
+      # @param [Symbol] kind Kind of span. Defaults to unspecified.
       # @param [Sampler] sampler Span-scoped sampler. If not provided,
       #     defaults to the trace configuration's default sampler.
       #
-      def in_span name, skip_frames: 0, sampler: nil
-        span = start_span name, skip_frames: skip_frames + 1, sampler: sampler
+      def in_span name, kind: nil, skip_frames: 0, sampler: nil
+        span = start_span name, kind: kind, skip_frames: skip_frames + 1,
+                                sampler: sampler
         begin
           yield span
         ensure

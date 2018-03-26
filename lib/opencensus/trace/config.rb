@@ -20,8 +20,7 @@ module OpenCensus
   module Trace
     # Schema of the Trace configuration. See Trace#configure for more info.
     @config = Common::Config.new do |config|
-      default_sampler =
-        Samplers::Probability.new Samplers::Probability::DEFAULT_RATE
+      default_sampler = Samplers::AlwaysSample.new
       config.add_option! :default_sampler, default_sampler do |value|
         value.respond_to? :call
       end

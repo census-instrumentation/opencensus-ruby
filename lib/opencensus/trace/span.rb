@@ -220,9 +220,8 @@ module OpenCensus
         @attributes = attributes
         @dropped_attributes_count = dropped_attributes_count
         @stack_trace = stack_trace
-        @stack_trace_hash_id = [stack_trace, dropped_frames_count].hash
-        @stack_trace_hash_id = -1 if @stack_trace_hash_id.zero?
         @dropped_frames_count = dropped_frames_count
+        @stack_trace_hash_id = init_stack_trace_hash_id
         @time_events = time_events
         @dropped_annotations_count = dropped_annotations_count
         @dropped_message_events_count = dropped_message_events_count
@@ -231,6 +230,13 @@ module OpenCensus
         @status = status
         @same_process_as_parent_span = same_process_as_parent_span
         @child_span_count = child_span_count
+      end
+
+      private
+
+      def init_stack_trace_hash_id
+        hash_id = [@stack_trace, @dropped_frames_count].hash
+        hash_id.zero? ? -1 : hash_id
       end
     end
   end

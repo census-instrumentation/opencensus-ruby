@@ -51,7 +51,7 @@ get "/lengthy" do
 
   # You may instrument your code to create custom spans for long-running
   # operations.
-  OpenCensus::Trace.in_span "long task" do |span|
+  OpenCensus::Trace.in_span "long task" do
     sleep rand
   end
 

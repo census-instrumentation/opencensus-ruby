@@ -232,9 +232,9 @@ module OpenCensus
       end
 
       ##
-      # Builds all finished spans under this context, and returns an array of
-      # built `Span` objects. Ignores any unfinished spans. The order of the
-      # generated spans is undefined.
+      # Builds spans under this context, and returns an array of built `Span`
+      # objects. Builds only spans that are both finished and sampled, and
+      # ignores others. The order of the generated spans is undefined.
       #
       # Does not build any ancestor spans. If you want the entire span tree
       # built, call this method on the `#root` context.
@@ -260,7 +260,10 @@ module OpenCensus
                                 max_message_events: nil,
                                 max_links: nil,
                                 max_string_length: nil
-        contained_span_builders.find_all(&:finished?).map do |sb|
+        sampled_span_builders = contained_span_builders.find_all do |sb|
+          sb.finished? && sb.sampled
+        end
+        sampled_span_builders.map do |sb|
           sb.to_span max_attributes: max_attributes,
                      max_stack_frames: max_stack_frames,
                      max_annotations: max_annotations,

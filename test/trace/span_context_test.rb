@@ -172,6 +172,15 @@ describe OpenCensus::Trace::SpanContext do
       spans.first.name.value.must_equal "hello"
     end
 
+    it "omits unsampled spans" do
+      span1.sampled = false
+      span2.finish!
+      span1.finish!
+      spans = root_context.build_contained_spans
+      spans.size.must_equal 1
+      spans.first.name.value.must_equal "world"
+    end
+
     it "omits spans not contained in the context" do
       span2.finish!
       span1.finish!

@@ -1,5 +1,9 @@
 # Release History
 
+### 0.3.1 / 2018-04-13
+
+* Clean unneeded files from the gem
+
 ### 0.3.0 / 2018-03-26
 
 * SpanContext#build_contained_spans honors sampling bit.

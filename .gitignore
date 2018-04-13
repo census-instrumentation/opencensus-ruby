@@ -1,15 +1,8 @@
 /.bundle/
-/.yardoc
-/Gemfile.lock
-/_yardoc/
-/coverage/
-/doc/
+/.yardoc/
+/docs/
+/examples/*/Gemfile.lock
 /pkg/
-/spec/reports/
 /tmp/
 
-/docs/_site
-/docs/Gemfile.lock
-/docs/api/
-
-/examples/*/Gemfile.lock
+/Gemfile.lock

@@ -50,6 +50,9 @@ module OpenCensus
         # @param [#export] exporter The exported used to export captured spans
         #     at the end of the request. Optional: If omitted, uses the exporter
         #     in the current config.
+        # @param [#sampler] sampler The sampler used to determine which spans
+        #     get captured. Optional: If omitted, uses the default sampler
+        #     in the current config.
         #
         def initialize app, exporter: nil, sampler: nil
           @app = app

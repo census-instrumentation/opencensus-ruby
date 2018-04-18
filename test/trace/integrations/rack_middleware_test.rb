@@ -123,6 +123,35 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
         spans.count.must_equal 1
       end
     end
+
+    describe "default sampler" do
+      let(:middleware) { OpenCensus::Trace::Integrations::RackMiddleware.new app, exporter: exporter }
+
+      it "should use the default AlwaysSample sampler" do
+        env = {
+          "SCRIPT_NAME" => "",
+          "PATH_INFO" => "/hello/world"
+        }
+        middleware.call env
+        spans = exporter.spans
+        spans.wont_be_empty
+      end
+    end
+
+    describe "custom sampler" do
+      let(:middleware) { OpenCensus::Trace::Integrations::RackMiddleware.new app, exporter: exporter, sampler: OpenCensus::Trace::Samplers::NeverSample.new }
+
+      it "should use the new sampler provided" do
+        env = {
+          "SCRIPT_NAME" => "",
+          "PATH_INFO" => "/hello/world"
+        }
+        middleware.call env
+
+        spans = exporter.spans
+        spans.must_be_empty
+      end
+    end
   end
 
   describe "trace context formatting" do

@@ -51,9 +51,10 @@ module OpenCensus
         #     at the end of the request. Optional: If omitted, uses the exporter
         #     in the current config.
         #
-        def initialize app, exporter: nil
+        def initialize app, exporter: nil, sampler: nil
           @app = app
           @exporter = exporter || OpenCensus::Trace.config.exporter
+          @sampler = sampler || OpenCensus::Trace.config.default_sampler
         end
 
         ##
@@ -76,7 +77,7 @@ module OpenCensus
             trace_context: context,
             same_process_as_parent: false do |span_context|
             begin
-              span_context.in_span get_path(env) do |span|
+              span_context.in_span get_path(env), sampler: @sampler do |span|
                 start_request span, env
                 @app.call(env).tap do |response|
                   finish_request span, response

@@ -77,7 +77,7 @@ module OpenCensus
       # Starts tracing a request in the current thread, by creating a new
       # SpanContext and setting it as the current thread-local context.
       # Generally you should call this when beginning the handling of a
-      # request. If there is a rack environment or a provided Trace-Context
+      # request. If there is a rack environment or a provided Trace-Parent
       # header, pass it in so the SpanContext is constructed accordingly.
       #
       # If you pass a block, this method will yield the SpanContext to the

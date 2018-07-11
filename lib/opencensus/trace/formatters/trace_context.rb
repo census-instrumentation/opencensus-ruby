@@ -41,7 +41,7 @@ module OpenCensus
         #
         # @private
         #
-        HEADER_NAME = "Trace-Context".freeze
+        HEADER_NAME = "Trace-Parent".freeze
 
         ##
         # The rack environment header used for the TraceContext header
@@ -49,7 +49,7 @@ module OpenCensus
         #
         # @private
         #
-        RACK_HEADER_NAME = "HTTP_TRACE_CONTEXT".freeze
+        RACK_HEADER_NAME = "HTTP_TRACE_PARENT".freeze
 
         ##
         # Returns the name of the header used for context propagation.

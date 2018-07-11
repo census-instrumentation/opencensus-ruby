@@ -157,7 +157,7 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       middleware.call env
       span = root_context.build_contained_spans.first
 
-      header = env[:request_headers]["Trace-Context"]
+      header = env[:request_headers]["Trace-Parent"]
       header.must_match %r{^00-#{span.trace_id}-#{span.span_id}}
     end
 

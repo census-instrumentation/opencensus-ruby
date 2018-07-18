@@ -48,7 +48,8 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
         "PATH_INFO" => "/hello/world",
         "HTTP_HOST" => "www.google.com",
         "REQUEST_METHOD" => "GET",
-        "SERVER_PROTOCOL" => "https",
+        "rack.url_scheme" => "https",
+        "SERVER_PROTOCOL" => "HTTP/1.1",
         "HTTP_USER_AGENT" => "Google Chrome",
       }
       middleware.call env
@@ -78,7 +79,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
       root_span.attributes["/http/method"].value.must_equal "GET"
       root_span.attributes["/http/url"].value.must_equal "https://www.google.com/hello/world"
       root_span.attributes["/http/host"].value.must_equal "www.google.com"
-      root_span.attributes["/http/client_protocol"].value.must_equal "https"
+      root_span.attributes["/http/client_protocol"].value.must_equal "HTTP/1.1"
       root_span.attributes["/http/user_agent"].value.must_equal "Google Chrome"
       root_span.attributes["/pid"].value.wont_be_empty
       root_span.attributes["/tid"].value.wont_be_empty

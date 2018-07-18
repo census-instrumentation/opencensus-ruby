@@ -103,7 +103,7 @@ module OpenCensus
         def get_url env
           path = get_path env
           host = get_host env
-          scheme = env["SERVER_PROTOCOL"]
+          scheme = env["rack.url_scheme"]
           query_string = env["QUERY_STRING"].to_s
           url = "#{scheme}://#{host}#{path}"
           url = "#{url}?#{query_string}" unless query_string.empty?

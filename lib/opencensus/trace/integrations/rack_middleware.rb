@@ -76,7 +76,7 @@ module OpenCensus
             trace_context: context,
             same_process_as_parent: false do |span_context|
             begin
-              span_context.in_span get_path(env) do |span|
+              Trace.in_span get_path(env) do |span|
                 start_request span, env
                 @app.call(env).tap do |response|
                   finish_request span, response

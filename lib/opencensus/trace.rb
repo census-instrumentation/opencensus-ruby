@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "opencensus/context"
 require "opencensus/trace/annotation"
 require "opencensus/trace/config"
 require "opencensus/trace/exporters"

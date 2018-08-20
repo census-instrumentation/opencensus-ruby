@@ -18,13 +18,15 @@ require "opencensus/trace/integrations/faraday_middleware"
 
 describe OpenCensus::Trace::Integrations::FaradayMiddleware do
   class TestApp
-    def initialize code: 200, body: "ok"
+    def initialize code: 200, body: "ok", exception: false
       @code = code
       @body = body
+      @exception = exception
     end
     def call env
       env[:status] = @code
       env[:body] = @body
+      env[:exception] = @exception
       TestResponse.new env
     end
   end
@@ -33,13 +35,14 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
       @env = env
     end
     def on_complete
+      raise Faraday::TimeoutError if @env[:exception]
       yield @env
       @env
     end
   end
 
-  def app code: 200, body: "ok"
-    TestApp.new code: code, body: body
+  def app code: 200, body: "ok", exception: false
+    TestApp.new code: code, body: body, exception: exception
   end
   let(:root_context) { OpenCensus::Trace::SpanContext.create_root }
 
@@ -174,6 +177,21 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
 
       header = env[:request_headers]["X-Cloud-Trace"]
       header.must_match %r{^#{span.trace_id}/#{span.span_id.to_i(16)}}
+    end
+
+    it "should close span if exception raised" do
+      middleware = OpenCensus::Trace::Integrations::FaradayMiddleware.new \
+        app(code: 500, body: nil, exception: true), span_context: root_context
+      env = {
+        method: "POST",
+        url: "https://www.google.com/"
+      }
+      assert_raises Faraday::TimeoutError do
+        middleware.call env
+      end
+
+      spans = root_context.build_contained_spans
+      spans.size.must_equal 1
     end
 
     describe "global configuration" do

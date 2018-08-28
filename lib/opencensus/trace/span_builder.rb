@@ -84,12 +84,13 @@ module OpenCensus
       end
 
       ##
-      # Sampling decision for this span. Generally this field is set when the
-      # span is first created. However, you can also change it after the fact.
+      # Wether the span should be sampled
       #
       # @return [boolean]
       #
-      attr_accessor :sampled
+      def sampled?
+        context.sampled?
+      end
 
       ##
       # A description of the span's operation.
@@ -381,9 +382,8 @@ module OpenCensus
       #
       # @private
       #
-      def initialize span_context, sampled, skip_frames: 0
+      def initialize span_context, skip_frames: 0
         @context = span_context
-        @sampled = sampled
         @name = ""
         @kind = SPAN_KIND_UNSPECIFIED
         @start_time = nil

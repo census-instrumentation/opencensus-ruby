@@ -145,18 +145,26 @@ module OpenCensus
       attr_reader :same_process_as_parent
 
       ##
+      # Set trace_options to sampled.
+      #
+      # @param [Boolean] sampled or not
+      #
+      def sampled= sampled
+        if sampled
+          @trace_data.trace_options |= 1
+        else
+          @trace_data.trace_options &= ~1
+        end
+      end
+
+      ##
       # Whether the context (e.g. the parent span) has been sampled. This
       # information may be used in sampling decisions for new spans.
       #
       # @return [boolean]
       #
       def sampled?
-        span = this_span
-        if span
-          span.sampled
-        else
-          trace_options & 0x01 != 0
-        end
+        trace_options & 1 == 1
       end
 
       ##
@@ -178,8 +186,8 @@ module OpenCensus
         child_context = create_child
         sampler ||= OpenCensus::Trace.config.default_sampler
         sampled = sampler.call span_context: self
-        span = SpanBuilder.new child_context, sampled,
-                               skip_frames: skip_frames + 1
+        span = SpanBuilder.new child_context, skip_frames: skip_frames + 1
+        self.sampled = sampled
         span.name = name
         span.kind = kind if kind
         span.start!
@@ -265,7 +273,7 @@ module OpenCensus
                                 max_links: nil,
                                 max_string_length: nil
         sampled_span_builders = contained_span_builders.find_all do |sb|
-          sb.finished? && sb.sampled
+          sb.finished? && sb.sampled?
         end
         sampled_span_builders.map do |sb|
           sb.to_span max_attributes: max_attributes,

@@ -85,6 +85,27 @@ describe OpenCensus::Trace::SpanContext do
     end
   end
 
+  describe "set_sampled" do
+    it "set sampled to true" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      span_context.sampled?.must_equal false
+
+      span_context.sampled = true
+      span_context.sampled?.must_equal true
+      span_context.trace_options.must_equal 1
+    end
+
+    it "set sampled to false" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      span_context.sampled = true
+      span_context.sampled?.must_equal true
+
+      span_context.sampled = false
+      span_context.sampled?.must_equal false
+      span_context.trace_options.must_equal 0
+    end
+  end
+
   describe "start_span" do
     it "creates the correct span" do
       span_context = OpenCensus::Trace::SpanContext.create_root
@@ -110,10 +131,10 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root
       sampler = OpenCensus::Trace::Samplers::AlwaysSample.new
       span = span_context.start_span "hello", sampler: sampler
-      span.sampled.must_equal true
+      span.sampled?.must_equal true
       sampler = OpenCensus::Trace::Samplers::NeverSample.new
       span = span_context.start_span "hello", sampler: sampler
-      span.sampled.must_equal false
+      span.sampled?.must_equal false
     end
   end
 
@@ -142,11 +163,11 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root
       sampler = OpenCensus::Trace::Samplers::AlwaysSample.new
       span_context.in_span "hello", sampler: sampler do |span|
-        span.sampled.must_equal true
+        span.sampled?.must_equal true
       end
       sampler = OpenCensus::Trace::Samplers::NeverSample.new
       span_context.in_span "hello", sampler: sampler do |span|
-        span.sampled.must_equal false
+        span.sampled?.must_equal false
       end
     end
   end
@@ -173,12 +194,11 @@ describe OpenCensus::Trace::SpanContext do
     end
 
     it "omits unsampled spans" do
-      span1.sampled = false
       span2.finish!
       span1.finish!
+      span1.context.sampled = false
       spans = root_context.build_contained_spans
-      spans.size.must_equal 1
-      spans.first.name.value.must_equal "world"
+      spans.size.must_equal 0
     end
 
     it "omits spans not contained in the context" do

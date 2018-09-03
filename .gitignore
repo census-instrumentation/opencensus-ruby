@@ -6,3 +6,8 @@
 /tmp/
 
 /Gemfile.lock
+
+# IntelliJ IDEA
+.idea
+*.iml
+.editorconfig

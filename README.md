@@ -98,7 +98,7 @@ additional custom spans to the request trace:
 ```ruby
 OpenCensus::Trace.in_span "my_task" do |span|
   # Do stuff...
-
+  
   OpenCensus::Trace.in_span "my_subtask" do |subspan|
     # Do other stuff
   end
@@ -112,8 +112,15 @@ module for more info.
 ### Exporting traces
 
 By default, OpenCensus will log request trace data as JSON. To export traces to
-your favorite analytics backend, install an export plugin. Plugins are
-currently being developed for Stackdriver, Zipkin, and other services.
+your favorite analytics backend, install an export plugin. 
+
+The provided exporters are:
+
+| Class | Description |
+| ----- | ----------- |
+| [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a standard Ruby Logger interface |
+| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace |
+| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server |
 
 You may also create your own
 [Exporter](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Exporters)
@@ -193,3 +200,7 @@ This library is licensed under Apache 2.0. Full license text is available in
 ## Disclaimer
 
 This is not an official Google product.
+
+[logger-exporter]: https://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Exporters/Logger
+[stackdriver-exporter]: https://github.com/census-ecosystem/opencensus-ruby-exporter-stackdriver
+[zipkin-exporter]: https://github.com/census-ecosystem/opencensus-ruby-exporter-zipkin

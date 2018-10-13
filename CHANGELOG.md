@@ -1,5 +1,9 @@
 # Release History
 
+### Unreleased
+
+* Use "transparent" in HTTP Header key with the TraceContext.
+
 ### 0.3.1 / 2018-04-13
 
 * Clean unneeded files from the gem

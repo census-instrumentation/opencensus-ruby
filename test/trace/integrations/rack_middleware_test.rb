@@ -129,7 +129,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
     let(:middleware) { OpenCensus::Trace::Integrations::RackMiddleware.new app, exporter: exporter }
     it "parses trace-context header from rack environment" do
       env = {
-        "HTTP_TRACE_CONTEXT" =>
+        "HTTP_TRACEPARENT" =>
           "00-0123456789ABCDEF0123456789abcdef-0123456789ABCdef-01"
       }
       resp = middleware.call env

@@ -43,9 +43,9 @@ module OpenCensus
 
       class << self
         ##
-        # Create a new root SpanContext object, given either a Trace-Context
+        # Create a new root SpanContext object, given either a traceparent
         # header value by itself, or an entire Rack environment. If a valid
-        # Trace-Context header can be obtained from either source, it is used
+        # traceparent header can be obtained from either source, it is used
         # to generate the SpanContext. Otherwise, a new root context with a
         # unique `trace_id` and a root `span_id` of "" is used.
         #

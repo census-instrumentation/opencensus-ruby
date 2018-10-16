@@ -172,7 +172,7 @@ module OpenCensus
         def finish_request span, env
           status = env[:status].to_i
           if status > 0
-            span.set_status status
+            span.set_http_status status
             span.put_attribute "/rpc/status_code", status
           end
           body = env[:body]

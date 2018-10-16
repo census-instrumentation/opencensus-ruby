@@ -276,6 +276,16 @@ module OpenCensus
       end
 
       ##
+      # Set the optional final status for the span using an http status code.
+      #
+      # @param [Integer] code HTTP status code as a 32-bit signed integer
+      # @param [String] message A developer-facing error message, which should
+      #     be in English.
+      def set_http_status code, message = ""
+        set_status map_http_status(code), message
+      end
+
+      ##
       # Set the stack trace for this span.
       # You may call this in one of three ways:
       #
@@ -599,6 +609,23 @@ module OpenCensus
             tstr.force_encoding Encoding::UTF_8
           end
           tstr
+        end
+      end
+
+      private
+
+      def map_http_status http_status
+        case http_status
+        when 200..399 then Status::OK
+        when 400 then Status::INVALID_ARGUMENT
+        when 401 then Status::UNAUTHENTICATED
+        when 403 then Status::PERMISSION_DENIED
+        when 404 then Status::NOT_FOUND
+        when 429 then Status::RESOURCE_EXHAUSTED
+        when 501 then Status::UNIMPLEMENTED
+        when 503 then Status::UNAVAILABLE
+        when 504 then Status::DEADLINE_EXCEEDED
+        else Status::UNKNOWN
         end
       end
     end

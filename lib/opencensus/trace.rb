@@ -104,6 +104,8 @@ module OpenCensus
           ensure
             unset_span_context
           end
+        else
+          span_context
         end
       end
 

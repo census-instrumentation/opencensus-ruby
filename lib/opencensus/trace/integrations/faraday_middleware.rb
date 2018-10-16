@@ -133,8 +133,14 @@ module OpenCensus
 
           span = span_context.start_span span_name, sampler: @sampler
           start_request span, request_env
-          @app.call(request_env).on_complete do |response_env|
-            finish_request span, response_env
+          begin
+            @app.call(request_env).on_complete do |response_env|
+              finish_request span, response_env
+            end
+          rescue StandardError => e
+            span.set_status 2, e.message
+            raise
+          ensure
             span_context.end_span span
           end
         end

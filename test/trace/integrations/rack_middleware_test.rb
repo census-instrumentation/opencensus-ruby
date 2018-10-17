@@ -71,7 +71,7 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
 
     it "captures the response status code" do
       root_span.status.wont_be_nil
-      root_span.status.code.must_equal 200
+      root_span.status.code.must_equal OpenCensus::Trace::Status::OK
     end
 
     it "adds attributes to the span" do

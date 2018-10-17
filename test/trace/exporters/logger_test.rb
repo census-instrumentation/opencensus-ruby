@@ -119,7 +119,7 @@ describe OpenCensus::Trace::Exporters::Logger do
     it "should serialize status" do
       output["status"].wont_be_nil
       output["status"].must_be_kind_of Hash
-      output["status"]["code"].must_equal 200
+      output["status"]["code"].must_equal OpenCensus::Trace::Status::OK
       output["status"]["message"].must_equal "OK"
     end
 

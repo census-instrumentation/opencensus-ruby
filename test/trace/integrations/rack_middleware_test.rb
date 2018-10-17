@@ -76,13 +76,10 @@ describe OpenCensus::Trace::Integrations::RackMiddleware do
 
     it "adds attributes to the span" do
       root_span.kind.must_equal :SERVER
-      root_span.attributes["/http/method"].value.must_equal "GET"
-      root_span.attributes["/http/url"].value.must_equal "https://www.google.com/hello/world"
-      root_span.attributes["/http/host"].value.must_equal "www.google.com"
-      root_span.attributes["/http/client_protocol"].value.must_equal "HTTP/1.1"
-      root_span.attributes["/http/user_agent"].value.must_equal "Google Chrome"
-      root_span.attributes["/pid"].value.wont_be_empty
-      root_span.attributes["/tid"].value.wont_be_empty
+      root_span.attributes["http.method"].value.must_equal "GET"
+      root_span.attributes["http.path"].value.must_equal "/hello/world"
+      root_span.attributes["http.host"].value.must_equal "www.google.com"
+      root_span.attributes["http.user_agent"].value.must_equal "Google Chrome"
     end
   end
 

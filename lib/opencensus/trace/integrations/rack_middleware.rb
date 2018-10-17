@@ -100,30 +100,21 @@ module OpenCensus
           env["HTTP_HOST"] || env["SERVER_NAME"]
         end
 
-        def get_url env
-          path = get_path env
-          host = get_host env
-          scheme = env["rack.url_scheme"]
-          query_string = env["QUERY_STRING"].to_s
-          url = "#{scheme}://#{host}#{path}"
-          url = "#{url}?#{query_string}" unless query_string.empty?
-          url
-        end
-
         def start_request span, env
           span.kind = SpanBuilder::SERVER
-          span.put_attribute "/http/host", get_host(env)
-          span.put_attribute "/http/url", get_url(env)
-          span.put_attribute "/http/method", env["REQUEST_METHOD"]
-          span.put_attribute "/http/client_protocol", env["SERVER_PROTOCOL"]
-          span.put_attribute "/http/user_agent", env["HTTP_USER_AGENT"]
-          span.put_attribute "/pid", ::Process.pid.to_s
-          span.put_attribute "/tid", ::Thread.current.object_id.to_s
+          span.put_attribute "http.host", get_host(env)
+          span.put_attribute "http.path", get_path(env)
+          span.put_attribute "http.method", env["REQUEST_METHOD"].to_s.upcase
+          if env["HTTP_USER_AGENT"]
+            span.put_attribute "http.user_agent", env["HTTP_USER_AGENT"]
+          end
         end
 
         def finish_request span, response
           if response.is_a?(::Array) && response.size == 3
-            span.set_http_status response[0]
+            http_status = response[0]
+            span.set_http_status http_status
+            span.put_attribute "http.status_code", http_status
           end
         end
       end

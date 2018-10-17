@@ -53,7 +53,7 @@ describe OpenCensus::Trace::Exporters::Logger do
         .put_annotation("some annotation", {"key" => "value"})
         .put_message_event(OpenCensus::Trace::SpanBuilder::SENT, 1234, 2345)
         .put_link("traceid", "spanid", OpenCensus::Trace::SpanBuilder::CHILD_LINKED_SPAN, {"key2" => "value2"})
-        .set_status(200, "OK")
+        .set_http_status(200, "OK")
         .update_stack_trace
         .finish!
     end
@@ -119,7 +119,7 @@ describe OpenCensus::Trace::Exporters::Logger do
     it "should serialize status" do
       output["status"].wont_be_nil
       output["status"].must_be_kind_of Hash
-      output["status"]["code"].must_equal 200
+      output["status"]["code"].must_equal OpenCensus::Trace::Status::OK
       output["status"]["message"].must_equal "OK"
     end
 

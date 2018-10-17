@@ -123,7 +123,7 @@ module OpenCensus
 
         def finish_request span, response
           if response.is_a?(::Array) && response.size == 3
-            span.set_status response[0]
+            span.set_http_status response[0]
           end
         end
       end

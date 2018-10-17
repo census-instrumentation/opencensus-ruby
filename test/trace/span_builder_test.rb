@@ -153,7 +153,7 @@ describe OpenCensus::Trace::SpanBuilder do
   end
 
   describe "set_status" do
-    let(:ret) { span_builder.set_status(200, "OK") }
+    let(:ret) { span_builder.set_status(0, "OK") }
 
     it "should be chainable" do
       ret.must_be_instance_of OpenCensus::Trace::SpanBuilder
@@ -164,8 +164,43 @@ describe OpenCensus::Trace::SpanBuilder do
       span = ret.to_span
       span.status.wont_be_nil
       status = span.status
-      status.code.must_equal 200
+      status.code.must_equal 0
       status.message.must_equal "OK"
+    end
+  end
+
+  describe "set_http_status" do
+    it "should be chainable" do
+      ret = span_builder.set_http_status(200, "OK")
+      ret.must_be_instance_of OpenCensus::Trace::SpanBuilder
+      ret.must_be_same_as span_builder
+    end
+
+    it "should capture 200" do
+      ret = span_builder.set_http_status(200, "OK")
+      span = ret.to_span
+      span.status.wont_be_nil
+      status = span.status
+      status.code.must_equal OpenCensus::Trace::Status::OK
+      status.message.must_equal "OK"
+    end
+
+    it "should capture 404" do
+      ret = span_builder.set_http_status(404, "Not found")
+      span = ret.to_span
+      span.status.wont_be_nil
+      status = span.status
+      status.code.must_equal OpenCensus::Trace::Status::NOT_FOUND
+      status.message.must_equal "Not found"
+    end
+
+    it "should capture 500" do
+      ret = span_builder.set_http_status(500, "Unknown error")
+      span = ret.to_span
+      span.status.wont_be_nil
+      status = span.status
+      status.code.must_equal OpenCensus::Trace::Status::UNKNOWN
+      status.message.must_equal "Unknown error"
     end
   end
 

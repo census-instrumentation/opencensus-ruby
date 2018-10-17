@@ -128,7 +128,7 @@ describe OpenCensus::Trace::Integrations::FaradayMiddleware do
 
       span.kind.must_equal :CLIENT
       span.status.wont_be_nil
-      span.status.code.must_equal 200
+      span.status.code.must_equal OpenCensus::Trace::Status::OK
       span.attributes["/http/method"].value.must_equal "POST"
       span.attributes["/http/url"].value.must_equal "https://www.google.com/"
       span.attributes["/rpc/request/size"].must_equal 5

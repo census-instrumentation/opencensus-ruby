@@ -151,6 +151,9 @@ module OpenCensus
 
         protected
 
+        ##
+        # @private Get the span name from the request object
+        #
         def extract_span_name env
           name = env[:span_name]
           return name if name

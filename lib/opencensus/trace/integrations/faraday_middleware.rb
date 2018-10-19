@@ -13,7 +13,7 @@
 # limitations under the License.
 
 require "faraday"
-
+require "uri"
 require "opencensus"
 
 module OpenCensus
@@ -88,8 +88,11 @@ module OpenCensus
       #       }
       #     end
       #
-      class FaradayMiddleware < Faraday::Middleware
-        ## The default name for Faraday spans
+      class FaradayMiddleware < ::Faraday::Middleware
+        ##
+        # Fallback span name
+        # @return [String]
+        #
         DEFAULT_SPAN_NAME = "faraday_request".freeze
 
         ##
@@ -101,8 +104,8 @@ module OpenCensus
         #     current thread-local span context.
         # @param [String, #call] span_name The name of the span to create.
         #     Can be a string or a callable that takes a faraday request env
-        #     and returns a string. Optional: If omitted, uses
-        #     `DEFAULT_SPAN_NAME`
+        #     and returns a string. Optional: If omitted, uses the request path
+        #     as recommended in the OpenCensus spec.
         # @param [#call] sampler The sampler to use when creating spans.
         #     Optional: If omitted, uses the sampler in the current config.
         # @param [#serialize,#header_name] formatter The formatter to use when
@@ -113,7 +116,7 @@ module OpenCensus
                        formatter: nil
           @app = app
           @span_context = span_context || OpenCensus::Trace
-          @span_name = span_name || DEFAULT_SPAN_NAME
+          @default_span_name = span_name
           @sampler = sampler
           @formatter = formatter || OpenCensus::Trace.config.http_formatter
         end
@@ -128,7 +131,8 @@ module OpenCensus
             return @app.call request_env
           end
 
-          span_name = request_env[:span_name] || @span_name
+          span_name = extract_span_name(request_env) || @default_span_name ||
+                      DEFAULT_SPAN_NAME
           span_name = span_name.call request_env if span_name.respond_to? :call
 
           span = span_context.start_span span_name, sampler: @sampler
@@ -148,22 +152,39 @@ module OpenCensus
         protected
 
         ##
+        # @private Get the span name from the request object
+        #
+        def extract_span_name env
+          name = env[:span_name]
+          return name if name
+          uri = build_uri env
+          return nil unless uri
+          path = uri.path.to_s
+          path.start_with?("/") ? path : "/#{path}"
+        end
+
+        ##
         # @private Set span attributes from request object
         #
         def start_request span, env
           span.kind = SpanBuilder::CLIENT
           req_method = env[:method]
-          span.put_attribute "/http/method", req_method if req_method
-          url = env[:url]
-          span.put_attribute "/http/url", url if url
+          span.put_attribute "http.method", req_method.upcase if req_method
+          uri = build_uri env
+          if uri
+            span.put_attribute "http.host", uri.hostname.to_s
+            span.put_attribute "http.path", uri.path.to_s
+          end
           body = env[:body]
-          body_size = body.bytesize if body.respond_to? :bytesize
-          span.put_attribute "/rpc/request/size", body_size if body_size
+          body_size = body.respond_to?(:bytesize) ? body.bytesize : 0
+          span.put_message_event SpanBuilder::SENT, 1, body_size
 
           formatter = env[:formatter] || @formatter
-          trace_context = formatter.serialize span.context.trace_context
-          headers = env[:request_headers] ||= {}
-          headers[formatter.header_name] = trace_context
+          if formatter.respond_to? :header_name
+            headers = env[:request_headers] ||= {}
+            trace_context = formatter.serialize span.context.trace_context
+            headers[formatter.header_name] = trace_context
+          end
         end
 
         ##
@@ -173,11 +194,19 @@ module OpenCensus
           status = env[:status].to_i
           if status > 0
             span.set_http_status status
-            span.put_attribute "/rpc/status_code", status
+            span.put_attribute "http.status_code", status
           end
           body = env[:body]
-          body_size = body.bytesize if body.respond_to? :bytesize
-          span.put_attribute "/rpc/response/size", body_size if body_size
+          body_size = body.respond_to?(:bytesize) ? body.bytesize : 0
+          span.put_message_event SpanBuilder::RECEIVED, 1, body_size
+        end
+
+        private
+
+        def build_uri env
+          ::URI.parse env[:url]
+        rescue ::URI::InvalidURIError
+          nil
         end
       end
     end

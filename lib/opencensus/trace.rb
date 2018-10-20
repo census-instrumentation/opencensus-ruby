@@ -126,10 +126,18 @@ module OpenCensus
       #
       # Will throw an exception if there is no current SpanContext.
       #
-      # @param [String] name Name of the span
-      # @param [Symbol] kind Kind of span. Defaults to unspecified.
-      # @param [Sampler] sampler Span-scoped sampler. If not provided,
-      #     defaults to the trace configuration's default sampler.
+      # @param [String] name Name of the span. Required.
+      # @param [Symbol] kind Kind of span. Optional. Defaults to unspecified.
+      #     Other allowed values are {OpenCensus::Trace::SpanBuilder::SERVER}
+      #     and {OpenCensus::Trace::SpanBuilder::CLIENT}.
+      # @param [Sampler,Boolean,nil] sampler Span-scoped sampler. Optional.
+      #     If provided, the sampler may be a sampler object as defined in the
+      #     {OpenCensus::Trace::Samplers} module docs, or the values `true` or
+      #     `false` as shortcuts for {OpenCensus::Trace::Samplers::AlwaysSample}
+      #     or {OpenCensus::Trace::Samplers::NeverSample}, respectively. If no
+      #     span-scoped sampler is provided, the local parent span's sampling
+      #     decision is used. If there is no local parent span, the configured
+      #     default sampler is used to make a sampling decision.
       #
       # @return [SpanBuilder] A SpanBuilder object that you can use to
       #     set span attributes and create children.
@@ -155,10 +163,18 @@ module OpenCensus
       # the thread-local SpanContext will be updated so calls to `start_span`
       # will create subspans.
       #
-      # @param [String] name Name of the span
-      # @param [Symbol] kind Kind of span. Defaults to unspecified.
-      # @param [Sampler] sampler Span-scoped sampler. If not provided,
-      #     defaults to the trace configuration's default sampler.
+      # @param [String] name Name of the span. Required.
+      # @param [Symbol] kind Kind of span. Optional. Defaults to unspecified.
+      #     Other allowed values are {OpenCensus::Trace::SpanBuilder::SERVER}
+      #     and {OpenCensus::Trace::SpanBuilder::CLIENT}.
+      # @param [Sampler,Boolean,nil] sampler Span-scoped sampler. Optional.
+      #     If provided, the sampler may be a sampler object as defined in the
+      #     {OpenCensus::Trace::Samplers} module docs, or the values `true` or
+      #     `false` as shortcuts for {OpenCensus::Trace::Samplers::AlwaysSample}
+      #     or {OpenCensus::Trace::Samplers::NeverSample}, respectively. If no
+      #     span-scoped sampler is provided, the local parent span's sampling
+      #     decision is used. If there is no local parent span, the configured
+      #     default sampler is used to make a sampling decision.
       #
       def in_span name, kind: nil, skip_frames: 0, sampler: nil
         span = start_span name, kind: kind, skip_frames: skip_frames + 1,

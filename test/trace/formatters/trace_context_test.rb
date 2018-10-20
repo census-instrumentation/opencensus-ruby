@@ -41,12 +41,11 @@ describe OpenCensus::Trace::Formatters::TraceContext do
     let(:trace_data) do
       OpenCensus::Trace::SpanContext::TraceData.new(
         "0123456789abcdef0123456789abcdef",
-        1,
         {}
       )
     end
     let(:span_context) do
-      OpenCensus::Trace::SpanContext.new trace_data, nil, "0123456789abcdef", nil
+      OpenCensus::Trace::SpanContext.new trace_data, nil, "0123456789abcdef", 1, nil
     end
 
     it "should serialize a SpanContext object" do

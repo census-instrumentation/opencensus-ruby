@@ -14,5 +14,5 @@
 
 module OpenCensus
   ## Current OpenCensus version
-  VERSION = "0.3.1".freeze
+  VERSION = "0.4.0".freeze
 end

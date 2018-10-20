@@ -108,12 +108,29 @@ describe OpenCensus::Trace::SpanContext do
 
     it "honors span-scoped sampler" do
       span_context = OpenCensus::Trace::SpanContext.create_root
-      sampler = OpenCensus::Trace::Samplers::AlwaysSample.new
-      span = span_context.start_span "hello", sampler: sampler
-      span.sampled.must_equal true
+      sampler1 = OpenCensus::Trace::Samplers::AlwaysSample.new
+      span1 = span_context.start_span "hello", sampler: sampler1
+      span1.sampled?.must_equal true
+      sampler2 = OpenCensus::Trace::Samplers::NeverSample.new
+      span2 = span_context.start_span "hello", sampler: sampler2
+      span2.sampled?.must_equal false
+    end
+
+    it "honors true and false as span-scoped samplers" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
+      span1 = span_context.start_span "hello", sampler: true
+      span1.sampled?.must_equal true
+      span2 = span_context.start_span "hello", sampler: false
+      span2.sampled?.must_equal false
+    end
+
+    it "honors local parent sampler" do
+      span_context = OpenCensus::Trace::SpanContext.create_root
       sampler = OpenCensus::Trace::Samplers::NeverSample.new
-      span = span_context.start_span "hello", sampler: sampler
-      span.sampled.must_equal false
+      span1 = span_context.start_span "hello", sampler: sampler
+      span1.sampled?.must_equal false
+      span2 = span1.context.start_span "world"
+      span2.sampled?.must_equal false
     end
   end
 
@@ -140,13 +157,13 @@ describe OpenCensus::Trace::SpanContext do
 
     it "honors span-scoped sampler" do
       span_context = OpenCensus::Trace::SpanContext.create_root
-      sampler = OpenCensus::Trace::Samplers::AlwaysSample.new
-      span_context.in_span "hello", sampler: sampler do |span|
-        span.sampled.must_equal true
+      sampler1 = OpenCensus::Trace::Samplers::AlwaysSample.new
+      span_context.in_span "hello", sampler: sampler1 do |span|
+        span.sampled?.must_equal true
       end
-      sampler = OpenCensus::Trace::Samplers::NeverSample.new
-      span_context.in_span "hello", sampler: sampler do |span|
-        span.sampled.must_equal false
+      sampler2 = OpenCensus::Trace::Samplers::NeverSample.new
+      span_context.in_span "hello", sampler: sampler2 do |span|
+        span.sampled?.must_equal false
       end
     end
   end
@@ -173,12 +190,14 @@ describe OpenCensus::Trace::SpanContext do
     end
 
     it "omits unsampled spans" do
-      span1.sampled = false
-      span2.finish!
-      span1.finish!
+      never_sample = OpenCensus::Trace::Samplers::NeverSample.new
+      s1 = root_context.start_span "hello"
+      s2 = s1.context.start_span "world", sampler: never_sample
+      s2.finish!
+      s1.finish!
       spans = root_context.build_contained_spans
       spans.size.must_equal 1
-      spans.first.name.value.must_equal "world"
+      spans.first.name.value.must_equal "hello"
     end
 
     it "omits spans not contained in the context" do

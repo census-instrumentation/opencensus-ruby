@@ -21,15 +21,24 @@ module OpenCensus
     # traces or when the handler receives a request from a different project.
     #
     class Link
-      # The relationship of the two spans is unknown, or known but other
-      # than parent-child.
-      TYPE_UNSPECIFIED    = :TYPE_UNSPECIFIED
+      ##
+      # A link type, indicating the relationship of the two spans is unknown,
+      # or is known but is other than parent-child.
+      # @return [Symbol]
+      #
+      TYPE_UNSPECIFIED = :TYPE_UNSPECIFIED
 
-      # The linked span is a child of the current span.
-      CHILD_LINKED_SPAN   = :CHILD_LINKED_SPAN
+      ##
+      # A link type, indicating the linked span is a child of the current span.
+      # @return [Symbol]
+      #
+      CHILD_LINKED_SPAN = :CHILD_LINKED_SPAN
 
-      # The linked span is a parent of the current span.
-      PARENT_LINKED_SPAN  = :PARENT_LINKED_SPAN
+      ##
+      # A link type, indicating the linked span is a parent of the current span.
+      # @return [Symbol]
+      #
+      PARENT_LINKED_SPAN = :PARENT_LINKED_SPAN
 
       ##
       # A unique identifier for a trace. All spans from the same trace share

@@ -20,18 +20,23 @@ module OpenCensus
     # or have a parent span, and may have zero or more children.
     #
     class Span
-      ## The span kind is unspecified
+      ##
+      # A span kind, indicating the span kind is unspecified.
+      # @return [Symbol]
+      #
       SPAN_KIND_UNSPECIFIED = :SPAN_KIND_UNSPECIFIED
 
       ##
-      # Indicates that the span covers server-side handling of an RPC or other
-      # remote network request.
+      # A span kind, indicating that the span covers server-side handling of an
+      # RPC or other remote network request.
+      # @return [Symbol]
       #
       SERVER = :SERVER
 
       ##
-      # Indicates that the span covers the client-side wrapper around an RPC
-      # or other remote request.
+      # A span kind, indicating that the span covers the client-side wrapper
+      # around an RPC or other remote request.
+      # @return [Symbol]
       #
       CLIENT = :CLIENT
 

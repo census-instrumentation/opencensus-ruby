@@ -20,13 +20,22 @@ module OpenCensus
     # An event describing a message sent/received between Spans.
     #
     class MessageEvent < TimeEvent
-      # Unknown event type.
+      ##
+      # An event type, indicating the type is unknown.
+      # @return [Symbol]
+      #
       TYPE_UNSPECIFIED = :TYPE_UNSPECIFIED
 
-      # Indicates a sent message.
+      ##
+      # An event type, indicating a sent message.
+      # @return [Symbol]
+      #
       SENT = :SENT
 
-      # Indicates a received message.
+      ##
+      # An event type, indicating a received message.
+      # @return [Symbol]
+      #
       RECEIVED = :RECEIVED
 
       ##

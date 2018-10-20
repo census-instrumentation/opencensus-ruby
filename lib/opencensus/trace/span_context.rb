@@ -22,21 +22,18 @@ module OpenCensus
     class SpanContext
       ##
       # Internal struct that holds trace-wide data.
-      #
       # @private
       #
       TraceData = Struct.new :trace_id, :span_map
 
       ##
       # Maximum integer value for a `trace_id`
-      #
       # @private
       #
       MAX_TRACE_ID = 0xffffffffffffffffffffffffffffffff
 
       ##
       # Maximum integer value for a `span_id`
-      #
       # @private
       #
       MAX_SPAN_ID = 0xffffffffffffffff
@@ -356,6 +353,7 @@ module OpenCensus
       # https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/Sampling.md
       #
       # @param [Sampler,Boolean,nil] sampler Span-scoped sampler.
+      # @return [Boolean]
       #
       def make_sampling_decision sampler
         resolved_sampler =

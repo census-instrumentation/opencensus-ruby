@@ -15,7 +15,7 @@
 require "opencensus/trace/samplers/always_sample"
 require "opencensus/trace/samplers/never_sample"
 require "opencensus/trace/samplers/probability"
-require "opencensus/trace/samplers/max_qps"
+require "opencensus/trace/samplers/rate_limiting"
 
 module OpenCensus
   module Trace
@@ -26,9 +26,8 @@ module OpenCensus
     # use a sampler to decide, for a given request, whether to report its
     # trace.
     #
-    # The OpenCensus specification defines three samplers: AlwaysSample,
-    # NeverSample, and Probability. The Ruby implementation also provides a
-    # fourth, MaxQPS, based on the Stackdriver library.
+    # The OpenCensus specification defines four samplers: AlwaysSample,
+    # NeverSample, Probability, and RateLimiting.
     #
     # A sampler is a Proc that takes a hash of environment information and
     # returns a boolean indicating whether or not to sample the current

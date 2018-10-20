@@ -17,3 +17,11 @@ require "opencensus"
 
 require "minitest/autorun"
 require "minitest/focus"
+
+class TestRandom < Array
+  alias_method :rand, :shift
+end
+
+class TestTimeClass < Array
+  alias_method :now, :shift
+end

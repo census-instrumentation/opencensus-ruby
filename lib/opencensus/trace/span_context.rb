@@ -25,7 +25,7 @@ module OpenCensus
       #
       # @private
       #
-      TraceData = Struct.new :trace_id, :trace_options, :span_map
+      TraceData = Struct.new :trace_id, :span_map
 
       ##
       # Maximum integer value for a `trace_id`
@@ -59,15 +59,14 @@ module OpenCensus
         #
         def create_root trace_context: nil, same_process_as_parent: nil
           if trace_context
-            trace_data = TraceData.new \
-              trace_context.trace_id, trace_context.trace_options, {}
+            trace_data = TraceData.new trace_context.trace_id, {}
             new trace_data, nil, trace_context.span_id,
-                same_process_as_parent
+                trace_context.trace_options, same_process_as_parent
           else
             trace_id = rand 1..MAX_TRACE_ID
             trace_id = trace_id.to_s(16).rjust(32, "0")
-            trace_data = TraceData.new trace_id, 0, {}
-            new trace_data, nil, "", nil
+            trace_data = TraceData.new trace_id, {}
+            new trace_data, nil, "", 0, nil
           end
         end
       end
@@ -124,9 +123,7 @@ module OpenCensus
       #
       # @return [Integer]
       #
-      def trace_options
-        @trace_data.trace_options
-      end
+      attr_reader :trace_options
 
       ##
       # The span ID as a 16-character hex string, or the empty string if the
@@ -145,18 +142,13 @@ module OpenCensus
       attr_reader :same_process_as_parent
 
       ##
-      # Whether the context (e.g. the parent span) has been sampled. This
+      # Whether this context (e.g. the parent span) has been sampled. This
       # information may be used in sampling decisions for new spans.
       #
       # @return [boolean]
       #
       def sampled?
-        span = this_span
-        if span
-          span.sampled
-        else
-          trace_options & 0x01 != 0
-        end
+        trace_options & 0x01 != 0
       end
 
       ##
@@ -166,20 +158,25 @@ module OpenCensus
       # The span will be started automatically with the current timestamp.
       # However, you are responsible for finishing the span yourself.
       #
-      # @param [String] name Name of the span
-      # @param [Symbol] kind Kind of span. Defaults to unspecified.
-      # @param [Sampler] sampler Span-scoped sampler. If not provided,
-      #     defaults to the trace configuration's default sampler.
+      # @param [String] name Name of the span. Required.
+      # @param [Symbol] kind Kind of span. Optional. Defaults to unspecified.
+      #     Other allowed values are {OpenCensus::Trace::SpanBuilder::SERVER}
+      #     and {OpenCensus::Trace::SpanBuilder::CLIENT}.
+      # @param [Sampler,Boolean,nil] sampler Span-scoped sampler. Optional.
+      #     If provided, the sampler may be a sampler object as defined in the
+      #     {OpenCensus::Trace::Samplers} module docs, or the values `true` or
+      #     `false` as shortcuts for {OpenCensus::Trace::Samplers::AlwaysSample}
+      #     or {OpenCensus::Trace::Samplers::NeverSample}, respectively. If no
+      #     span-scoped sampler is provided, the local parent span's sampling
+      #     decision is used. If there is no local parent span, the configured
+      #     default sampler is used to make a sampling decision.
       #
       # @return [SpanBuilder] A SpanBuilder object that you can use to
       #     set span attributes and create children.
       #
       def start_span name, kind: nil, skip_frames: 0, sampler: nil
-        child_context = create_child
-        sampler ||= OpenCensus::Trace.config.default_sampler
-        sampled = sampler.call span_context: self
-        span = SpanBuilder.new child_context, sampled,
-                               skip_frames: skip_frames + 1
+        child_context = create_child sampler
+        span = SpanBuilder.new child_context, skip_frames: skip_frames + 1
         span.name = name
         span.kind = kind if kind
         span.start!
@@ -195,10 +192,18 @@ module OpenCensus
       # SpanBuilder will then be passed to the block you provide. The span will
       # be finished automatically at the end of the block.
       #
-      # @param [String] name Name of the span
-      # @param [Symbol] kind Kind of span. Defaults to unspecified.
-      # @param [Sampler] sampler Span-scoped sampler. If not provided,
-      #     defaults to the trace configuration's default sampler.
+      # @param [String] name Name of the span. Required.
+      # @param [Symbol] kind Kind of span. Optional. Defaults to unspecified.
+      #     Other allowed values are {OpenCensus::Trace::SpanBuilder::SERVER}
+      #     and {OpenCensus::Trace::SpanBuilder::CLIENT}.
+      # @param [Sampler,Boolean,nil] sampler Span-scoped sampler. Optional.
+      #     If provided, the sampler may be a sampler object as defined in the
+      #     {OpenCensus::Trace::Samplers} module docs, or the values `true` or
+      #     `false` as shortcuts for {OpenCensus::Trace::Samplers::AlwaysSample}
+      #     or {OpenCensus::Trace::Samplers::NeverSample}, respectively. If no
+      #     span-scoped sampler is provided, the local parent span's sampling
+      #     decision is used. If there is no local parent span, the configured
+      #     default sampler is used to make a sampling decision.
       #
       def in_span name, kind: nil, skip_frames: 0, sampler: nil
         span = start_span name, kind: kind, skip_frames: skip_frames + 1,
@@ -265,7 +270,7 @@ module OpenCensus
                                 max_links: nil,
                                 max_string_length: nil
         sampled_span_builders = contained_span_builders.find_all do |sb|
-          sb.finished? && sb.sampled
+          sb.finished? && sb.sampled?
         end
         sampled_span_builders.map do |sb|
           sb.to_span max_attributes: max_attributes,
@@ -284,10 +289,12 @@ module OpenCensus
       #
       # @private
       #
-      def initialize trace_data, parent, span_id, same_process_as_parent
+      def initialize trace_data, parent, span_id, trace_options,
+                     same_process_as_parent
         @trace_data = trace_data
         @parent = parent
         @span_id = span_id
+        @trace_options = trace_options
         @same_process_as_parent = same_process_as_parent
       end
 
@@ -327,15 +334,45 @@ module OpenCensus
       ##
       # Create a child of this SpanContext, with a random unique span ID.
       #
+      # @param [Sampler,Boolean,nil] sampler Span-scoped sampler.
       # @return [SpanContext] The created child context.
       #
-      def create_child
+      def create_child sampler
+        sampling_decision = make_sampling_decision sampler
+        child_trace_options = sampling_decision ? 1 : 0
         loop do
           child_span_id = rand 1..MAX_SPAN_ID
           child_span_id = child_span_id.to_s(16).rjust(16, "0")
           unless @trace_data.span_map.key? child_span_id
-            return SpanContext.new @trace_data, self, child_span_id, true
+            return SpanContext.new @trace_data, self, child_span_id,
+                                   child_trace_options, true
           end
+        end
+      end
+
+      ##
+      # Make a sampling decision in the current context given a span sampler.
+      # Implements the logic specified at:
+      # https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/Sampling.md
+      #
+      # @param [Sampler,Boolean,nil] sampler Span-scoped sampler.
+      #
+      def make_sampling_decision sampler
+        resolved_sampler =
+          case sampler
+          when true
+            OpenCensus::Trace::Samplers::AlwaysSample.new
+          when false
+            OpenCensus::Trace::Samplers::NeverSample.new
+          when nil
+            root? ? OpenCensus::Trace.config.default_sampler : nil
+          else
+            sampler
+          end
+        if resolved_sampler
+          resolved_sampler.call(span_context: self)
+        else
+          sampled?
         end
       end
 

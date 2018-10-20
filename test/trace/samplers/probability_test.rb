@@ -17,27 +17,21 @@ require "test_helper"
 describe OpenCensus::Trace::Samplers::Probability do
   describe ".call" do
     it "should return true if rng < rate" do
-      rng = Random.new
-      rng.stub :rand, 0.2 do
-        sampler = OpenCensus::Trace::Samplers::Probability.new(0.5, rng: rng)
-        sampler.call.must_equal true
-      end
+      rng = TestRandom.new [0.2]
+      sampler = OpenCensus::Trace::Samplers::Probability.new 0.5, rng: rng
+      sampler.call.must_equal true
     end
 
     it "should return true if rng == rate" do
-      rng = Random.new
-      rng.stub :rand, 0.5 do
-        sampler = OpenCensus::Trace::Samplers::Probability.new(0.5, rng: rng)
-        sampler.call.must_equal true
-      end
+      rng = TestRandom.new [0.5]
+      sampler = OpenCensus::Trace::Samplers::Probability.new 0.5, rng: rng
+      sampler.call.must_equal true
     end
 
     it "should return false if rng < rate" do
-      rng = Random.new
-      rng.stub :rand, 0.7 do
-        sampler = OpenCensus::Trace::Samplers::Probability.new(0.5, rng: rng)
-        sampler.call.must_equal false
-      end
+      rng = TestRandom.new [0.7]
+      sampler = OpenCensus::Trace::Samplers::Probability.new 0.5, rng: rng
+      sampler.call.must_equal false
     end
 
     describe "with 1.0 rate" do
@@ -51,8 +45,15 @@ describe OpenCensus::Trace::Samplers::Probability do
     describe "with 0.0 rate" do
       let(:sampler) { OpenCensus::Trace::Samplers::Probability.new 0.0 }
 
-      it "should always return false" do
+      it "should return false" do
         sampler.call.must_equal false
+      end
+
+      it "should return true anyway if the span context is sampled" do
+        trace_context = OpenCensus::Trace::TraceContextData.new "1", "2", 1
+        span_context = OpenCensus::Trace::SpanContext.create_root \
+          trace_context: trace_context
+        sampler.call(span_context: span_context).must_equal true
       end
     end
   end

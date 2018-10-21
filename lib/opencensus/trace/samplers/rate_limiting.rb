@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 require "monitor"
 
 module OpenCensus
@@ -32,8 +33,8 @@ module OpenCensus
         #
         # @param [Number] qps Samples per second. Default is {DEFAULT_RATE}.
         # @param [#rand] rng The random number generator to use. Default is a
-        #     new Random instance.
-        # @param [#now] time_class The time class to use. Default is Time.
+        #     new `::Random` instance.
+        # @param [#now] time_class The time class to use. Default is `::Time`.
         #     Generally used for testing.
         #
         def initialize qps = DEFAULT_RATE, rng: nil, time_class: nil

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 module OpenCensus
   module Trace
     ##
@@ -22,21 +23,18 @@ module OpenCensus
     class SpanContext
       ##
       # Internal struct that holds trace-wide data.
-      #
       # @private
       #
       TraceData = Struct.new :trace_id, :span_map
 
       ##
       # Maximum integer value for a `trace_id`
-      #
       # @private
       #
       MAX_TRACE_ID = 0xffffffffffffffffffffffffffffffff
 
       ##
       # Maximum integer value for a `span_id`
-      #
       # @private
       #
       MAX_SPAN_ID = 0xffffffffffffffff
@@ -154,7 +152,7 @@ module OpenCensus
       ##
       # Create a new span in this context.
       # You must pass a name for the span. All other span attributes should
-      # be set using the SpanBuilder methods.
+      # be set using {OpenCensus::Trace::SpanBuilder} methods.
       # The span will be started automatically with the current timestamp.
       # However, you are responsible for finishing the span yourself.
       #
@@ -186,7 +184,7 @@ module OpenCensus
       ##
       # Create a new span in this context.
       # You must pass a name for the span. All other span attributes should
-      # be set using the SpanBuilder methods.
+      # be set using {OpenCensus::Trace::SpanBuilder} methods.
       #
       # The span will be started automatically with the current timestamp. The
       # SpanBuilder will then be passed to the block you provide. The span will
@@ -356,6 +354,7 @@ module OpenCensus
       # https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/Sampling.md
       #
       # @param [Sampler,Boolean,nil] sampler Span-scoped sampler.
+      # @return [Boolean]
       #
       def make_sampling_decision sampler
         resolved_sampler =

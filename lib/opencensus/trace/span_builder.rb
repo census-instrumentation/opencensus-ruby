@@ -12,39 +12,62 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 module OpenCensus
   module Trace
     ##
     # Span represents a single span within a request trace.
     #
     class SpanBuilder
-      ## The type of a message event or link is unknown.
+      ##
+      # This value may be used as an event type or a link type, and indicates
+      # that the type is unknown.
+      # @return [Symbol]
+      #
       TYPE_UNSPECIFIED = :TYPE_UNSPECIFIED
 
-      ## Indicates a sent message.
+      ##
+      # An event type, indicating a sent message.
+      # @return [Symbol]
+      #
       SENT = :SENT
 
-      ## Indicates a received message.
+      ##
+      # An event type, indicating a received message.
+      # @return [Symbol]
+      #
       RECEIVED = :RECEIVED
 
-      ## The linked span is a child of the current span.
+      ##
+      # A link type, indicating the linked span is a child of the current span.
+      # @return [Symbol]
+      #
       CHILD_LINKED_SPAN = :CHILD_LINKED_SPAN
 
-      ## The linked span is a parent of the current span.
+      ##
+      # A link type, indicating the linked span is a parent of the current span.
+      # @return [Symbol]
+      #
       PARENT_LINKED_SPAN = :PARENT_LINKED_SPAN
 
-      ## The span kind is unspecified
+      ##
+      # A span kind, indicating that the span is either neither a server nor
+      # a client, or is unknown.
+      # @return [Symbol]
+      #
       SPAN_KIND_UNSPECIFIED = :SPAN_KIND_UNSPECIFIED
 
       ##
-      # Indicates that the span covers server-side handling of an RPC or other
-      # remote network request.
+      # A span kind, indicating that the span covers server-side handling of an
+      # RPC or other remote network request.
+      # @return [Symbol]
       #
       SERVER = :SERVER
 
       ##
-      # Indicates that the span covers the client-side wrapper around an RPC
-      # or other remote request.
+      # A span kind, indicating that the span covers the client-side wrapper
+      # around an RPC or other remote request.
+      # @return [Symbol]
       #
       CLIENT = :CLIENT
 
@@ -110,8 +133,9 @@ module OpenCensus
       ##
       # The kind of span. Can be used to specify additional relationships
       # between spans in addition to a parent/child relationship.
-      # Valid values are `SpanBuilder::CLIENT`, `SpanBuilder::SERVER`, and
-      # `SpanBuilder::SPAN_KIND_UNSPECIFIED`.
+      # Valid values are {OpenCensus::Trace::SpanBuilder::CLIENT},
+      # {OpenCensus::Trace::SpanBuilder::SERVER}, and
+      # {OpenCensus::Trace::SpanBuilder::SPAN_KIND_UNSPECIFIED}.
       #
       # This field is required.
       #
@@ -137,7 +161,7 @@ module OpenCensus
       # the local machine where the span execution ends. On the server side,
       # this is the time when the server application handler stops running.
       #
-      # In Ruby, this is represented by a Time object in UTC, or `nil` if the
+      # In Ruby, this is represented by a `Time` object in UTC, or `nil` if the
       # starting timestamp has not yet been populated.
       #
       # @return [Time, nil]
@@ -216,12 +240,14 @@ module OpenCensus
       # Add an event describing a message sent/received between spans.
       #
       # @param [Symbol] type The type of MessageEvent. Indicates whether the
-      #     message was sent or received. Valid values are `SpanBuilder::SENT`
-      #     `SpanBuilder::RECEIVED`, and `SpanBuilder::TYPE_UNSPECIFIED`.
+      #     message was sent or received. Valid values are
+      #     {OpenCensus::Trace::SpanBuilder::SENT},
+      #     {OpenCensus::Trace::SpanBuilder::RECEIVED}, and
+      #     {OpenCensus::Trace::SpanBuilder::TYPE_UNSPECIFIED}.
       # @param [Integer] id An identifier for the MessageEvent's message that
       #     can be used to match SENT and RECEIVED events. For example, this
       #     field could represent a sequence ID for a streaming RPC. It is
-      #     recommended to be unique within a Span. The valid range is 64-bit
+      #     recommended to be unique within a span. The valid range is 64-bit
       #     unsigned `(0..2^64-1)`
       # @param [Integer] uncompressed_size The number of uncompressed bytes
       #     sent or received.
@@ -252,9 +278,10 @@ module OpenCensus
       # @param [String] span_id The unique identifier for a span within a trace.
       #     An 8-byte array expressed as 16 hex digits.
       # @param [Symbol] type The relationship of the current span relative to
-      #     the linked span. Valid values are `SpanBuilder::CHILD_LINKED_SPAN`,
-      #     `SpanBuilder::PARENT_LINKED_SPAN`, and
-      #     `SpanBuilder::TYPE_UNSPECIFIED`.
+      #     the linked span. Valid values are
+      #     {OpenCensus::Trace::SpanBuilder::CHILD_LINKED_SPAN},
+      #     {OpenCensus::Trace::SpanBuilder::PARENT_LINKED_SPAN}, and
+      #     {OpenCensus::Trace::SpanBuilder::TYPE_UNSPECIFIED}.
       # @param [String] attributes Key-value pairs providing additional
       #     properties of the link. Keys must be strings, and values are
       #     restricted to the same types as attributes (see #put_attribute).
@@ -271,6 +298,7 @@ module OpenCensus
       # @param [Integer] code Status code as a 32-bit signed integer
       # @param [String] message A developer-facing error message, which should
       #     be in English.
+      #
       def set_status code, message = ""
         @status_code = code
         @status_message = message
@@ -283,19 +311,20 @@ module OpenCensus
       # @param [Integer] code HTTP status code as a 32-bit signed integer
       # @param [String] message A developer-facing error message, which should
       #     be in English.
+      #
       def set_http_status code, message = ""
         set_status map_http_status(code), message
       end
 
       ##
       # Set the stack trace for this span.
-      # You may call this in one of three ways:
       #
+      # You may call this in one of three ways:
       # *   Pass in no argument to use the caller's stack trace.
       # *   Pass in an integer to use the caller's stack trace, but skip
       #     additional stack frames.
-      # *   Pass in an explicit array of Thread::Backtrace::Location as
-      #     returned from Kernel#caller_locations
+      # *   Pass in an explicit array of `Thread::Backtrace::Location` as
+      #     returned from `Kernel#caller_locations`
       #
       # @param [Array<Thread::Backtrace::Location>, Integer] stack_trace
       #

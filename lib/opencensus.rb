@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+##
+# OpenCensus is a vendor-agnostic single distribution of libraries to provide
+# metrics collection and tracing for your services. See https://opencensus.io/
+# for general information on OpenCensus.
+#
+# The OpenCensus module provides a namespace for the Ruby implementation of
+# OpenCensus, including the core libraries for OpenCensus metrics and tracing.
+#
+module OpenCensus
+end
+
 require "opencensus/common"
 require "opencensus/config"
 require "opencensus/context"

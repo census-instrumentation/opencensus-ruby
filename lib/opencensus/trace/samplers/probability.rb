@@ -24,9 +24,9 @@ module OpenCensus
       #
       class Probability
         ##
-        # The default sampling probability.
+        # The default sampling probability, equal to 1/10000.
         #
-        DEFAULT_RATE = 0.1
+        DEFAULT_RATE = 0.0001
 
         ##
         # Create a sampler for the given probability.

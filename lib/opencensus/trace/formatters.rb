@@ -20,8 +20,8 @@ module OpenCensus
   module Trace
     ##
     # The Formatters module contains several implementations of cross-service
-    # SpanContext propagation. Each formatter can serialize and deserialize a
-    # TraceContextData instance.
+    # context propagation. Each formatter can serialize and deserialize a
+    # {OpenCensus::Trace::TraceContextData} instance.
     #
     module Formatters
     end

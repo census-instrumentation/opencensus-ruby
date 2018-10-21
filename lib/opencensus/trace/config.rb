@@ -22,16 +22,16 @@ module OpenCensus
     # Schema of the Trace configuration. See Trace#configure for more info.
     @config = Common::Config.new do |config|
       default_sampler = Samplers::AlwaysSample.new
+      exporter_logger = ::Logger.new STDOUT, ::Logger::INFO
+      default_exporter = Exporters::Logger.new exporter_logger
+      default_formatter = Formatters::TraceContext.new
+
       config.add_option! :default_sampler, default_sampler do |value|
         value.respond_to? :call
       end
-      default_exporter =
-        Exporters::Logger.new ::Logger.new(STDOUT, ::Logger::INFO)
       config.add_option! :exporter, default_exporter do |value|
         value.respond_to? :export
       end
-      default_formatter =
-        Formatters::TraceContext.new
       config.add_option! :http_formatter, default_formatter do |value|
         value.respond_to?(:serialize) &&
           value.respond_to?(:deserialize) &&
@@ -68,7 +68,7 @@ module OpenCensus
       #
       #     OpenCensus::Trace.configure do |config|
       #       config.default_sampler =
-      #         OpenCensus::Trace::Samplers::AlwaysSample.new
+      #         OpenCensus::Trace::Samplers::RateLimiting.new
       #       config.default_max_attributes = 16
       #     end
       #
@@ -76,17 +76,17 @@ module OpenCensus
       #
       # *   `default_sampler` The default sampler to use. Must be a sampler,
       #     an object with a `call` method that takes a single options hash.
-      #     See OpenCensus::Trace::Samplers. The initial value is a Probability
-      #     sampler with a default rate.
+      #     See {OpenCensus::Trace::Samplers}. The initial value is an instance
+      #     of {OpenCensus::Trace::Samplers::AlwaysSample}.
       # *   `exporter` The exporter to use. Must be an exporter, an object with
       #     an export method that takes an array of Span objects. See
-      #     OpenCensus::Trace::Exporters. The initial value is a Logger exporter
-      #     that logs to STDOUT.
+      #     {OpenCensus::Trace::Exporters}. The initial value is a
+      #     {OpenCensus::Trace::Exporters::Logger} that logs to STDOUT.
       # *   `http_formatter` The trace context propagation formatter to use.
       #     Must be a formatter, an object with `serialize`, `deserialize`,
       #     `header_name`, and `rack_header_name` methods. See
-      #     OpenCensus::Trace::Formatter. The initial value is a TraceContext
-      #     formatter.
+      #     {OpenCensus::Trace::Formatters}. The initial value is a
+      #     {OpenCensus::Trace::Formatters::TraceContext}.
       # *   `default_max_attributes` The maximum number of attributes to add to
       #     a span. Initial value is 32. Use 0 for no maximum.
       # *   `default_max_stack_frames` The maximum number of stack frames to

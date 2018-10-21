@@ -20,8 +20,9 @@ module OpenCensus
 
   class << self
     ##
-    # Configure OpenCensus. Most configuration parameters are part of
-    # subconfigurations that live under this main configuration.
+    # Configure OpenCensus. Most configuration parameters are defined in
+    # subconfigurations that live under this main configuration. See, for
+    # example, {OpenCensus::Trace.configure}.
     #
     # If the OpenCensus Railtie is installed in a Rails application, the
     # toplevel configuration object is also exposed as `config.opencensus`.
@@ -33,7 +34,7 @@ module OpenCensus
     #
     #     OpenCensus.configure do |config|
     #       config.trace.default_sampler =
-    #         OpenCensus::Trace::Samplers::AlwaysSample.new
+    #         OpenCensus::Trace::Samplers::RateLimiting.new
     #       config.trace.default_max_attributes = 16
     #     end
     #

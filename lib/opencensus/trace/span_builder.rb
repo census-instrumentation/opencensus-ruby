@@ -160,7 +160,7 @@ module OpenCensus
       # the local machine where the span execution ends. On the server side,
       # this is the time when the server application handler stops running.
       #
-      # In Ruby, this is represented by a Time object in UTC, or `nil` if the
+      # In Ruby, this is represented by a `Time` object in UTC, or `nil` if the
       # starting timestamp has not yet been populated.
       #
       # @return [Time, nil]
@@ -246,7 +246,7 @@ module OpenCensus
       # @param [Integer] id An identifier for the MessageEvent's message that
       #     can be used to match SENT and RECEIVED events. For example, this
       #     field could represent a sequence ID for a streaming RPC. It is
-      #     recommended to be unique within a Span. The valid range is 64-bit
+      #     recommended to be unique within a span. The valid range is 64-bit
       #     unsigned `(0..2^64-1)`
       # @param [Integer] uncompressed_size The number of uncompressed bytes
       #     sent or received.
@@ -322,8 +322,8 @@ module OpenCensus
       # *   Pass in no argument to use the caller's stack trace.
       # *   Pass in an integer to use the caller's stack trace, but skip
       #     additional stack frames.
-      # *   Pass in an explicit array of Thread::Backtrace::Location as
-      #     returned from Kernel#caller_locations
+      # *   Pass in an explicit array of `Thread::Backtrace::Location` as
+      #     returned from `Kernel#caller_locations`
       #
       # @param [Array<Thread::Backtrace::Location>, Integer] stack_trace
       #

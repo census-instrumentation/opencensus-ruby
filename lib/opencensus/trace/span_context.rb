@@ -151,7 +151,7 @@ module OpenCensus
       ##
       # Create a new span in this context.
       # You must pass a name for the span. All other span attributes should
-      # be set using the SpanBuilder methods.
+      # be set using {OpenCensus::Trace::SpanBuilder} methods.
       # The span will be started automatically with the current timestamp.
       # However, you are responsible for finishing the span yourself.
       #
@@ -183,7 +183,7 @@ module OpenCensus
       ##
       # Create a new span in this context.
       # You must pass a name for the span. All other span attributes should
-      # be set using the SpanBuilder methods.
+      # be set using {OpenCensus::Trace::SpanBuilder} methods.
       #
       # The span will be started automatically with the current timestamp. The
       # SpanBuilder will then be passed to the block you provide. The span will

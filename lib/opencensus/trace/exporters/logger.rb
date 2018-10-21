@@ -27,9 +27,9 @@ module OpenCensus
         # Create a new Logger exporter
         #
         # @param [#log] logger The logger to write to.
-        # @param [Symbol] level The log level. This should be a log level
-        #        defined by {https://ruby-doc.org/stdlib-2.5.0/libdoc/logger/rdoc/Logger.html
-        #        Logger Standard Library}.
+        # @param [Integer] level The log level. This should be a log level
+        #        defined by the Logger standard library. Default is
+        #        `::Logger::INFO`.
         #
         def initialize logger, level: ::Logger::INFO
           @logger = logger

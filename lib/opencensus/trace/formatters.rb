@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 require "opencensus/trace/formatters/binary"
 require "opencensus/trace/formatters/cloud_trace"
 require "opencensus/trace/formatters/trace_context"

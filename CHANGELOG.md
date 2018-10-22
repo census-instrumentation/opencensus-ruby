@@ -1,6 +1,6 @@
 # Release History
 
-### 0.4.0 / Unreleased
+### 0.4.0 / 2018-10-22
 
 This is an important update that includes a number of fixes and brings the
 library up to date with the latest OpenCensus specification.

@@ -13,6 +13,11 @@
 # limitations under the License.
 
 
+require "opencensus/stats/recorder"
+require "opencensus/stats/view"
+require "opencensus/stats/aggregation"
+require "opencensus/stats/measure"
+
 module OpenCensus
   ##
   # The Stats module contains support for OpenCensus stats collection.
@@ -20,8 +25,66 @@ module OpenCensus
   # OpenCensus allows users to create typed measures, record measurements,
   # aggregate the collected data, and export the aggregated data.
   #
-  # TODO: implement stats
   #
   module Stats
+    STATS_CONTEXT_KEY = :__stats_context__
+
+    class << self
+      def stats_context= context
+        OpenCensus::Context.set STATS_CONTEXT_KEY, context
+      end
+
+      def unset_stats_context
+        OpenCensus::Context.unset STATS_CONTEXT_KEY
+      end
+
+      def stats_context
+        OpenCensus::Context.get STATS_CONTEXT_KEY
+      end
+
+      def recorder
+        self.stats_context = Recorder.new unless stats_context
+        stats_context
+      end
+
+      def measure_int name:, unit:, description: nil
+        Measure.new name, description, unit, :int
+      end
+
+      def measure_float name:, unit:, description: nil
+        Measure.new name, description, unit, :float
+      end
+
+      def create_view \
+          name:,
+          measure:,
+          aggregation:,
+          description: nil,
+          tag_keys: nil
+        View.new(
+          name: name,
+          measure: measure,
+          aggregation: aggregation,
+          description: description,
+          tag_keys: tag_keys
+        )
+      end
+
+      def sum_aggregation
+        Aggregation.new :sum
+      end
+
+      def count_aggregation
+        Aggregation.new :count
+      end
+
+      def distribution_aggregation buckets
+        Aggregation.new :distribution, buckets: buckets
+      end
+
+      def last_value_aggregation
+        Aggregation.new :last_value
+      end
+    end
   end
 end

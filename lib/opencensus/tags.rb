@@ -13,14 +13,29 @@
 # limitations under the License.
 
 
+require "opencensus/tags/tag_map"
+
 module OpenCensus
   ##
   # The Tags module contains support for OpenCensus tags. Tags are key-value
   # pairs. Tags provide additional cardinality to the OpenCensus instrumentation
   # data.
   #
-  # TODO: implement tags
-  #
   module Tags
+    TAGS_CONTEXT_KEY = :__tags_context__
+
+    class << self
+      def tags_context= context
+        OpenCensus::Context.set TAGS_CONTEXT_KEY, context
+      end
+
+      def unset_tags_context
+        OpenCensus::Context.unset TAGS_CONTEXT_KEY
+      end
+
+      def tags_context
+        OpenCensus::Context.get TAGS_CONTEXT_KEY
+      end
+    end
   end
 end

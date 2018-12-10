@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 
-require 'forwardable'
+require "forwardable"
 
 module OpenCensus
   module Tags
@@ -26,7 +26,7 @@ module OpenCensus
         @tags[key] = value
       end
 
-      def_delegators :@tags, :[], :each, :delete, :delete_if
+      def_delegators :@tags, :[], :each, :delete, :delete_if, :length
 
       private
 
@@ -46,7 +46,7 @@ module OpenCensus
       end
 
       def printable_str? str
-        !str.bytes.any? { |b| b < 32 || b > 126 }
+        str.bytes.none? { |b| b < 32 || b > 126 }
       end
     end
   end

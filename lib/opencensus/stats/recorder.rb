@@ -7,7 +7,7 @@ require "opencensus/stats/view_data"
 module OpenCensus
   module Stats
     class Recorder
-      attr_reader :views, :exporters
+      attr_reader :views, :exporters, :measures, :measure_views_data
 
       def initialize
         @views = {}
@@ -15,14 +15,6 @@ module OpenCensus
         @exporters = []
         @measure_views_data = {}
         @time = Time.now.utc
-      end
-
-      def measure_int name, unit, description = nil
-        Measure.new name, description, unit, :int
-      end
-
-      def measure_float name, unit, description = nil
-        Measure.new name, description, unit, :float
       end
 
       def register_view view
@@ -43,39 +35,32 @@ module OpenCensus
       end
 
       def record *measurements, tags: nil
-        return if measurements.any?{|m| m.value.negative? }
-
-        tags = Tags.tags_context unless tags
+        return if measurements.any? { |m| m.value.negative? }
+        tags ||= Tags.tags_context
 
         measurements.each do |measurement|
           next unless @measures.key? measurement.measure.name
 
           views_data = @measure_views_data[measurement.measure.name]
-          next unless views_data
-
           views_data.each do |view_data|
             view_data.record tags, measurement.value, Time.now.utc
           end
 
           export views_data
         end
-
-        true
       end
 
-      def view_data name
-        view = @views[name]
+      def view_data view_name
+        view = @views[view_name]
         return unless view
 
         views_data = @measure_views_data[view.measure.name]
-        return unless views_data
-
-        views_data.find{|view_data| view_data.view.name == view.name }
+        views_data.find { |view_data| view_data.view.name == view.name }
       end
 
       def clear_stats
         @measure_views_data.each_value do |views_data|
-          views_data.each &:clear_stats
+          views_data.each(&:clear_stats)
         end
       end
 
@@ -87,7 +72,8 @@ module OpenCensus
         @exporters.delete exporter
       end
 
-      def export view_datas
+      # TODO: implementation
+      def export views_data
       end
     end
   end

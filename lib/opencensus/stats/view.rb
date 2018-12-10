@@ -4,18 +4,18 @@
 module OpenCensus
   module Stats
     class View
-      attr_accessor :name, :measure, :aggregation, :tag_keys, :description
+      attr_accessor :name, :measure, :aggregation, :columns, :description
 
       def initialize \
           name:,
           measure:,
           aggregation:,
-          tag_keys:,
+          columns:,
           description: nil
         @name = name
         @measure = measure
         @aggregation = aggregation
-        @tag_keys = tag_keys.sort
+        @columns = columns
         @description = description
         @time = Time.now
       end

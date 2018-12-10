@@ -43,16 +43,20 @@ module OpenCensus
       end
 
       def recorder
-        self.stats_context = Recorder.new unless stats_context
-        stats_context
+        self.stats_context ||= Recorder.new
       end
 
       def measure_int name:, unit:, description: nil
-        Measure.new name, description, unit, :int
+        Measure.new name: name, unit: unit, type: :int, description: description
       end
 
       def measure_float name:, unit:, description: nil
-        Measure.new name, description, unit, :float
+        Measure.new(
+          name: name,
+          unit: unit,
+          type: :float,
+          description: description
+        )
       end
 
       def create_view \
@@ -60,13 +64,13 @@ module OpenCensus
           measure:,
           aggregation:,
           description: nil,
-          tag_keys: nil
+          columns: nil
         View.new(
           name: name,
           measure: measure,
           aggregation: aggregation,
           description: description,
-          tag_keys: tag_keys
+          columns: columns
         )
       end
 

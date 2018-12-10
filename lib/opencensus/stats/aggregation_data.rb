@@ -25,20 +25,18 @@ module OpenCensus
         end
       end
 
-      def add value, timestamp: nil, attachments: nil
+      def add value, timestamp: nil
         case type
         when :sum
-          self.data += value
+          @data += value
         when :count
-          self.data += 1
+          @data += 1
         when :distribution
           add_distribution value
         when :last_value
-          self.data = value
+          @data = value
         end
       end
-
-      private
 
       def add_distribution value
         @data[:count] += 1
@@ -50,7 +48,7 @@ module OpenCensus
         bucket_index ||= @data[:buckets].length
         @data[:bucket_counts][bucket_index] += 1
 
-        delta_from_mean = value - @data[:mean]
+        delta_from_mean = (value - @data[:mean]).to_f
         @data[:mean] += delta_from_mean / @data[:count]
         @data[:sum_of_squared_deviation] +=
           delta_from_mean * (value - @data[:mean])

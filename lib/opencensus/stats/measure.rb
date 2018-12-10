@@ -9,16 +9,16 @@ module OpenCensus
       # Describes the unit used for the Measure.
       # Should follows the format described by
       # http://unitsofmeasure.org/ucum.html
-      UNIT_NONE = "1"    # for general counts
-      BYTE = "By"   # bytes
-      KBYTE = "kb"  # Kbytes
-      SEC = "s"     # seconds
-      MS = "ms"     # millisecond
-      NS = "ns"     # nanosecond
+      UNIT_NONE = "1" # for general counts
+      BYTE = "By"
+      KBYTE = "kb"
+      SEC = "s"
+      MS = "ms"
+      NS = "ns"
 
       attr_accessor :name, :description, :unit, :type
 
-      def initialize name, unit, type, description
+      def initialize name:, unit:, type:, description: nil
         @name = name
         @unit = unit
         @type = type

@@ -20,19 +20,14 @@ module OpenCensus
         @end_time = Time.now.utc
       end
 
-      def record tags, value, timestamp, attachments: nil
-        tag_values = view.tag_keys.map { |key| tags[key] }
+      def record tags, value, timestamp
+        tag_values = view.columns.map { |key| tags[key] }
 
-        # TODO : if tag_values present then add_sample
         unless data.key? tag_values
           data[tag_values] = view.aggregation.new_aggregation_data
         end
 
-        data[tag_values].add(
-          value,
-          timestamp: timestamp,
-          attachments: attachments
-        )
+        data[tag_values].add value, timestamp: timestamp
       end
 
       def clear_stats

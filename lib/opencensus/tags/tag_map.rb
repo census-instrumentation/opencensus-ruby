@@ -26,7 +26,15 @@ module OpenCensus
         @tags[key] = value
       end
 
-      def_delegators :@tags, :[], :each, :delete, :delete_if, :length
+      def to_binary
+        Formatters::Binary.new.serialize self
+      end
+
+      def self.from_binary data
+        Formatters::Binary.new.deserialize data
+      end
+
+      def_delegators :@tags, :[], :each, :delete, :delete_if, :length, :to_h
 
       private
 

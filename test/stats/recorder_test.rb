@@ -156,8 +156,8 @@ describe OpenCensus::Stats::Recorder do
       recorder.clear_stats
 
       recorder.measure_views_data.values.each do |views_data|
-        views_data.each do |view_data|
-          view_data.data.must_be_empty
+        views_data.each do |vd|
+          vd.data.must_be_empty
         end
       end
     end

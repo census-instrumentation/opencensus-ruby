@@ -149,4 +149,27 @@ describe OpenCensus::Tags::TagMap do
     tag_map.length.must_equal 0
   end
 
+  describe "binary formatter" do
+    it "serialize tag map to binary format" do
+      tag_map = OpenCensus::Tags::TagMap.new({
+        "key1" => "val1",
+        "key2" => "val2"
+      })
+
+      expected_binary = "\x00\x00\x04key1\x04val1\x00\x04key2\x04val2"
+      tag_map.to_binary.must_equal expected_binary
+    end
+
+    it "deserialize binary format and create tag map" do
+      binary = "\x00\x00\x04key1\x04val1\x00\x04key2\x04val2"
+
+      tag_map = OpenCensus::Tags::TagMap.from_binary binary
+      expected_value = {
+        "key1" => "val1",
+        "key2" => "val2"
+      }
+      tag_map.to_h.must_equal expected_value
+    end
+  end
+
 end

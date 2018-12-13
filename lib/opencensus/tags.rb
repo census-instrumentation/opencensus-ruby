@@ -14,6 +14,7 @@
 
 
 require "opencensus/tags/tag_map"
+require "opencensus/tags/formatters"
 
 module OpenCensus
   ##

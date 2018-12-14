@@ -28,9 +28,7 @@ module OpenCensus
       class InvaliedBucketsError < StandardError; end
 
       def validate_buckets! buckets
-        if buckets.nil?
-          raise InvaliedBucketsError, "buckets should not be nil"
-        end
+        raise InvaliedBucketsError, "buckets should not be nil" unless buckets
 
         if buckets.any?(&:nil?)
           raise InvaliedBucketsError, "buckets value should not be nil"

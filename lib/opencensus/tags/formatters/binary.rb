@@ -60,8 +60,7 @@ module OpenCensus
           loop do
             bits = int_val & 0x7F
             int_val >>= 7
-            # p int_val
-            if int_val == 0
+            if int_val.zero?
               result << bits
               break
             else
@@ -80,7 +79,7 @@ module OpenCensus
             byte = io.getbyte
             int_val |= (byte & 0x7F) << shift
             shift += 7
-            return int_val if (byte & 0x80) == 0
+            return int_val if (byte & 0x80).zero?
           end
         end
       end

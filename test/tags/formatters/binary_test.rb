@@ -61,7 +61,7 @@ describe OpenCensus::Tags::Formatters::Binary do
       error = expect {
         formatter.deserialize binary
       }.must_raise OpenCensus::Tags::Formatters::Binary::BinaryFormatterError
-      error.message.must_match /invalid version id/i
+      error.message.must_match(/invalid version id/i)
     end
 
     it "stop parsing subsequent tags if found invalid field tag id" do

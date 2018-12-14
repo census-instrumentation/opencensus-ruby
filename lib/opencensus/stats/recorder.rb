@@ -74,6 +74,7 @@ module OpenCensus
 
       # TODO: implementation
       def export views_data
+        @exporters.each { |exporter| exporter.export views_data }
       end
     end
   end

@@ -17,6 +17,7 @@ require "opencensus/stats/recorder"
 require "opencensus/stats/view"
 require "opencensus/stats/aggregation"
 require "opencensus/stats/measure"
+require "opencensus/stats/exporters"
 
 module OpenCensus
   ##

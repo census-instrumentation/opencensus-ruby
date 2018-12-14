@@ -3,14 +3,48 @@
 module OpenCensus
   module Tags
     module Formatters
+      ##
+      # This formatter serializes and deserializes tags context according to
+      # the OpenCensus' BinaryEncoding specification. See
+      # [documentation](https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md).
+      #
+      # @example Serialize
+      #
+      # formatter = OpenCensus::Tags::Formatters::Binary.new
+      #
+      # tag_map = OpenCensus::Tags::TagMap.new({\"key1" => \"val1"})
+      # binary = formatter.serialize tag_map # "\x00\x00\x04key1\x04val1"
+      #
+      # @example Deserialize
+      #
+      # formatter = OpenCensus::Tags::Formatters::Binary.new
+      #
+      # binary = "\x00\x00\x04key1\x04val1"
+      # tag_map = formatter.deserialize binary
+      #
       class Binary
         # @private
         class BinaryFormatterError < StandardError; end
 
+        # @private
+        #
+        # Seralization version
         VERSION_ID = 0
+
+        # @private
+        #
+        # Tag field id
         TAG_FIELD_ID = 0
+
+        # @private
+        #
+        # Serialized tag context limit
         TAG_MAP_SERIALIZED_SIZE_LIMIT = 8192
 
+        # Serialize TagMap object
+        #
+        # @param [TagMap] tags_context
+        #
         def serialize tags_context
           binary = [int_to_varint(VERSION_ID)]
 
@@ -26,6 +60,11 @@ module OpenCensus
           binary.length > TAG_MAP_SERIALIZED_SIZE_LIMIT ? nil : binary
         end
 
+        # Deserialize binary data into a TagMap object.
+        #
+        # @param [String] binary
+        # @return [TagMap]
+        #
         def deserialize binary
           return TagMap.new if binary.nil? || binary.empty?
 
@@ -55,6 +94,13 @@ module OpenCensus
 
         private
 
+        # @private
+        #
+        # Convert integer to Varint.
+        # @see https://developers.google.com/protocol-buffers/docs/encoding#varints
+        #
+        # @param [Integer] int_val
+        # @return [String]
         def int_to_varint int_val
           result = []
           loop do
@@ -70,6 +116,14 @@ module OpenCensus
           result.pack "C*"
         end
 
+        # @private
+        #
+        # Convert Varint bytes format to integer
+        # @see https://developers.google.com/protocol-buffers/docs/encoding#varints
+        #
+        # @param [StringIO] io
+        # @return [Integer]
+        #
         def varint_to_int io
           int_val = 0
           shift = 0

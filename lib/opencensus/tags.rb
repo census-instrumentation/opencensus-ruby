@@ -25,17 +25,34 @@ module OpenCensus
   # data.
   #
   module Tags
+    ##
+    # Internal key for storing the current TagMap in the thread local
+    # Context
+    #
+    # @private
+    #
     TAGS_CONTEXT_KEY = :__tags_context__
 
     class << self
+      ##
+      # Sets the current thread-local TagMap, which used in Stats data recording.
+      #
+      # @param [TagMap] context
+      #
       def tags_context= context
         OpenCensus::Context.set TAGS_CONTEXT_KEY, context
       end
 
+      # Unsets the current thread-local TagMap context
+      #
       def unset_tags_context
         OpenCensus::Context.unset TAGS_CONTEXT_KEY
       end
 
+      # Returns the current thread-local TagMap object.
+      #
+      # @return [TagMap, nil]
+      #
       def tags_context
         OpenCensus::Context.get TAGS_CONTEXT_KEY
       end

@@ -13,10 +13,11 @@
 # limitations under the License.
 
 
+require "opencensus/stats/config"
 require "opencensus/stats/recorder"
 require "opencensus/stats/view"
 require "opencensus/stats/aggregation"
-require "opencensus/stats/measure"
+require "opencensus/stats/measure_registry"
 require "opencensus/stats/exporters"
 
 module OpenCensus
@@ -48,16 +49,31 @@ module OpenCensus
       end
 
       def measure_int name:, unit:, description: nil
-        Measure.new name: name, unit: unit, type: :int, description: description
+        MeasureRegistry.register(
+          name: name,
+          unit: unit,
+          type: :int,
+          description: description
+        )
       end
 
       def measure_float name:, unit:, description: nil
-        Measure.new(
+        MeasureRegistry.register(
           name: name,
           unit: unit,
           type: :float,
           description: description
         )
+      end
+
+      def registered_measures
+        MeasureRegistry.measures
+      end
+
+      def create_measurement name, value
+        measure = MeasureRegistry.get name
+        return measure.measurement(value) if measure
+        raise ArgumentError, "#{name} measure is not registered"
       end
 
       def create_view \

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+
 module OpenCensus
   module Stats
     class ViewData

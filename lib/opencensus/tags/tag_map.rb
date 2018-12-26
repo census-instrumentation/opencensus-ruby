@@ -93,7 +93,10 @@ module OpenCensus
       #   @see Hash#length
       # @!method to_h
       #   @see Hash#to_h
-      def_delegators :@tags, :[], :each, :delete, :delete_if, :length, :to_h
+      # @!method empty?
+      #   @see Hash#empty?
+      def_delegators :@tags, :[], :each, :delete, :delete_if, :length, \
+                     :to_h, :empty?
 
       private
 

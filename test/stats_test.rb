@@ -23,32 +23,87 @@ describe OpenCensus::Stats do
     end
   end
 
-  describe "mesure" do
-    it "create int mesure" do
-      mesure = OpenCensus::Stats.measure_int(
+  describe "measure" do
+    before {
+      OpenCensus::Stats::MeasureRegistry.clear
+    }
+    it "create int measure" do
+      measure = OpenCensus::Stats.measure_int(
         name: "Latency",
         unit: "ms",
         description: "Test description"
       )
 
-      mesure.must_be_kind_of OpenCensus::Stats::Measure
-      mesure.int?.must_equal true
-      mesure.name.must_equal "Latency"
-      mesure.unit.must_equal "ms"
-      mesure.description.must_equal "Test description"
+      measure.must_be_kind_of OpenCensus::Stats::Measure
+      measure.int?.must_equal true
+      measure.name.must_equal "Latency"
+      measure.unit.must_equal "ms"
+      measure.description.must_equal "Test description"
+      OpenCensus::Stats::MeasureRegistry.get(measure.name).must_equal measure
     end
 
     it "create float measure" do
-      mesure = OpenCensus::Stats.measure_float(
+      measure = OpenCensus::Stats.measure_float(
         name: "Storage",
         unit: "kb",
         description: "Test description"
       )
-      mesure.must_be_kind_of OpenCensus::Stats::Measure
-      mesure.float?.must_equal true
-      mesure.name.must_equal "Storage"
-      mesure.unit.must_equal "kb"
-      mesure.description.must_equal "Test description"
+      measure.must_be_kind_of OpenCensus::Stats::Measure
+      measure.float?.must_equal true
+      measure.name.must_equal "Storage"
+      measure.unit.must_equal "kb"
+      measure.description.must_equal "Test description"
+      OpenCensus::Stats::MeasureRegistry.get(measure.name).must_equal measure
+    end
+
+    it "get list of registered measure" do
+      measure = OpenCensus::Stats.measure_float(
+        name: "Storage-1",
+        unit: "kb",
+        description: "Test description"
+      )
+      OpenCensus::Stats.registered_measures.first.must_equal measure
+    end
+
+    it "prevents dublicate measure registration" do
+      measure_name = "Storage-2"
+      measure = OpenCensus::Stats.measure_float(
+        name: measure_name,
+        unit: "kb",
+        description: "Test description"
+      )
+
+      OpenCensus::Stats.measure_float(
+        name: measure_name,
+        unit: "kb",
+        description: "Test description"
+      ).must_be_nil
+
+      OpenCensus::Stats.registered_measures.length.must_equal 1
+      OpenCensus::Stats::MeasureRegistry.get(measure_name).must_equal measure
+    end
+  end
+
+  describe "measurement" do
+    before {
+      OpenCensus::Stats::MeasureRegistry.clear
+    }
+    it "create measurement" do
+      measure = OpenCensus::Stats.measure_int(
+        name: "latency",
+        unit: "ms",
+        description: "Test description"
+      )
+
+      measurement = OpenCensus::Stats.create_measurement "latency", 10
+      measurement.measure.must_equal measure
+      measurement.value.must_equal 10
+    end
+
+    it "raise an error if measure not found in registry" do
+      expect {
+          OpenCensus::Stats.create_measurement "latency-#{Time.now.to_i}", 10
+      }.must_raise ArgumentError
     end
   end
 

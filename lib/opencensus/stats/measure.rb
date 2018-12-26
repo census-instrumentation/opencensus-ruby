@@ -16,7 +16,7 @@ module OpenCensus
       MS = "ms"
       NS = "ns"
 
-      attr_accessor :name, :description, :unit, :type
+      attr_reader :name, :description, :unit, :type
 
       def initialize name:, unit:, type:, description: nil
         @name = name

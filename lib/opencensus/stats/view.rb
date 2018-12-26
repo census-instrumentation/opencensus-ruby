@@ -4,7 +4,7 @@
 module OpenCensus
   module Stats
     class View
-      attr_accessor :name, :measure, :aggregation, :columns, :description
+      attr_reader :name, :measure, :aggregation, :columns, :description
 
       def initialize \
           name:,

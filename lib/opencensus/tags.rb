@@ -15,6 +15,7 @@
 # limitations under the License.
 
 
+require "opencensus/tags/config"
 require "opencensus/tags/tag_map"
 require "opencensus/tags/formatters"
 

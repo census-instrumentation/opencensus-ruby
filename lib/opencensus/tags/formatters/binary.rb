@@ -69,7 +69,7 @@ module OpenCensus
           return TagMap.new if binary.nil? || binary.empty?
 
           io = StringIO.new binary
-          version_id = io.getc.unpack1("C")
+          version_id = io.getc.unpack("C").first
           unless version_id == VERSION_ID
             raise BinaryFormatterError, "invalid version id"
           end

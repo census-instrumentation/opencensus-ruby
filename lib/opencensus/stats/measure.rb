@@ -14,27 +14,27 @@ module OpenCensus
       # http://unitsofmeasure.org/ucum.html
       # Unit name for general counts
       # @return [String]
-      UNIT_NONE = "1"
+      UNIT_NONE = "1".freeze
 
       # Unit name for bytes
       # @return [String]
-      BYTE = "By"
+      BYTE = "By".freeze
 
       # Unit name for Kilobytes
       # @return [String]
-      KBYTE = "kb"
+      KBYTE = "kb".freeze
 
       # Unit name for Seconds
       # @return [String]
-      SEC = "s"
+      SEC = "s".freeze
 
       # Unit name for Micro seconds
       # @return [String]
-      MS = "ms"
+      MS = "ms".freeze
 
       # Unit name for Neno seconds
       # @return [String]
-      NS = "ns"
+      NS = "ns".freeze
 
       # @return [String]
       attr_reader :name

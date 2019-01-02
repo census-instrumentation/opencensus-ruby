@@ -60,7 +60,7 @@ module OpenCensus
       # @param [Array<Measurement>, Measurement] measurements
       # @param [TagMap] tags
       def record *measurements, tags: nil
-        return if measurements.any? { |m| m.value.negative? }
+        return if measurements.any? { |m| m.value < 0 }
         tags ||= Tags.tags_context
         return if tags.nil? || tags.empty?
 

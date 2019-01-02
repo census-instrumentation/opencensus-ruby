@@ -21,7 +21,8 @@ module OpenCensus
       # Columns (a.k.a Tag Keys) to match with the
       # associated Measure. Measure will be recorded in a "greedy" way.
       # That is, every view aggregates every measure.
-      # This is similar to doing a GROUPBY on view’s columns. Columns must be unique.
+      # This is similar to doing a GROUPBY on view columns. Columns must be
+      # unique.
       # @return [Array<String>]
       attr_reader :columns
 

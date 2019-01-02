@@ -15,8 +15,11 @@ module OpenCensus
       # @return [Symbol] Aggregation type.
       attr_reader :type
 
-      # @return [Integer,Hash,nil] Aggregated data.
+      # @return [Integer,Float,Hash,nil] Aggregated data.
       attr_reader :data
+
+      # @return [Time, Nil] Last recorded time.
+      attr_reader :timestamp
 
       # @private
       # Create new aggregation data collection instance.
@@ -44,6 +47,8 @@ module OpenCensus
       # @param [Integer, Float] value
       # @param [Time] timestamp
       def add value, timestamp: nil
+        @timestamp = timestamp
+
         case type
         when :sum
           @data += value
@@ -58,21 +63,23 @@ module OpenCensus
 
       private
 
+      # @private
       # Calculate count, sum, max, min, mean, sum of squared deviation.
+      # @param [Integer,Float] value
       def add_distribution value
         @data[:count] += 1
         @data[:sum] += value
         @data[:max] = value if value > @data[:max]
         @data[:min] = value if value < @data[:min]
 
-        bucket_index = @data[:buckets].find_index { |b| b > value }
-        bucket_index ||= @data[:buckets].length
-        @data[:bucket_counts][bucket_index] += 1
-
         delta_from_mean = (value - @data[:mean]).to_f
         @data[:mean] += delta_from_mean / @data[:count]
         @data[:sum_of_squared_deviation] +=
           delta_from_mean * (value - @data[:mean])
+
+        bucket_index = @data[:buckets].find_index { |b| b > value } ||
+                       @data[:buckets].length
+        @data[:bucket_counts][bucket_index] += 1
       end
     end
   end

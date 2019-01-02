@@ -36,7 +36,8 @@ module OpenCensus
 
     class << self
       ##
-      # Sets the current thread-local TagMap, which used in Stats data recording.
+      # Sets the current thread-local TagMap, which used in Stats data
+      # recording.
       #
       # @param [TagMap] context
       #

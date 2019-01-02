@@ -78,14 +78,14 @@ describe OpenCensus::Stats::AggregationData do
       values = [1, 3, 5, 10, 4]
       values.each { |v| aggr_data.add v }
 
-      mean = ( values.sum.to_f / values.length )
+      mean = ( values.inject(:+).to_f / values.length )
       expected_data = {
         count: values.length,
-        sum: values.sum,
+        sum: values.inject(:+),
         max: values.max,
         min: values.min,
         mean: mean,
-        sum_of_squared_deviation: values.map { |v| (v - mean)**2 }.sum,
+        sum_of_squared_deviation: values.map { |v| (v - mean)**2 }.inject(:+),
         buckets: buckets,
         bucket_counts: [1, 1, 2, 1]
       }

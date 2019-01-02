@@ -150,6 +150,8 @@ module OpenCensus
       end
 
       # Create aggregation defination instance with type distribution.
+      # @param [Array<Integer>,Array<Float>] buckets Value boundries for
+      # distribution.
       # @return [Aggregation]
       def distribution_aggregation buckets
         Aggregation.new :distribution, buckets: buckets

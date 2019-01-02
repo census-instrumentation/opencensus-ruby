@@ -78,7 +78,7 @@ module OpenCensus
 
           loop do
             break if io.eof?
-            tag_field_id = io.getc.unpack1("C")
+            tag_field_id = io.getc.unpack("C").first
             break unless tag_field_id == TAG_FIELD_ID
 
             key_length = varint_to_int io

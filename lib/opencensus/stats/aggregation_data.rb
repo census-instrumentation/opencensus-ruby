@@ -2,9 +2,24 @@
 
 module OpenCensus
   module Stats
+    ##
+    # AggregationData container to store collected stats data.
+    #
+    # aggregation types:
+    #   1. Sum
+    #   2. Count
+    #   3. Last value
+    #   4. Distribution - count, sum, min, max, mean, sum of squared deviation
+    #
     class AggregationData
-      attr_reader :type, :data
+      # @return [Symbol] Aggregation type.
+      attr_reader :type
 
+      # @return [Integer,Hash,nil] Aggregated data.
+      attr_reader :data
+
+      # @private
+      # Create new aggregation data collection instance.
       def initialize type, buckets: nil
         @type = type
 
@@ -25,6 +40,9 @@ module OpenCensus
         end
       end
 
+      # Add value to aggregated data
+      # @param [Integer, Float] value
+      # @param [Time] timestamp
       def add value, timestamp: nil
         case type
         when :sum
@@ -38,6 +56,9 @@ module OpenCensus
         end
       end
 
+      private
+
+      # Calculate count, sum, max, min, mean, sum of squared deviation.
       def add_distribution value
         @data[:count] += 1
         @data[:sum] += value

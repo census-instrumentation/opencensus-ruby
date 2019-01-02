@@ -20,6 +20,7 @@ require "opencensus/stats/exporters"
 
 module OpenCensus
   module Stats
+    # Schema of the Trace configuration. See Stats#configure for more info.
     @config = Common::Config.new do |config|
       exporter_logger = ::Logger.new STDOUT, ::Logger::INFO
       default_exporter = Exporters::Logger.new exporter_logger
@@ -29,11 +30,37 @@ module OpenCensus
       end
     end
 
+    # Expose the stats config as a subconfig under the main config.
     OpenCensus.configure do |config|
       config.add_alias! :stats, config: @config
     end
 
     class << self
+      ##
+      # Configure OpenCensus Stats. These configuration fields include
+      # parameters governing aggregation, exporting.
+      #
+      # This configuration is also available as the `stats` subconfig under the
+      # main configuration `OpenCensus.configure`. If the OpenCensus Railtie is
+      # installed in a Rails application, the configuration object is also
+      # exposed as `config.opencensus.stats`.
+      #
+      # Generally, you should configure this once at process initialization,
+      # but it can be modified at any time.
+      #
+      # Supported fields are:
+      #
+      # *   `exporter` The exporter to use. Must be an exporter, an object with
+      #     an export method that takes an array of ViewData objects. See
+      #     {OpenCensus::Stats::Exporters}. The initial value is a
+      #     {OpenCensus::Stats::Exporters::Logger} that logs to STDOUT.
+      #
+      # @example:
+      #
+      #  OpenCensus::Stats.configure do |config|
+      #    config.exporter = OpenCensus::Stats::Exporters::Logger.new
+      #  end
+      #
       def configure
         if block_given?
           yield @config
@@ -42,6 +69,10 @@ module OpenCensus
         end
       end
 
+      ##
+      # Get the current configuration
+      # @private
+      #
       attr_reader :config
     end
   end

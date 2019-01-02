@@ -18,6 +18,7 @@ require "opencensus/tags/formatters"
 
 module OpenCensus
   module Tags
+    # Schema of the Tags configuration. See Tags#configure for more info.
     @config = Common::Config.new do |config|
       default_formatter = Formatters::Binary.new
       config.add_option! :binary_formatter, default_formatter do |value|
@@ -25,11 +26,36 @@ module OpenCensus
       end
     end
 
+    # Expose the tags config as a subconfig under the main config.
     OpenCensus.configure do |config|
       config.add_alias! :tags, config: @config
     end
 
     class << self
+      ##
+      # Configure OpenCensus Tags. These configuration fields include
+      # parameters formatter.
+      #
+      # This configuration is also available as the `tags` subconfig under the
+      # main configuration `OpenCensus.configure`. If the OpenCensus Railtie is
+      # installed in a Rails application, the configuration object is also
+      # exposed as `config.opencensus.tags`.
+      #
+      # Generally, you should configure this once at process initialization,
+      # but it can be modified at any time.
+      #
+      # Supported fields are:
+      #
+      # *  `binary_formatter` The tags context propagation formatter to use.
+      #    Must be a formatter, an object with `serialize`, `deserialize`,
+      #    methods. See {OpenCensus::Tags::Formatters::Binary}.
+      #
+      # @example
+      #
+      #   OpenCensus::Tags.configure do |config|
+      #     config.binary_formatter = OpenCensus::Tags::Formatters::Binary.new
+      #   end
+      #
       def configure
         if block_given?
           yield @config

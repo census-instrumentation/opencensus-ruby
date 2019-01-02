@@ -5,6 +5,9 @@ require "opencensus/stats/aggregation_data"
 
 module OpenCensus
   module Stats
+    # @private
+    #
+    # Aggregation model.
     class Aggregation
       attr_reader :type, :buckets
 

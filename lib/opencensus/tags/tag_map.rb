@@ -56,7 +56,7 @@ module OpenCensus
       #
       # @param [String] key Tag key
       # @param [String] value Tag value
-      # @raise [InvaliedTagError] If invalid tag key or value.
+      # @raise [InvalidTagError] If invalid tag key or value.
       #
       def []= key, value
         validate_key! key
@@ -98,39 +98,33 @@ module OpenCensus
       def_delegators :@tags, :[], :each, :delete, :delete_if, :length, \
                      :to_h, :empty?
 
+      # Invalid tag error.
+      class InvalidTagError < StandardError; end
+
       private
 
-      # @private
-      class InvaliedTagError < StandardError; end
-
-      # @private
-      #
       # Validate tag key.
       # @param [String] key
-      # @raise [InvaliedTagError] If key is empty, length grater then 255
+      # @raise [InvalidTagError] If key is empty, length grater then 255
       #   characters or contains non printable characters
       #
       def validate_key! key
         if key.empty? || key.length > MAX_LENGTH || !printable_str?(key)
-          raise InvaliedTagError, "Invalid tag key #{key}"
+          raise InvalidTagError, "Invalid tag key #{key}"
         end
       end
 
-      # @private
-      #
       # Validate tag value.
       # @param [String] value
-      # @raise [InvaliedTagError] If value length grater then 255 characters
+      # @raise [InvalidTagError] If value length grater then 255 characters
       #   or contains non printable characters
       #
       def validate_value! value
         if (value && value.length > MAX_LENGTH) || !printable_str?(value)
-          raise InvaliedTagError, "Invalid tag value #{value}"
+          raise InvalidTagError, "Invalid tag value #{value}"
         end
       end
 
-      # @private
-      #
       # Check string is printable.
       # @param [String] str
       # @return [Boolean]

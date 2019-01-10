@@ -22,28 +22,28 @@ describe OpenCensus::Tags::TagMap do
       it "raise error for empty key" do
         expect {
           raise OpenCensus::Tags::TagMap.new({ "" => "mobile-1.0"})
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if key length more then 255 chars" do
         key = "k" * 256
         expect {
           raise OpenCensus::Tags::TagMap.new({ key => "mobile-1.0"})
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if key contains non printable chars less then 32 ascii code" do
         key = "key#{[31].pack('c')}-test"
         expect {
           raise OpenCensus::Tags::TagMap.new({ key => "mobile-1.0"})
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if key contains non printable chars greater then 126 ascii code" do
         key = "key#{[127].pack('c')}-test"
         expect {
           raise OpenCensus::Tags::TagMap.new({ key => "mobile-1.0"})
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
     end
 
@@ -52,21 +52,21 @@ describe OpenCensus::Tags::TagMap do
         value = "v" * 256
         expect {
           OpenCensus::Tags::TagMap.new({ "frontend" => value })
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if value contains non printable chars less then 32 ascii code" do
         value = "value#{[31].pack('c')}-test"
         expect {
           OpenCensus::Tags::TagMap.new({ "frontend" => value})
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if value contains non printable chars greater then 126 ascii code" do
         value = "value#{[127].pack('c')}-test"
         expect {
           OpenCensus::Tags::TagMap.new({ "frontend" => value })
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
     end
   end
@@ -90,28 +90,28 @@ describe OpenCensus::Tags::TagMap do
       it "raise error for empty key" do
         expect {
           tag_map[""] = "mobile-1.0"
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if key length more then 255 chars" do
         key = "k" * 256
         expect {
           tag_map[key] = "mobile-1.0"
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if key contains non printable chars less then 32 ascii code" do
         key = "key#{[31].pack('c')}-test"
         expect {
           tag_map[key] = "mobile-1.0"
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if key contains non printable chars greater then 126 ascii code" do
         key = "key#{[127].pack('c')}-test"
         expect {
           tag_map[key] = "mobile-1.0"
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
     end
 
@@ -122,21 +122,21 @@ describe OpenCensus::Tags::TagMap do
         value = "v" * 256
         expect {
           tag_map["frontend"] = value
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if value contains non printable chars less then 32 ascii code" do
         value = "value#{[31].pack('c')}-test"
         expect {
           tag_map["frontend"] = value
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
 
       it "raise error if value contains non printable chars greater then 126 ascii code" do
         value = "value#{[127].pack('c')}-test"
         expect {
           tag_map["frontend"] = value
-        }.must_raise OpenCensus::Tags::TagMap::InvaliedTagError
+        }.must_raise OpenCensus::Tags::TagMap::InvalidTagError
       end
     end
   end
@@ -171,5 +171,4 @@ describe OpenCensus::Tags::TagMap do
       tag_map.to_h.must_equal expected_value
     end
   end
-
 end

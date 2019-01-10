@@ -23,7 +23,7 @@ module OpenCensus
       # tag_map = formatter.deserialize binary
       #
       class Binary
-        # @private
+        # Binary formatter error.
         class BinaryFormatterError < StandardError; end
 
         # @private
@@ -64,6 +64,8 @@ module OpenCensus
         #
         # @param [String] binary
         # @return [TagMap]
+        # @raise [BinaryFormatterError] If deserialized version id not valid or
+        # tag key, value size in varint more then then unsigned int32.
         #
         def deserialize binary
           return TagMap.new if binary.nil? || binary.empty?
@@ -94,8 +96,6 @@ module OpenCensus
 
         private
 
-        # @private
-        #
         # Convert integer to Varint.
         # @see https://developers.google.com/protocol-buffers/docs/encoding#varints
         #
@@ -116,13 +116,12 @@ module OpenCensus
           result.pack "C*"
         end
 
-        # @private
-        #
         # Convert Varint bytes format to integer
         # @see https://developers.google.com/protocol-buffers/docs/encoding#varints
         #
         # @param [StringIO] io
         # @return [Integer]
+        # @raise [BinaryFormatterError] If varint size more then unsigned int32
         #
         def varint_to_int io
           int_val = 0

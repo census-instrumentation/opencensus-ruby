@@ -9,9 +9,7 @@ module OpenCensus
     # Stats recorder.
     #
     # Recorder record measurement against measure for registered views
-    # Span represents a span in a trace record. Spans are contained in
-    # a trace and arranged in a forest. That is, each span may be a root span
-    # or have a parent span, and may have zero or more children.
+    # Span represents a span in a trace record.
     class Recorder
       # @private
       # @return [Hash<String,View>] Hash of view name and View object.
@@ -38,6 +36,7 @@ module OpenCensus
       # Register view
       #
       # @param [View] view
+      # @return [View]
       def register_view view
         return if @views.key? view.name
 
@@ -53,23 +52,21 @@ module OpenCensus
           start_time: @time,
           end_time: @time
         )
+        view
       end
 
       # Record measurements
       #
       # @param [Array<Measurement>, Measurement] measurements
-      # @param [TagMap] tags
-      def record *measurements, tags: nil
+      def record *measurements
         return if measurements.any? { |m| m.value < 0 }
-        tags ||= Tags.tags_context
-        return if tags.nil? || tags.empty?
 
         measurements.each do |measurement|
-          next unless @measures.key? measurement.measure.name
-
           views_data = @measure_views_data[measurement.measure.name]
+          next unless views_data
+
           views_data.each do |view_data|
-            view_data.record tags, measurement.value, Time.now.utc
+            view_data.record measurement
           end
         end
       end

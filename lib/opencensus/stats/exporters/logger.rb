@@ -65,7 +65,7 @@ module OpenCensus
 
         def format_aggregation view_data
           {
-            type: view_data.view.aggregation.type,
+            type: view_data.view.aggregation.class.name.downcase,
             start_time: view_data.start_time,
             end_time: view_data.end_time,
             data: view_data.data

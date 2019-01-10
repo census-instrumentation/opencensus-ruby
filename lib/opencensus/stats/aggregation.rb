@@ -1,42 +1,26 @@
 # frozen_string_literal: true
 
 
+require "opencensus/stats/aggregation/sum"
+require "opencensus/stats/aggregation/count"
+require "opencensus/stats/aggregation/last_value"
+require "opencensus/stats/aggregation/distribution"
 require "opencensus/stats/aggregation_data"
 
 module OpenCensus
   module Stats
-    # @private
+    # # Aggregation
     #
-    # Aggregation model.
-    class Aggregation
-      attr_reader :type, :buckets
-
-      # @private
-      def initialize type, buckets: nil
-        @type = type
-
-        if type == :distribution
-          validate_buckets! buckets
-          @buckets = buckets
-        end
-      end
-
-      def new_aggregation_data
-        AggregationData.new type, buckets: buckets
-      end
-
-      private
-
-      # @private
-      class InvaliedBucketsError < StandardError; end
-
-      def validate_buckets! buckets
-        raise InvaliedBucketsError, "buckets should not be nil" unless buckets
-
-        if buckets.any?(&:nil?)
-          raise InvaliedBucketsError, "buckets value should not be nil"
-        end
-      end
+    # Aggregation types to describes how the data collected based on aggregation
+    # type.
+    # Aggregation types are.
+    # - Sum
+    # - Count
+    # - Last Value
+    # - Distribution - calcualate min, max, mean, sum, count,
+    #   sum of squared deviation
+    #
+    module Aggregation
     end
   end
 end

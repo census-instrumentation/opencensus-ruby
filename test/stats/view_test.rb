@@ -5,11 +5,11 @@ describe OpenCensus::Stats::View do
     OpenCensus::Stats::Measure.new(
       name: "latency",
       unit: "ms",
-      type: :int,
+      type: OpenCensus::Stats::Measure::INT64_TYPE,
       description: "latency desc"
     )
   }
-  let(:aggregation){ OpenCensus::Stats::Aggregation.new :sum }
+  let(:aggregation){ OpenCensus::Stats::Aggregation::Sum.new }
   let(:columns) { ["frontend"]}
 
   it "create view instance and populate properties" do

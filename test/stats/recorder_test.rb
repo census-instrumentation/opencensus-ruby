@@ -2,18 +2,18 @@ require "test_helper"
 
 describe OpenCensus::Stats::Recorder do
   before{
-    OpenCensus::Tags.unset_tags_context
+    OpenCensus::Tags.unset_tag_map_context
     OpenCensus::Stats::MeasureRegistry.clear
   }
   let(:measure_name) { "latency" }
   let(:measure){
-    OpenCensus::Stats.measure_int(
+    OpenCensus::Stats.create_measure_int(
       name: measure_name,
       unit: "ms",
       description: "latency desc"
     )
   }
-  let(:aggregation){ OpenCensus::Stats::Aggregation.new :sum }
+  let(:aggregation){ OpenCensus::Stats::Aggregation::Sum.new }
   let(:tag_keys) { ["frontend"]}
   let(:view) {
     OpenCensus::Stats::View.new(
@@ -28,7 +28,11 @@ describe OpenCensus::Stats::Recorder do
     OpenCensus::Tags::TagMap.new(tag_keys.first => "mobile-ios9.3.5")
   }
 
-  it "create with default properties" do
+  let(:tags) {
+    { tag_keys.first => "mobile-ios9.3.5" }
+  }
+
+  it "create reacorder with default properties" do
     recorder = OpenCensus::Stats::Recorder.new
 
     recorder.views.must_be_empty
@@ -59,7 +63,7 @@ describe OpenCensus::Stats::Recorder do
       view1 = OpenCensus::Stats::View.new(
         name: "test.view",
         measure: measure,
-        aggregation: OpenCensus::Stats::Aggregation.new(:count),
+        aggregation: OpenCensus::Stats::Aggregation::Count,
         description: "View for count",
         columns: ["service-1"]
       )
@@ -76,7 +80,7 @@ describe OpenCensus::Stats::Recorder do
       view1 = OpenCensus::Stats::View.new(
         name: "test.view1",
         measure: measure,
-        aggregation: OpenCensus::Stats::Aggregation.new(:count),
+        aggregation: OpenCensus::Stats::Aggregation::Count,
         description: "View for count",
         columns: ["service-1"]
       )
@@ -91,8 +95,12 @@ describe OpenCensus::Stats::Recorder do
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
 
-      measurement = OpenCensus::Stats.create_measurement(measure_name, 10)
-      recorder.record measurement, tags: tag_map
+      measurement = OpenCensus::Stats.create_measurement(
+        name: measure_name,
+        value: 10,
+        tags: tags
+      )
+      recorder.record measurement
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 1
     end
@@ -101,9 +109,17 @@ describe OpenCensus::Stats::Recorder do
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
 
-      measurement1 = OpenCensus::Stats.create_measurement(measure_name, 10)
-      measurement2 = OpenCensus::Stats.create_measurement(measure_name, 20)
-      recorder.record measurement1, measurement2, tags: tag_map
+      measurement1 = OpenCensus::Stats.create_measurement(
+        name: measure_name,
+        value: 10,
+        tags: tags
+      )
+      measurement2 = OpenCensus::Stats.create_measurement(
+        name: measure_name,
+        value: 20,
+        tags: tags
+      )
+      recorder.record measurement1, measurement2
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 1
     end
@@ -112,7 +128,11 @@ describe OpenCensus::Stats::Recorder do
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
 
-      measurement = OpenCensus::Stats.create_measurement(measure_name, -1)
+      measurement = OpenCensus::Stats.create_measurement(
+        name: measure_name,
+        value: -1,
+        tags: tags
+      )
       recorder.record measurement, tags: tag_map
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 0
@@ -129,20 +149,24 @@ describe OpenCensus::Stats::Recorder do
         description: "latency desc"
       )
 
-      recorder.record measure1.measurement(1), tags: tag_map
+      recorder.record measure1.create_measurement(value: 1, tags: tags)
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 0
     end
 
     it "record measurement against tags global context" do
-      OpenCensus::Tags.tags_context = OpenCensus::Tags::TagMap.new(
+      OpenCensus::Tags.tag_map_context = OpenCensus::Tags::TagMap.new(
         "frontend" => "android-1.0.1"
       )
 
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
 
-      measurement = OpenCensus::Stats.create_measurement(measure_name, 1)
+      measurement = OpenCensus::Stats.create_measurement(
+        name: measure_name,
+        value: 1,
+        tags: OpenCensus::Tags.tag_map_context
+      )
       recorder.record measurement
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 1
@@ -155,7 +179,7 @@ describe OpenCensus::Stats::Recorder do
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
 
-      recorder.record measure.measurement(10), tags: tag_map
+      recorder.record measure.create_measurement(value: 10, tags: tag_map)
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 1
 
@@ -173,7 +197,7 @@ describe OpenCensus::Stats::Recorder do
     it "record measurement and get view data" do
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
-      recorder.record measure.measurement(1), tags: tag_map
+      recorder.record measure.create_measurement(value: 1, tags: tags)
       view_data = recorder.view_data view.name
       view_data.must_be_instance_of OpenCensus::Stats::ViewData
     end
@@ -181,7 +205,7 @@ describe OpenCensus::Stats::Recorder do
     it "return nil for non exists view" do
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
-      recorder.record measure.measurement(1), tags: tag_map
+      recorder.record measure.create_measurement(value: 1, tags: tags)
       view_data = recorder.view_data "non-exists-view"
       view_data.must_be_nil
     end

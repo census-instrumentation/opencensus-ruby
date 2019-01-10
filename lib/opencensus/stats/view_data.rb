@@ -3,11 +3,20 @@
 
 module OpenCensus
   module Stats
-    # @private
-    #
     # ViewData is a container to store stats.
     class ViewData
-      attr_reader :view, :start_time, :end_time, :data
+      # @return [View]
+      attr_reader :view
+
+      # @return [Time, nil]
+      attr_reader :start_time
+
+      # @return [Time, nil]
+      attr_reader :end_time
+
+      # @return [Hash<Array<String>>,AggregationData] Recorded stats data
+      # against view columns.
+      attr_reader :data
 
       # @private
       # Create instance of view
@@ -32,19 +41,21 @@ module OpenCensus
         @end_time = Time.now.utc
       end
 
-      # Record value
+      # Record a measurement.
       #
-      # @param [TagMap] tags
-      # @param [Integer, Float] value
-      # @param [Time] timestamp
-      def record tags, value, timestamp
-        tag_values = view.columns.map { |key| tags[key] }
+      # @param [Measurement] measurement
+      def record measurement
+        tag_values = @view.columns.map { |column| measurement.tags[column] }
 
-        unless data.key? tag_values
-          data[tag_values] = view.aggregation.new_aggregation_data
+        unless @data.key? tag_values
+          @data[tag_values] = @view.aggregation.create_aggregation_data
         end
 
-        data[tag_values].add value, timestamp: timestamp
+        AggregationData.add(
+          @data[tag_values],
+          measurement.value,
+          measurement.time
+        )
       end
 
       # Clear recorded ata

@@ -7,7 +7,11 @@ module OpenCensus
   module Stats
     # Measure
     #
-    # The definition of the Measurement.
+    # The definition of the Measurement. Describes the type of the individual
+    # values/measurements recorded by an application. It includes information
+    # such as the type of measurement, the  units of measurement and descriptive
+    # names for the data. This provides th fundamental type used for recording
+    # data.
     class Measure
       # Describes the unit used for the Measure.
       # Should follows the format described by
@@ -28,13 +32,25 @@ module OpenCensus
       # @return [String]
       SEC = "s".freeze
 
-      # Unit name for Micro seconds
+      # Unit name for Milli seconds
       # @return [String]
       MS = "ms".freeze
+
+      # Unit name for Micro seconds
+      # @return [String]
+      US = "us".freeze
 
       # Unit name for Neno seconds
       # @return [String]
       NS = "ns".freeze
+
+      # Measure int64 type
+      # @return [String]
+      INT64_TYPE = "INT64".freeze
+
+      # Measure double type
+      # @return [String]
+      DOUBLE_TYPE = "DOUBLE".freeze
 
       # @return [String]
       attr_reader :name
@@ -47,7 +63,7 @@ module OpenCensus
       attr_reader :unit
 
       # Data type of the measure.
-      # @return [String]
+      # @return [String] Valid types are `:int`, `:double`
       attr_reader :type
 
       # @private
@@ -61,21 +77,22 @@ module OpenCensus
 
       # Create new measurement
       # @param [Integer, Float] value
+      # @param [Hash<String,String>] tags Tags to which the value is recorded
       # @return [Measurement]
-      def measurement value
-        Measurement.new(self, value)
+      def create_measurement value:, tags:
+        Measurement.new measure: self, value: value, tags: tags
       end
 
-      # Is integer data type
+      # Is int64 data type
       # @return [Boolean]
-      def int?
-        type == :int
+      def int64?
+        type == INT64_TYPE
       end
 
       # Is float data type
       # @return [Boolean]
-      def float?
-        type == :float
+      def double?
+        type == DOUBLE_TYPE
       end
     end
   end

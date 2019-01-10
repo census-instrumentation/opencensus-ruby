@@ -32,7 +32,7 @@ module OpenCensus
     #
     # @private
     #
-    TAGS_CONTEXT_KEY = :__tags_context__
+    TAG_MAP_CONTEXT_KEY = :__tag_map_context__
 
     class << self
       ##
@@ -41,22 +41,22 @@ module OpenCensus
       #
       # @param [TagMap] context
       #
-      def tags_context= context
-        OpenCensus::Context.set TAGS_CONTEXT_KEY, context
+      def tag_map_context= context
+        OpenCensus::Context.set TAG_MAP_CONTEXT_KEY, context
       end
 
       # Unsets the current thread-local TagMap context
       #
-      def unset_tags_context
-        OpenCensus::Context.unset TAGS_CONTEXT_KEY
+      def unset_tag_map_context
+        OpenCensus::Context.unset TAG_MAP_CONTEXT_KEY
       end
 
       # Returns the current thread-local TagMap object.
       #
       # @return [TagMap, nil]
       #
-      def tags_context
-        OpenCensus::Context.get TAGS_CONTEXT_KEY
+      def tag_map_context
+        OpenCensus::Context.get TAG_MAP_CONTEXT_KEY
       end
     end
   end

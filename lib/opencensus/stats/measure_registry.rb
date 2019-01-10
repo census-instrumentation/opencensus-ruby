@@ -6,7 +6,8 @@ require "opencensus/stats/measure"
 
 module OpenCensus
   module Stats
-    # @private
+    # #MeasureRegistry
+    #
     # Measure registry is a collection of uniq measures.
     #
     class MeasureRegistry
@@ -31,6 +32,9 @@ module OpenCensus
         #
         def register name:, unit:, type:, description: nil
           return if instance.measures.key? name
+
+          raise if type ==
+
           measure = Measure.new(
             name: name,
             unit: unit,

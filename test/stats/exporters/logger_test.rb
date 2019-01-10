@@ -1,8 +1,8 @@
 require "test_helper"
 
 describe OpenCensus::Stats::Exporters::Logger do
-  after{
-    OpenCensus::Tags.unset_tags_context
+  before{
+    OpenCensus::Tags.unset_tag_map_context
   }
 
   let(:logger) {
@@ -15,11 +15,11 @@ describe OpenCensus::Stats::Exporters::Logger do
     OpenCensus::Stats::Measure.new(
       name: "latency",
       unit: "ms",
-      type: :int,
+      type: OpenCensus::Stats::Measure::INT64_TYPE,
       description: "latency desc"
     )
   }
-  let(:aggregation){ OpenCensus::Stats::Aggregation.new :sum }
+  let(:aggregation){ OpenCensus::Stats::Aggregation::Sum.new }
   let(:tag_keys) { ["frontend"]}
   let(:view) {
     OpenCensus::Stats::View.new(
@@ -33,16 +33,18 @@ describe OpenCensus::Stats::Exporters::Logger do
   let(:tag_map) {
     OpenCensus::Tags::TagMap.new(tag_keys.first => "mobile-ios9.3.5")
   }
+  let(:tags){
+    { tag_keys.first => "mobile-ios9.3.5" }
+  }
+  let(:view_data){
+    recorder = OpenCensus::Stats::Recorder.new
+    recorder.register_view view
+    recorder.record measure.create_measurement(value: 10, tags: tags)
+    view_data = recorder.view_data view.name
+    [view_data]
+  }
 
   describe "export" do
-    let(:view_data){
-      recorder = OpenCensus::Stats::Recorder.new
-      recorder.register_view view
-      recorder.record measure.measurement(10), tags: tag_map
-      view_data = recorder.view_data view.name
-      [view_data]
-    }
-
     it "should emit data for a covered log level" do
       exporter = OpenCensus::Stats::Exporters::Logger.new logger, level: ::Logger::INFO
       out, _err = capture_subprocess_io do

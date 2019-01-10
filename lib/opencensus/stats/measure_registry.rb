@@ -33,8 +33,6 @@ module OpenCensus
         def register name:, unit:, type:, description: nil
           return if instance.measures.key? name
 
-          raise if type ==
-
           measure = Measure.new(
             name: name,
             unit: unit,

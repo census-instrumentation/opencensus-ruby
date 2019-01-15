@@ -19,6 +19,8 @@ module OpenCensus
           @value = 0
         end
 
+        # rubocop:disable Lint/UnusedMethodArgument
+
         # Increment counter.
         # @param [Value] value
         # @param [Time] time Time of data point was recorded
@@ -26,6 +28,8 @@ module OpenCensus
           @time = time
           @value += 1
         end
+
+        # rubocop:enable Lint/UnusedMethodArgument
       end
     end
   end

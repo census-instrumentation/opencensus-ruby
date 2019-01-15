@@ -8,8 +8,8 @@ module OpenCensus
   module Stats
     module Exporters
       ##
-      # The Logger exporter exports captured stats view data to a standard Ruby Logger
-      # interface.
+      # The Logger exporter exports captured stats view data to a standard
+      # Ruby Logger interface.
       #
       class Logger
         ##

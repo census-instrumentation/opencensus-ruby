@@ -43,7 +43,7 @@ module OpenCensus
         end
 
         ##
-        # Pass the captured spans to the delegates.
+        # Pass the captured stats view data to the delegates.
         #
         # @param [Array<ViewData>] views_data The captured stats.
         #

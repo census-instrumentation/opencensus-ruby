@@ -6,7 +6,7 @@ module OpenCensus
   module Stats
     ##
     # The Exporters module provides integrations for exporting collected stats
-    # spans to an external or local service. Exporter classes may be put inside
+    # to an external or local service. Exporter classes may be put inside
     # this module, but are not required to be located here.
     #
     # An exporter is an object that must respond to the following method:

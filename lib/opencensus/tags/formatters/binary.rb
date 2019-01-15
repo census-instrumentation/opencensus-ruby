@@ -23,7 +23,7 @@ module OpenCensus
       # tag_map = formatter.deserialize binary
       #
       class Binary
-        # Binary formatter error.
+        # Binary format error for tags serialize/deserialize.
         class BinaryFormatterError < StandardError; end
 
         # @private

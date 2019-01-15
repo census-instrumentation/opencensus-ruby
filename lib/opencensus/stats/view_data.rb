@@ -51,11 +51,7 @@ module OpenCensus
           @data[tag_values] = @view.aggregation.create_aggregation_data
         end
 
-        AggregationData.add(
-          @data[tag_values],
-          measurement.value,
-          measurement.time
-        )
+        @data[tag_values].add measurement.value, measurement.time
       end
 
       # Clear recorded ata

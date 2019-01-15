@@ -8,8 +8,7 @@ module OpenCensus
   module Stats
     # Stats recorder.
     #
-    # Recorder record measurement against measure for registered views
-    # Span represents a span in a trace record.
+    # Recorder record measurement against measure for registered views.
     class Recorder
       # @private
       # @return [Hash<String,View>] Hash of view name and View object.

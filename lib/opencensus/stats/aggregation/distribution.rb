@@ -26,8 +26,7 @@ module OpenCensus
             raise InvalidBucketsError, "buckets value should not be nil"
           end
 
-          buckets.reject! { |v| v < 0 }
-          @buckets = buckets
+          @buckets = buckets.reject { |v| v < 0 }
         end
 
         # Create new aggregation data container to store distribution values.

@@ -40,7 +40,7 @@ module OpenCensus
       # @return [String]
       US = "us".freeze
 
-      # Unit name for Neno seconds
+      # Unit name for Nano seconds
       # @return [String]
       NS = "ns".freeze
 
@@ -63,7 +63,7 @@ module OpenCensus
       attr_reader :unit
 
       # Data type of the measure.
-      # @return [String] Valid types are `:int`, `:double`
+      # @return [String] Valid types are {INT64_TYPE}, {DOUBLE_TYPE}.
       attr_reader :type
 
       # @private

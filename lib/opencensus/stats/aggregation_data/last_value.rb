@@ -16,7 +16,7 @@ module OpenCensus
 
         # Set last value
         # @param [Integer,Float] value
-        # @param [Time] timestamp Time of data point was recorded
+        # @param [Time] time Time of data point was recorded
         def add value, time
           @time = time
           @value = value

@@ -19,21 +19,6 @@ module OpenCensus
     #   sum of squared deviation
     #
     module AggregationData
-      # Add value to aggregation data based on type.
-      #
-      # @param [Distribution,Sum,LastValue,Count] aggregation_data
-      # @param [Integer,Float] value
-      # @param [Time] time Time of data point was recorded
-      def self.add aggregation_data, value, time
-        case aggregation_data
-        when Distribution
-          aggregation_data.add value, time
-        when Sum, LastValue
-          aggregation_data.add value, time
-        when Count
-          aggregation_data.add time
-        end
-      end
     end
   end
 end

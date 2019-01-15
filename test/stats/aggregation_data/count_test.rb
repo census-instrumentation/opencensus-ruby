@@ -11,7 +11,7 @@ describe OpenCensus::Stats::AggregationData::Count do
       aggregation_data = OpenCensus::Stats::AggregationData::Count.new
 
       time = Time.now
-      aggregation_data.add time
+      aggregation_data.add nil, time
       aggregation_data.value.must_equal 1
       aggregation_data.time.must_equal time
     end

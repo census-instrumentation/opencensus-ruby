@@ -50,7 +50,7 @@ module OpenCensus
           @mean = 0
           @sum_of_squared_deviation = 0
           @bucket_counts = Array.new(buckets.length + 1, 0)
-          @start_time = Time.now
+          @start_time = Time.now.utc
         end
 
         # @private

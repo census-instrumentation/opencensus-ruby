@@ -50,7 +50,7 @@ module OpenCensus
         @aggregation = aggregation
         @columns = columns
         @description = description
-        @time = Time.now
+        @time = Time.now.utc
       end
     end
   end

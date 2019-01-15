@@ -28,7 +28,7 @@ module OpenCensus
         @measure = measure
         @value = value
         @tags = Tags::TagMap.new tags
-        @time = Time.now
+        @time = Time.now.utc
       end
     end
   end

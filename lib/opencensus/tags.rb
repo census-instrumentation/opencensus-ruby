@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2017 OpenCensus Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +15,49 @@
 # limitations under the License.
 
 
+require "opencensus/tags/config"
+require "opencensus/tags/tag_map"
+require "opencensus/tags/formatters"
+
 module OpenCensus
   ##
   # The Tags module contains support for OpenCensus tags. Tags are key-value
   # pairs. Tags provide additional cardinality to the OpenCensus instrumentation
   # data.
   #
-  # TODO: implement tags
-  #
   module Tags
+    ##
+    # Internal key for storing the current TagMap in the thread local
+    # Context
+    #
+    # @private
+    #
+    TAG_MAP_CONTEXT_KEY = :__tag_map_context__
+
+    class << self
+      ##
+      # Sets the current thread-local TagMap, which used in Stats data
+      # recording.
+      #
+      # @param [TagMap] context
+      #
+      def tag_map_context= context
+        OpenCensus::Context.set TAG_MAP_CONTEXT_KEY, context
+      end
+
+      # Unsets the current thread-local TagMap context
+      #
+      def unset_tag_map_context
+        OpenCensus::Context.unset TAG_MAP_CONTEXT_KEY
+      end
+
+      # Returns the current thread-local TagMap object.
+      #
+      # @return [TagMap, nil]
+      #
+      def tag_map_context
+        OpenCensus::Context.get TAG_MAP_CONTEXT_KEY
+      end
+    end
   end
 end

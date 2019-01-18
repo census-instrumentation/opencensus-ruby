@@ -52,7 +52,19 @@ workflows:
   version: 2
   tests:
     jobs:
-      - Test Ruby 2.3
-      - Test Ruby 2.4
-      - Test Ruby 2.5
-      - Test Ruby 2.6
+      - Test Ruby 2.3:
+          filters:
+            branches:
+              ignore: gh-pages
+      - Test Ruby 2.4:
+          filters:
+            branches:
+              ignore: gh-pages
+      - Test Ruby 2.5:
+          filters:
+            branches:
+              ignore: gh-pages
+      - Test Ruby 2.6:
+          filters:
+            branches:
+              ignore: gh-pages

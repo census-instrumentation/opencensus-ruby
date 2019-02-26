@@ -19,13 +19,17 @@ module OpenCensus
           @value = 0
         end
 
+        # rubocop:disable Lint/UnusedMethodArgument
+
         # Add value
         # @param [Integer,Float] value
         # @param [Time] time Time of data point was recorded
-        def add value, time
+        def add value, time, attachments: nil
           @time = time
           @value += value
         end
+
+        # rubocop:enable Lint/UnusedMethodArgument
       end
     end
   end

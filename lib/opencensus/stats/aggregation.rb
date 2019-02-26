@@ -6,6 +6,7 @@ require "opencensus/stats/aggregation/count"
 require "opencensus/stats/aggregation/last_value"
 require "opencensus/stats/aggregation/distribution"
 require "opencensus/stats/aggregation_data"
+require "opencensus/stats/exemplar"
 
 module OpenCensus
   module Stats

@@ -24,7 +24,7 @@ module OpenCensus
         # Increment counter.
         # @param [Value] value
         # @param [Time] time Time of data point was recorded
-        def add value, time
+        def add value, time, attachments: nil
           @time = time
           @value += 1
         end

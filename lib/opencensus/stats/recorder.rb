@@ -57,7 +57,8 @@ module OpenCensus
       # Record measurements
       #
       # @param [Array<Measurement>, Measurement] measurements
-      def record *measurements
+      # @param [Hash<String,String>] attachments
+      def record *measurements, attachments: nil
         return if measurements.any? { |m| m.value < 0 }
 
         measurements.each do |measurement|
@@ -65,7 +66,7 @@ module OpenCensus
           next unless views_data
 
           views_data.each do |view_data|
-            view_data.record measurement
+            view_data.record measurement, attachments: attachments
           end
         end
       end

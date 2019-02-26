@@ -133,7 +133,7 @@ describe OpenCensus::Stats::Recorder do
         value: -1,
         tags: tags
       )
-      recorder.record measurement, tags: tag_map
+      recorder.record measurement
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 0
     end

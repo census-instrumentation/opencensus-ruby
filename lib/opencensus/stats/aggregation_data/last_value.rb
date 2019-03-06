@@ -19,6 +19,7 @@ module OpenCensus
         # Set last value
         # @param [Integer,Float] value
         # @param [Time] time Time of data point was recorded
+        # @param [Hash<String,String>] attachments
         def add value, time, attachments: nil
           @time = time
           @value = value

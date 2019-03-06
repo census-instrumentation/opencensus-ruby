@@ -38,7 +38,9 @@ module OpenCensus
         # @return [Time] The latest time a new value was recorded
         attr_reader :time
 
-        # @return [Hash<Integer,Exemplar>] Exemplars map
+        # @return [Array<Exemplar>] Exemplars are points associated with each
+        #   bucket in the distribution giving an example of what was aggregated
+        #   into the bucket.
         attr_reader :exemplars
 
         # @private
@@ -61,7 +63,8 @@ module OpenCensus
         # Add value to distribution
         # @param [Integer,Float] value
         # @param [Time] time Time of data point was recorded
-        # @param [Hash<String,String>] attachments
+        # @param [Hash<String,String>,nil] attachments Attachments are key-value
+        #   pairs that describe the context in which the exemplar was recored.
         def add value, time, attachments: nil
           @time = time
           @count += 1

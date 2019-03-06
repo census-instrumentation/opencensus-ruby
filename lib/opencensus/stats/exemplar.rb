@@ -19,13 +19,14 @@ module OpenCensus
       attr_reader :time
 
       # Contextual information about the example value
-      # @return [String]
+      # @return [Hash<String,String>]
       attr_reader :attachments
 
       # Create instance of the exemplar
       # @param [Integer,Float] value
       # @param [Time] time
-      # @param [Hash<String,String>] attachments
+      # @param [Hash<String,String>] attachments. Attachments are key-value
+      #   pairs that describe the context in which the exemplar was recored.
       def initialize value:, time:, attachments:
         @value = value
         @time = time

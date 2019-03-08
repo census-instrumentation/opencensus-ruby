@@ -44,14 +44,19 @@ module OpenCensus
       # Record a measurement.
       #
       # @param [Measurement] measurement
-      def record measurement
+      # @param [Hash<String,String>] attachments
+      def record measurement, attachments: nil
         tag_values = @view.columns.map { |column| measurement.tags[column] }
 
         unless @data.key? tag_values
           @data[tag_values] = @view.aggregation.create_aggregation_data
         end
 
-        @data[tag_values].add measurement.value, measurement.time
+        @data[tag_values].add(
+          measurement.value,
+          measurement.time,
+          attachments: attachments
+        )
       end
 
       # Clear recorded ata

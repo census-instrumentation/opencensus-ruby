@@ -38,6 +38,11 @@ module OpenCensus
         # @return [Time] The latest time a new value was recorded
         attr_reader :time
 
+        # @return [Array<Exemplar>] Exemplars are points associated with each
+        #   bucket in the distribution giving an example of what was aggregated
+        #   into the bucket.
+        attr_reader :exemplars
+
         # @private
         # @param [Array<Integer>,Array<Float>] buckets Buckets boundries
         # for distribution
@@ -50,6 +55,7 @@ module OpenCensus
           @mean = 0
           @sum_of_squared_deviation = 0
           @bucket_counts = Array.new(buckets.length + 1, 0)
+          @exemplars = []
           @start_time = Time.now.utc
         end
 
@@ -57,7 +63,9 @@ module OpenCensus
         # Add value to distribution
         # @param [Integer,Float] value
         # @param [Time] time Time of data point was recorded
-        def add value, time
+        # @param [Hash<String,String>,nil] attachments Attachments are key-value
+        #   pairs that describe the context in which the exemplar was recored.
+        def add value, time, attachments: nil
           @time = time
           @count += 1
           @sum += value
@@ -71,6 +79,14 @@ module OpenCensus
           bucket_index = @buckets.find_index { |b| b > value } ||
                          @buckets.length
           @bucket_counts[bucket_index] += 1
+
+          if attachments
+            @exemplars[bucket_index] = Exemplar.new(
+              value: value,
+              time: time,
+              attachments: attachments
+            )
+          end
         end
 
         # Get distribution result values.

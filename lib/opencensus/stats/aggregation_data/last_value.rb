@@ -14,13 +14,18 @@ module OpenCensus
         # @return [Time] The latest time at new data point was recorded
         attr_reader :time
 
+        # rubocop:disable Lint/UnusedMethodArgument
+
         # Set last value
         # @param [Integer,Float] value
         # @param [Time] time Time of data point was recorded
-        def add value, time
+        # @param [Hash<String,String>] attachments Attachments are not in use
+        def add value, time, attachments: nil
           @time = time
           @value = value
         end
+
+        # rubocop:enable Lint/UnusedMethodArgument
       end
     end
   end

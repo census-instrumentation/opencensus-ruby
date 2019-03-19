@@ -36,6 +36,25 @@ module OpenCensus
       #     chain.add OpenCensus::Trace::Integrations::SidekiqMiddleware
       #   end
       # end
+      #
+      # See OpenCensus::Trace::Integrations::Rails for details on configuration
+      # of attribute_namespace to prefix span
+      #
+      # ### Trace path
+      # The Sidekiq middleware also provides a `sidekiq` configuration that
+      # supports the following fields:
+      #
+      # * `enable` defaults to true
+      # *  `sample_proc`, defaults to a proc that returns true. Allows you to
+      #     test the contents of the Sidekiq job hash to decide if you want to
+      #     sample a certain job. If the proc returns true the job will be
+      #     sampled.
+      # * `trace_prefix` will be prepended to the trace name in the Trace list.
+      #     Defaults to 'sidekiq/'
+      # * `job_attrs_for_trace_name` used to get attributes from the Sidekiq job hash
+      #     to append to the trace name. Defaults to ["class"]. This will allow
+      #     you to include job arguments for example, but take care not to
+      #     include sensitive data in the trace name
       class SidekiqMiddleware
         OpenCensus::Trace.configure do |c|
           c.add_config! :sidekiq do |sc|
@@ -44,6 +63,8 @@ module OpenCensus
             # TODO: remove this when we have a solution that follows the
             # standards of the rest of the gem
             sc.add_option! :sample_proc, ->(_job) { true }
+            sc.add_option! :trace_prefix, "sidekiq/"
+            sc.add_option! :job_attrs_for_trace_name, %w(class)
           end
         end
 
@@ -55,10 +76,12 @@ module OpenCensus
         #     in the current config.
         #
         def initialize exporter: nil
-          @exporter = exporter || OpenCensus::Trace.config.exporter
+          config = OpenCensus::Trace.config
 
-          # TODO: choose new location for this proc definition
-          @trace_path_proc = Google::Cloud::Trace.configure.trace_path_proc
+          @exporter = exporter || config.exporter
+
+          @trace_prefix = config.sidekiq.trace_prefix
+          @job_attrs = config.sidekiq.job_attrs_for_trace_name
 
           setup_notifications
         end
@@ -70,11 +93,7 @@ module OpenCensus
         # @yield the next middleware in the chain or worker `perform` method
         # @return [Void]
         def call _worker, job, _queue
-          # TODO: consider creating a class that processes the job Hash and gets the context
-          # Following example of OpenCensus::Trace::Formatters::TraceContext
-          # might be better than giving total control because you can do too
-          # much stuff in a proc
-          path = @trace_path_proc ? @trace_path_proc.call(job) : "/#{job["class"]}"
+          trace_path = [@trace_prefix, job.values_at(*@job_attrs)].join("/")
 
           # TODO: find a way to give the job data to the sampler
           # Duplicate this class maybe lib/opencensus/trace/formatters/trace_context.rb
@@ -91,7 +110,7 @@ module OpenCensus
             trace_context: nil,
             same_process_as_parent: false do |span_context|
             begin
-              Trace.in_span path do |span|
+              Trace.in_span trace_path do |span|
                 start_job span
                 yield
               end

@@ -52,6 +52,19 @@ See the documentation for the
 [Rails integration class](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/Rails)
 for more information.
 
+### Getting started with Sidekiq
+
+You can use the OpenCensus library to trace sidekiq jobs.
+
+To enable this functionality, require this file during application startup:
+```ruby
+# In config/application.rb
+require "opencensus/trace/integrations/rails"
+```
+See the documentation for the
+[Sidekiq integration class](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/Sidekiq)
+for more information.
+
 ### Getting started with other Rack-based frameworks
 
 Other Rack-based frameworks, such as Sinatra, can use the Rack Middleware

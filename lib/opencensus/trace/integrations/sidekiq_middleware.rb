@@ -14,6 +14,7 @@
 
 require "opencensus/trace/integrations/rails_config"
 
+# TODO: add tests for this middleware
 module OpenCensus
   module Trace
     module Integrations

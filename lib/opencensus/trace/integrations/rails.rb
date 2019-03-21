@@ -16,6 +16,7 @@
 require "active_support"
 require "rails/railtie"
 require "opencensus/trace/integrations/rack_middleware"
+require "opencensus/trace/integrations/rails_config"
 
 module OpenCensus
   module Trace
@@ -91,24 +92,7 @@ module OpenCensus
       #     config.opencensus.trace.middleware_placement = ::Rails::Rack::Logger
       #
       class Rails < ::Rails::Railtie
-        ##
-        # The ActiveSupport notifications that will be reported as spans by
-        # default. To change this list, update the value of the
-        # `trace.notifications.events` configuration.
-        #
-        DEFAULT_NOTIFICATION_EVENTS = [
-          "sql.active_record",
-          "render_template.action_view",
-          "send_file.action_controller",
-          "send_data.action_controller",
-          "deliver.action_mailer"
-        ].freeze
-
         OpenCensus::Trace.configure do |c|
-          c.add_config! :notifications do |rc|
-            rc.add_option! :events, DEFAULT_NOTIFICATION_EVENTS.dup
-            rc.add_option! :attribute_namespace, "rails/"
-          end
           c.add_option! :middleware_placement, :end,
                         match: [:begin, :end, Class]
         end

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "opencensus/trace/integrations/rails"
+require "opencensus/trace/integrations/rails_config"
 
 module OpenCensus
   module Trace

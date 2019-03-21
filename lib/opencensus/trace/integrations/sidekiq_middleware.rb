@@ -65,6 +65,7 @@ module OpenCensus
             sc.add_option! :sample_proc, ->(_job) { true }
             sc.add_option! :trace_prefix, "sidekiq/"
             sc.add_option! :job_attrs_for_trace_name, %w(class)
+            sc.add_option! :host_name, ""
           end
         end
 
@@ -76,12 +77,11 @@ module OpenCensus
         #     in the current config.
         #
         def initialize exporter: nil
-          config = OpenCensus::Trace.config
+          @exporter = exporter || OpenCensus::Trace.config.exporter
 
-          @exporter = exporter || config.exporter
-
-          @trace_prefix = config.sidekiq.trace_prefix
-          @job_attrs = config.sidekiq.job_attrs_for_trace_name
+          config = configuration
+          @trace_prefix = config.trace_prefix
+          @job_attrs = config.job_attrs_for_trace_name
 
           setup_notifications
         end
@@ -101,7 +101,7 @@ module OpenCensus
 
           # TODO: use a sampler. We need to figure out how to pass job details
           # to the sampler to choose whether or not to sample this run
-          unless OpenCensus::Trace.config.sidekiq.sample_proc.call(job)
+          unless configuration.sample_proc.call(job)
             yield
             return
           end
@@ -152,19 +152,10 @@ module OpenCensus
           end
         end
 
-        # TODO: set project Id and credentials following opencensus doc
         ##
-        # Fallback to default configuration values if not defined already
-        def init_default_config
-          configuration.project_id ||= Google::Cloud::Trace.default_project_id
-          configuration.credentials ||= Google::Cloud.configure.credentials
-          configuration.capture_stack ||= false
-        end
-
-        ##
-        # @private Get Google::Cloud::Trace.configure
+        # @private Get OpenCensus Sidekiq config
         def configuration
-          Google::Cloud::Trace.configure
+          OpenCensus::Trace.config.sidekiq
         end
 
         ##
@@ -178,11 +169,7 @@ module OpenCensus
           # https://github.com/googleapis/google-cloud-ruby/blob/master/google-cloud-trace/lib/google/cloud/trace/notifications.rb#L92
 
           span.kind = SpanBuilder::SERVER
-          # TODO: use a different configuration key
-          span.put_attribute "http.host", Google::Cloud::Trace.configure.host
-
-          # TODO: we need to change the location of this config variable
-          span.put_attribute "http.path", Google::Cloud::Trace.configure.http_url
+          span.put_attribute "http.host", configuration.host_name
 
           # TODO: see if we need to upload these values
           # span.name = span_name

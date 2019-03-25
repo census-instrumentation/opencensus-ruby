@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "opencensus/trace/integrations/rails_config"
+require "opencensus/trace/integrations/active_support"
 
 # TODO: add tests for this middleware
 module OpenCensus

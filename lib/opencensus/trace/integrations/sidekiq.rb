@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-require "active_support"
-require "opencensus/trace/integrations/rails_config"
+require "opencensus/trace/integrations/active_support"
+require "opencensus/trace/integrations/sidekiq_middleware"
 
 module OpenCensus
   module Trace
@@ -36,7 +35,7 @@ module OpenCensus
       # of attribute_namespace to prefix span
       #
       # ### Configuring ActiveSupport Notifications
-      # See OpenCensus::Trace::Integrations::Rails for information on
+      # See OpenCensus::Trace::Integrations::ActiveSupport for information on
       # ActiveSupport notifications
       #
       # ### Trace path
@@ -50,9 +49,9 @@ module OpenCensus
       #     sampled.
       # * `trace_prefix` will be prepended to the trace name in the Trace list.
       #     Defaults to 'sidekiq/'
-      # * `job_attrs_for_trace_name` used to get attributes from the Sidekiq job hash
-      #     to append to the trace name. Defaults to ["class"]. This will allow
-      #     you to include job arguments for example, but take care not to
+      # * `job_attrs_for_trace_name` used to get attributes from the Sidekiq job
+      #     hash to append to the trace name. Defaults to ["class"]. This will
+      #     allow you to include job arguments for example, but take care not to
       #     include sensitive data in the trace name
       class Sidekiq
         OpenCensus::Trace.configure do |c|
@@ -65,30 +64,6 @@ module OpenCensus
             sc.add_option! :trace_prefix, "sidekiq/"
             sc.add_option! :job_attrs_for_trace_name, %w(class)
             sc.add_option! :host_name, ""
-          end
-
-          c.notifications.events.each do |type|
-            ActiveSupport::Notifications.subscribe(type) do |*args|
-              event = ActiveSupport::Notifications::Event.new(*args)
-              self.handle_notification_event event
-            end
-          end
-        end
-
-        ##
-        # Add a span based on a notification event.
-        # @private
-        #
-        def self.handle_notification_event event
-          span_context = OpenCensus::Trace.span_context
-          if span_context
-            ns = OpenCensus::Trace.configure.notifications.attribute_namespace
-            span = span_context.start_span event.name, skip_frames: 2
-            span.start_time = event.time
-            span.end_time = event.end
-            event.payload.each do |k, v|
-              span.put_attribute "#{ns}#{k}", v.to_s
-            end
           end
         end
       end

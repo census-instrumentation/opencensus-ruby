@@ -69,8 +69,6 @@ module OpenCensus
         def setup_notifications!
           OpenCensus::Trace.configure.notifications.events.each do |type|
             ::ActiveSupport::Notifications.subscribe(type) do |*args|
-              puts args[4][:sql]
-
               event = ::ActiveSupport::Notifications::Event.new(*args)
               handle_notification_event event
             end

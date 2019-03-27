@@ -18,7 +18,6 @@ require "opencensus/trace/integrations/active_support"
 module OpenCensus
   module Trace
     module Integrations
-
       # # Sidekiq integration
       #
       # This is a middleware for Sidekiq applications:
@@ -64,7 +63,8 @@ module OpenCensus
           trace_path = [@trace_prefix, job.values_at(*@job_attrs)].join("/")
 
           # TODO: find a way to give the job data to the sampler
-          # Duplicate this class maybe lib/opencensus/trace/formatters/trace_context.rb
+          # Duplicate this class maybe
+          #   lib/opencensus/trace/formatters/trace_context.rb
           # trace_context: job.slice(*%w(class args queue)),
 
           # TODO: use a sampler. We need to figure out how to pass job details

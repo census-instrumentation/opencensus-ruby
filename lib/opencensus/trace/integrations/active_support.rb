@@ -17,7 +17,6 @@ require "active_support"
 module OpenCensus
   module Trace
     module Integrations
-
       # ### Configuring ActiveSupport Notifications
       #
       # This Railtie provides a `notifications` configuration that
@@ -91,7 +90,6 @@ module OpenCensus
             end
           end
         end
-
       end
     end
   end

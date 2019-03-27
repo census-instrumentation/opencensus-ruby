@@ -103,23 +103,8 @@ module OpenCensus
         # @param [Google::Cloud::Trace::TraceSpan] span The root span to
         #     configure.
         def start_job span
-          # TODO: tidy up stack trace
-          # https://github.com/googleapis/google-cloud-ruby/blob/master/google-cloud-trace/lib/google/cloud/trace/notifications.rb#L92
-
           span.kind = SpanBuilder::SERVER
           span.put_attribute "http.host", configuration.host_name
-
-          # TODO: see if we need to upload these values
-          # span.name = span_name
-          #
-          # span.put_attribute "pid", ::Process.pid.to_s
-          # span.put_attribute "tid", ::Thread.current.object_id.to_s
-          #
-          # if capture_stack
-          #   Google::Cloud::Trace::LabelKey.set_stack_trace labels,
-          #                                                  skip_frames: 3
-          # end
-          #
         end
       end
     end

@@ -84,8 +84,7 @@ module OpenCensus
 
         initializer "opencensus.trace" do |app|
           setup_middleware app.middleware
-          # OpenCensus::Trace::Integrations::ActiveSupport.setup_notifications!
-          end
+        end
 
         ##
         # Insert middleware into the middleware stack

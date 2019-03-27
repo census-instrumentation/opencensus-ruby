@@ -39,7 +39,6 @@ module OpenCensus
       #
       #     config.opencensus.trace.notifications.attribute_namespace = "myapp/"
       class ActiveSupport < ::Rails::Railtie
-
         ##
         # The ActiveSupport notifications that will be reported as spans by
         # default. To change this list, update the value of the

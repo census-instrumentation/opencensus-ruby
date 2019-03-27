@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "opencensus"
+require "opencensus/trace/integrations/sidekiq"
 require "opencensus/trace/integrations/active_support"
 
 # TODO: add tests for this middleware

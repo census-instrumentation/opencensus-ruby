@@ -16,16 +16,16 @@ require "test_helper"
 
 require "opencensus/trace/integrations/rails"
 
-describe OpenCensus::Trace::Integrations::Rails do
+describe OpenCensus::Trace::Integrations::ActiveSupport do
   describe "#setup_notifications" do
-    let(:railtie) { OpenCensus::Trace::Integrations::Rails.instance }
+    let(:railtie) { OpenCensus::Trace::Integrations::ActiveSupport.instance }
     after {
       ActiveSupport::Notifications.notifier = ActiveSupport::Notifications::Fanout.new
       OpenCensus::Trace.unset_span_context
     }
 
     it "creates spans for sql notifications" do
-      railtie.setup_notifications
+      railtie.setup_notifications!
       OpenCensus::Trace.start_request_trace
       ActiveSupport::Notifications.instrument("sql.active_record", query: "hello") do
       end

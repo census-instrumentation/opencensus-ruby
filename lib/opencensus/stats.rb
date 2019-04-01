@@ -116,12 +116,9 @@ module OpenCensus
       #   if given tags are nil and tags global context is nil.
       def create_measurement name:, value:, tags: nil
         measure = MeasureRegistry.get name
+        raise ArgumentError, "#{name} measure is not registered" unless measure
 
-        unless measure
-          raise ArgumentError, "#{name} measure is not registered"
-        end
-
-        tags = OpenCensus::Tags.tag_map_context unless tags
+        tags ||= OpenCensus::Tags.tag_map_context
         raise ArgumentError, "pass tags or set tags global context" unless tags
 
         measure.create_measurement value: value, tags: tags

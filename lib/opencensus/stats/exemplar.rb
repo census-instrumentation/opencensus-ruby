@@ -25,7 +25,7 @@ module OpenCensus
       # Create instance of the exemplar
       # @param [Integer,Float] value
       # @param [Time] time
-      # @param [Hash<String,String>] attachments. Attachments are key-value
+      # @param [Hash<String,String>] attachments Attachments are key-value
       #   pairs that describe the context in which the exemplar was recored.
       def initialize value:, time:, attachments:
         @value = value

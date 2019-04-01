@@ -13,7 +13,6 @@
 # limitations under the License.
 
 require "opencensus/trace/integrations/active_support"
-require "opencensus/trace/integrations/sidekiq_middleware"
 
 module OpenCensus
   module Trace

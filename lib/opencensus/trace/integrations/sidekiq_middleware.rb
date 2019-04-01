@@ -16,7 +16,6 @@ require "opencensus"
 require "opencensus/trace/integrations/sidekiq"
 require "opencensus/trace/integrations/active_support"
 
-# TODO: add tests for this middleware
 module OpenCensus
   module Trace
     module Integrations

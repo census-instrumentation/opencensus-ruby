@@ -39,8 +39,8 @@ module OpenCensus
       # end
       #
       class SidekiqMiddleware
-        HTTP_HOST_ATTRIBUTE = "http.host"
-        SEPARATOR = "/"
+        HTTP_HOST_ATTRIBUTE = "http.host".freeze
+        SEPARATOR = "/".freeze
 
         ##
         # Create the Sidekiq middleware.
@@ -65,7 +65,7 @@ module OpenCensus
         # @return [Void]
         def call _worker, job, _queue
           trace_path = [@trace_prefix, job.values_at(*@job_attrs)]
-                         .join(SEPARATOR)
+                       .join(SEPARATOR)
 
           # TODO: find a way to give the job data to the sampler
           # Duplicate this class maybe

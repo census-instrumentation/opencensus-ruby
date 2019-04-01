@@ -20,7 +20,9 @@ describe OpenCensus::Stats::Exporters::Logger do
     )
   }
   let(:aggregation){ OpenCensus::Stats::Aggregation::Sum.new }
-  let(:tag_keys) { ["frontend"]}
+  let(:tag_key) { "frontend" }
+  let(:tag_value) { "mobile-ios9.3.5" }
+  let(:tag_keys) { [tag_key] }
   let(:view) {
     OpenCensus::Stats::View.new(
       name: "test.view",
@@ -30,12 +32,13 @@ describe OpenCensus::Stats::Exporters::Logger do
       columns: tag_keys
     )
   }
-  let(:tag_map) {
-    OpenCensus::Tags::TagMap.new(tag_keys.first => "mobile-ios9.3.5")
+  let(:tag){
+    OpenCensus::Tags::Tag.new tag_key, tag_value
   }
-  let(:tags){
-    { tag_keys.first => "mobile-ios9.3.5" }
+  let(:tags) {
+    OpenCensus::Tags::TagMap.new [tag]
   }
+
   let(:view_data){
     recorder = OpenCensus::Stats::Recorder.new
     recorder.register_view view

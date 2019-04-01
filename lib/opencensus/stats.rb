@@ -108,12 +108,23 @@ module OpenCensus
       #
       # @param [String] name Name of the registered measure
       # @param [Integer, Float] value Value of the measurement
-      # @param [Hash<String,String>] tags Tags to which the value is recorded
-      # @raise [ArgumentError] if givem measure is not register
-      def create_measurement name:, value:, tags:
+      # @param [Tags::TagMap] tags A map of tags to which the value is recorded.
+      #   Tags could either be explicitly passed, or implicitly read from
+      #   current tags context.
+      # @raise [ArgumentError]
+      #   if given measure is not register.
+      #   if given tags are nil and tags global context is nil.
+      def create_measurement name:, value:, tags: nil
         measure = MeasureRegistry.get name
-        return measure.create_measurement(value: value, tags: tags) if measure
-        raise ArgumentError, "#{name} measure is not registered"
+
+        unless measure
+          raise ArgumentError, "#{name} measure is not registered"
+        end
+
+        tags = OpenCensus::Tags.tag_map_context unless tags
+        raise ArgumentError, "pass tags or set tags global context" unless tags
+
+        measure.create_measurement value: value, tags: tags
       end
 
       # Create and register a view to current stats recorder context.

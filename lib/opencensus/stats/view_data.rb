@@ -46,7 +46,9 @@ module OpenCensus
       # @param [Measurement] measurement
       # @param [Hash<String,String>] attachments
       def record measurement, attachments: nil
-        tag_values = @view.columns.map { |column| measurement.tags[column] }
+        tag_values = @view.columns.map do |column|
+          measurement.tags[column].value if measurement.tags[column]
+        end
 
         unless @data.key? tag_values
           @data[tag_values] = @view.aggregation.create_aggregation_data
@@ -59,7 +61,7 @@ module OpenCensus
         )
       end
 
-      # Clear recorded ata
+      # Clear recorded data
       def clear
         data.clear
       end

@@ -40,6 +40,9 @@ module OpenCensus
       # end
       #
       class SidekiqMiddleware
+        HTTP_HOST_ATTRIBUTE = "http.host"
+        SEPARATOR = "/"
+
         ##
         # Create the Sidekiq middleware.
         #
@@ -62,7 +65,8 @@ module OpenCensus
         # @yield the next middleware in the chain or worker `perform` method
         # @return [Void]
         def call _worker, job, _queue
-          trace_path = [@trace_prefix, job.values_at(*@job_attrs)].join("/")
+          trace_path = [@trace_prefix, job.values_at(*@job_attrs)]
+                         .join(SEPARATOR)
 
           # TODO: find a way to give the job data to the sampler
           # Duplicate this class maybe
@@ -106,7 +110,7 @@ module OpenCensus
         #     configure.
         def start_job span
           span.kind = SpanBuilder::SERVER
-          span.put_attribute "http.host", configuration.host_name
+          span.put_attribute HTTP_HOST_ATTRIBUTE, configuration.host_name
         end
       end
     end

@@ -88,7 +88,9 @@ module OpenCensus
                 yield
               end
             ensure
-              @exporter.export span_context.build_contained_spans
+              @exporter.export span_context.build_contained_spans \
+                               max_stack_frames: OpenCensus::Trace.configure
+                                                 .default_max_stack_frames
             end
           end
         end

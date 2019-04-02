@@ -79,9 +79,7 @@ module OpenCensus
             return
           end
 
-          Trace.start_request_trace \
-            trace_context: nil,
-            same_process_as_parent: false do |span_context|
+          Trace.start_request_trace do |span_context|
             begin
               Trace.in_span trace_path do |span|
                 start_job span
@@ -89,8 +87,7 @@ module OpenCensus
               end
             ensure
               @exporter.export span_context.build_contained_spans \
-                               max_stack_frames: OpenCensus::Trace.configure
-                                                 .default_max_stack_frames
+                max_stack_frames: max_frames
             end
           end
         end
@@ -101,6 +98,12 @@ module OpenCensus
         # @private Get OpenCensus Sidekiq config
         def configuration
           OpenCensus::Trace.config.sidekiq
+        end
+
+        ##
+        # @private The default maximum stack frames from the configuration
+        def max_frames
+          OpenCensus::Trace.config.default_max_stack_frames
         end
 
         ##

@@ -48,10 +48,6 @@ stats_recorder.record(
   video_size_measure.create_measurement(value: 24 * MIB, tags: tag_map_osx),
 )
 
-view_data = stats_recorder.view_data video_size_view.name
-
-pp view_data.data
-
-# I can't figure out how to make the exporter work
+# create an exporter and export data
 log_exporter = OpenCensus::Stats::Exporters::Logger.new(Logger.new(STDOUT))
-log_exporter.export(view_data.data)
+log_exporter.export(stats_recorder.views_data)

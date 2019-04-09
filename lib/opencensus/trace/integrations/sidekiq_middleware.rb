@@ -14,7 +14,6 @@
 
 require "opencensus"
 require "opencensus/trace/integrations/sidekiq"
-require "opencensus/trace/integrations/active_support"
 
 module OpenCensus
   module Trace

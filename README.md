@@ -58,8 +58,8 @@ You can use the OpenCensus library to trace sidekiq jobs.
 
 To enable this functionality, require this file during application startup:
 ```ruby
-# In config/application.rb
-require "opencensus/trace/integrations/rails"
+# In config/application.rb or config/initializers/opencensus.rb for example
+require "opencensus/trace/integrations/sidekiq"
 ```
 See the documentation for the
 [Sidekiq integration class](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/Sidekiq)
@@ -100,6 +100,21 @@ conn.get "/"
 
 See the documentation for the
 [FaradayMiddleware](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/FaradayMiddleware)
+class for more info.
+
+### Tracing ActiveSupport
+
+If you are using ActiveSupport and wish to trace SQL requests, template
+rendering and so on, you need to require the ActiveSupport integration.
+Here is an example:
+
+```ruby
+# In config/application.rb or config/initializers/opencensus.rb for example
+require "opencensus/trace/integrations/active_support"
+```
+
+See the documentation for the
+[ActiveSupport](http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/ActiveSupport)
 class for more info.
 
 ### Adding Custom Trace Spans

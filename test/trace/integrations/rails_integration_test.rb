@@ -86,7 +86,7 @@ describe "Rails integration" do
         end
       end
 
-      def capture_in_rails_context cmd, timeout: 5
+      def capture_in_rails_context cmd, timeout: 6
         result = nil
         Dir.chdir APP_DIR do
           Bundler.with_original_env do

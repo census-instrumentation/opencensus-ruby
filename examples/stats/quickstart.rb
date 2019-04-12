@@ -2,7 +2,6 @@
 
 $LOAD_PATH.unshift File.expand_path("../../lib", __dir__)
 require "opencensus"
-require 'pp'
 
 MIB = 1 << 20
 frontend_key = "my.org/keys/frontend"
@@ -25,7 +24,7 @@ video_size_view = OpenCensus::Stats::View.new(
   columns: [frontend_key]
 )
 
-stats_recorder = OpenCensus::Stats::Recorder.new()
+stats_recorder = OpenCensus::Stats::Recorder.new
 stats_recorder.register_view(video_size_view)
 
 # setup up our in-context tags, and record some measurements
@@ -45,7 +44,7 @@ stats_recorder.record(
   video_size_measure.create_measurement(value: 21 * MIB, tags: tag_map_osx),
   video_size_measure.create_measurement(value: 22 * MIB, tags: tag_map_osx),
   video_size_measure.create_measurement(value: 23 * MIB, tags: tag_map_osx),
-  video_size_measure.create_measurement(value: 24 * MIB, tags: tag_map_osx),
+  video_size_measure.create_measurement(value: 24 * MIB, tags: tag_map_osx)
 )
 
 # create an exporter and export data

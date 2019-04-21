@@ -31,7 +31,7 @@ module OpenCensus
       ##
       # A set of attributes on the annotation.
       #
-      # @return [Hash<String, (TruncatableString, Integer, Boolean)>]
+      # @return [Hash<String, (TruncatableString, Integer, Float, Boolean)>]
       #
       attr_reader :attributes
 

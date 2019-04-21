@@ -324,12 +324,12 @@ describe OpenCensus::Trace::SpanBuilder::PieceBuilder do
       result["b"].truncated_byte_count.must_equal 0
     end
 
-    it "should keep booleans and TruncatableStrings" do
+    it "should keep booleans, TruncatableStrings and floats" do
       ts = OpenCensus::Trace::TruncatableString.new "asdf",
                                                     truncated_byte_count: 20
-      input = {a: true, b: false, c: ts}
-      result = builder_with_small_maxes.convert_attributes input
-      result.must_equal({"a" => true, "b" => false, "c" => ts})
+      input = {a: true, b: false, c: ts, d: 10.239}
+      result = builder_with_no_maxes.convert_attributes input
+      result.must_equal({"a" => true, "b" => false, "c" => ts, "d" => 10.239})
     end
 
     it "should keep an entire hash if there is no max" do

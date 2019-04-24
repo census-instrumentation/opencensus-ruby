@@ -1,6 +1,6 @@
 require "test_helper"
 
-describe OpenCensus::Stats::Measurement do
+describe OpenCensus::Stats::Measure do
   let(:tag_key) { "key1" }
   let(:tag_value) { "val1" }
   let(:tag){

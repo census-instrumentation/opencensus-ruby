@@ -71,17 +71,21 @@ describe OpenCensus::Tags::Tag do
     end
   end
 
-  describe "tag ttl" do
-    it "set no propagation" do
-      tag = OpenCensus::Tags::Tag.new "key", "val"
-      tag.set_no_propagation
+  describe "create tag with ttl" do
+    it "no propagation" do
+      tag = OpenCensus::Tags::Tag.create_non_propagative_tag "key", "val"
+      tag.key.must_equal "key"
+      tag.value.must_equal "val"
       tag.ttl.must_equal 0
+      tag.propagate?.must_equal false
     end
 
-    it "set unlimited propagation" do
-      tag = OpenCensus::Tags::Tag.new "key", "val"
-      tag.set_unlimited_propagation
+    it "unlimited propagation" do
+      tag = OpenCensus::Tags::Tag.create_unlimited_propagative_tag "key", "val"
+      tag.key.must_equal "key"
+      tag.value.must_equal "val"
       tag.ttl.must_equal(-1)
+      tag.propagate?.must_equal true
     end
   end
 end

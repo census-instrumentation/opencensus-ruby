@@ -59,6 +59,7 @@ module OpenCensus
         # Serialize TagMap object
         #
         # @param [TagMap] tags_context
+        # @return [String, nil]
         #
         def serialize tags_context
           binary = [int_to_varint(VERSION_ID)]
@@ -68,9 +69,14 @@ module OpenCensus
 
             binary << int_to_varint(TAG_FIELD_ID)
             binary << int_to_varint(tag.key.length)
-            binary << tag.key.encode(Encoding::UTF_8)
-            binary << int_to_varint(tag.value ? tag.value.length : 0)
-            binary << tag.value.to_s.encode(Encoding::UTF_8)
+            binary << tag.key
+
+            if tag.value
+              binary << int_to_varint(tag.value.length)
+              binary << tag.value
+            else
+              binary << int_to_varint(0)
+            end
           end
 
           binary = binary.join

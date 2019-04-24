@@ -76,21 +76,50 @@ module OpenCensus
       # Check tag can propagate
       # @return [Boolean]
       def propagate?
-        @ttl == -1 || @ttl > 0
+        @ttl == UNLIMITED_PROPAGATION || @ttl > NO_PROPAGATION
       end
 
-      # Set no propagation A tag with no propagation is considered to have
+      # Create non propagative tag.
+      #
+      # A tag with no propagation is considered to have
       # local scope and is used within the process where it's created.
-      def set_no_propagation
-        @ttl = NO_PROPAGATION
+      #
+      # @param [String] key Tag key
+      #   Maximum allowed length of the key is {MAX_LENGTH} and must contains
+      #   only printable characters.
+      # @param [String] value Tag value
+      #   Maximum allowed length of the key is {MAX_LENGTH}. Value can be a
+      #   nil value but if it present it must contains only printable
+      #   characters.
+      # @raise [InvalidTagError] If invalid tag key or value.
+      #   key: If key is empty, length grater then {MAX_LENGTH} characters or
+      #   contains non printable characters
+      #   value: If value length grater then 255 characters
+      #   or contains non printable characters
+      # @return [Tag]
+      def self.create_non_propagative_tag key, value
+        new key, value, ttl: NO_PROPAGATION
       end
 
-      # Set unlimited propagation
-      # A tag unlimited propagation can propagate unlimited hops.
+      # Create tag with unlimited propagation
+      #
       # It is typical used to track a request, which may be processed across
       # multiple entities.
-      def set_unlimited_propagation
-        @ttl = UNLIMITED_PROPAGATION
+      # @param [String] key Tag key
+      #   Maximum allowed length of the key is {MAX_LENGTH} and must contains
+      #   only printable characters.
+      # @param [String] value Tag value
+      #   Maximum allowed length of the key is {MAX_LENGTH}. Value can be a
+      #   nil value but if it present it must contains only printable
+      #   characters.
+      # @raise [InvalidTagError] If invalid tag key or value.
+      #   key: If key is empty, length grater then {MAX_LENGTH} characters or
+      #   contains non printable characters
+      #   value: If value length grater then 255 characters
+      #   or contains non printable characters
+      # @return [Tag]
+      def self.create_unlimited_propagative_tag key, value
+        new key, value
       end
 
       private

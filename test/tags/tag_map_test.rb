@@ -14,7 +14,13 @@ describe OpenCensus::Tags::TagMap do
       tag_map.length.must_equal 0
     end
 
-    it "create tags map with tags key, values" do
+    it "create tags map from tags key, values" do
+      tag_map = OpenCensus::Tags::TagMap.new({ tag_key => tag_value })
+      tag_map.length.must_equal 1
+      tag_map[tag_key].value.must_equal tag_value
+    end
+
+    it "create tag map from tags array" do
       tag_map = OpenCensus::Tags::TagMap.new(tags)
       tag_map.length.must_equal 1
       tag_map[tag_key].value.must_equal tag_value

@@ -55,6 +55,13 @@ module OpenCensus
     #  # Length
     #  tag_map.length # 1
     #
+    # @example Create tag map from hash
+    #
+    #   tag_map = OpenCensus::Tags::OpenCensus.new({
+    #     "key1" => "val1",
+    #     "key2" => "val2"
+    #   })
+    #
     # @example Create tag map with list of tags.
     #
     #   tag_map = OpenCensus::Tags::OpenCensus.new([
@@ -67,11 +74,20 @@ module OpenCensus
 
       # Create a tag map.
       #
-      # @param [Array<Tags::Tag>] tags Tags list with string key and value and
-      #   metadata.
-      #
-      def initialize tags = []
-        @tags = tags.each_with_object({}) { |tag, r| r[tag.key] = tag }
+      # @param [Hash<String,String>, Array<Tags::Tag>, nil] tags Tags list with
+      #   string key and value and metadata.
+      def initialize tags = nil
+        @tags = case tags
+                when Hash
+                  tags.each_with_object({}) do |(key, value), r|
+                    tag = Tag.new key, value
+                    r[tag.key] = tag
+                  end
+                when Array
+                  tags.each_with_object({}) { |tag, r| r[tag.key] = tag }
+                else
+                  {}
+                end
       end
 
       # Insert tag.
@@ -83,7 +99,7 @@ module OpenCensus
 
       # Get all tags
       #
-      # @returns [Array<Tag>]
+      # @return [Array<Tag>]
       def tags
         @tags.values
       end

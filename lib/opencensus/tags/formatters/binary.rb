@@ -64,7 +64,7 @@ module OpenCensus
         def serialize tags_context
           binary = [int_to_varint(VERSION_ID)]
 
-          tags_context.each do |tag|
+          tags_context.each do |_, tag|
             next unless tag.propagate?
 
             binary << int_to_varint(TAG_FIELD_ID)

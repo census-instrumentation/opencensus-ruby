@@ -118,12 +118,12 @@ module OpenCensus
       end
 
       # @!method each
-      #   @see Array#each
+      #   @see Hash#each
       # @!method length
-      #   @see Array#length
+      #   @see Hash#length
       # @!method empty?
-      #   @see Array#empty?
-      def_delegators :tags, :each, :length, :empty?
+      #   @see Hash#empty?
+      def_delegators :@tags, :each, :length, :empty?
 
       # Convert tag map to binary string format.
       #

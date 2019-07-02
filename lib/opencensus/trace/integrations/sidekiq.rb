@@ -62,6 +62,7 @@ module OpenCensus
             sc.add_option! :sample_proc, ->(_job) { true }
             sc.add_option! :trace_prefix, "sidekiq/"
             sc.add_option! :job_attrs_for_trace_name, %w[class]
+            sc.add_option! :job_attrs_for_span, %w[class]
             sc.add_option! :host_name, ""
           end
         end

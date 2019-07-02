@@ -53,7 +53,8 @@ module OpenCensus
 
           config = configuration
           @trace_prefix = config.trace_prefix
-          @job_attrs = config.job_attrs_for_trace_name
+          @job_name_attrs = config.job_attrs_for_trace_name
+          @job_span_attrs = config.job_attrs_for_span
         end
 
         # @param [Object] worker the worker instance
@@ -63,7 +64,7 @@ module OpenCensus
         # @yield the next middleware in the chain or worker `perform` method
         # @return [Void]
         def call _worker, job, _queue
-          trace_path = [@trace_prefix, job.values_at(*@job_attrs)]
+          trace_path = [@trace_prefix, job.values_at(*@job_name_attrs)]
                        .join(SEPARATOR)
 
           # TODO: find a way to give the job data to the sampler
@@ -81,7 +82,7 @@ module OpenCensus
           Trace.start_request_trace do |span_context|
             begin
               Trace.in_span trace_path do |span|
-                start_job span
+                start_job span, job.slice(*@job_span_attrs)
                 yield
               end
             ensure
@@ -111,9 +112,13 @@ module OpenCensus
         # @private
         # @param [Google::Cloud::Trace::TraceSpan] span The root span to
         #     configure.
-        def start_job span
+        # @param [Hash] attrs attributes to add to the span
+        def start_job span, attrs
           span.kind = SpanBuilder::SERVER
           span.put_attribute HTTP_HOST_ATTRIBUTE, configuration.host_name
+          attrs.each do |attr_name, attr_value|
+            span.put_attribute attr_name, attr_value
+          end
         end
       end
     end

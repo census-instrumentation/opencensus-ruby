@@ -208,11 +208,11 @@ module OpenCensus
       # the ID of the logged-in user, or any other relevant information.
       #
       # Keys must be strings.
-      # Values may be String, TruncatableString, Integer, or Boolean.
+      # Values may be String, TruncatableString, Integer, Float or Boolean.
       # The valid integer range is 64-bit signed `(-2^63..2^63-1)`.
       #
       # @param [String, Symbol] key
-      # @param [String, TruncatableString, Integer, boolean] value
+      # @param [String, TruncatableString, Integer, Float, Boolean] value
       #
       def put_attribute key, value
         @attributes[key.to_s] = value
@@ -282,7 +282,8 @@ module OpenCensus
       #     {OpenCensus::Trace::SpanBuilder::CHILD_LINKED_SPAN},
       #     {OpenCensus::Trace::SpanBuilder::PARENT_LINKED_SPAN}, and
       #     {OpenCensus::Trace::SpanBuilder::TYPE_UNSPECIFIED}.
-      # @param [String] attributes Key-value pairs providing additional
+      # @param [Hash<String, (TruncatableString, Integer, Float, Boolean)>]
+      #     attributes Key-value pairs providing additional
       #     properties of the link. Keys must be strings, and values are
       #     restricted to the same types as attributes (see #put_attribute).
       #
@@ -514,7 +515,7 @@ module OpenCensus
                 else
                   truncatable_string v.to_s
                 end
-              when true, false, TruncatableString
+              when true, false, TruncatableString, Float
                 v
               else
                 truncatable_string v.to_s

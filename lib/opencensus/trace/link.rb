@@ -69,7 +69,7 @@ module OpenCensus
       ##
       # A set of attributes on the link.
       #
-      # @return [Hash<String, (TruncatableString, Integer, Boolean)>]
+      # @return [Hash<String, (TruncatableString, Integer, Float, Boolean)>]
       #
       attr_reader :attributes
 

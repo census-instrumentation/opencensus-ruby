@@ -101,7 +101,7 @@ module OpenCensus
       ##
       # The properties of this span.
       #
-      # @return [Hash<String, (TruncatableString, Integer, Boolean)>]
+      # @return [Hash<String, (TruncatableString, Integer, Float, Boolean)>]
       #
       attr_reader :attributes
 

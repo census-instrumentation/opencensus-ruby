@@ -63,7 +63,7 @@ module OpenCensus
             end_time: span.end_time,
             attributes: format_attributes(span.attributes),
             dropped_attributes_count: span.dropped_attributes_count,
-            stack_trace: span.stack_trace,
+            stack_trace: span.stack_trace.map(&:to_s),
             dropped_frames_count: span.dropped_frames_count,
             stack_trace_hash_id: span.stack_trace_hash_id,
             time_events: span.time_events.map { |te| format_time_event(te) },

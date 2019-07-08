@@ -126,6 +126,7 @@ describe OpenCensus::Trace::Exporters::Logger do
     it "should serialize stack trace" do
       output["stack_trace"].wont_be_empty
       output["stack_trace"].must_be_kind_of Array
+      output["stack_trace"].first.must_be_kind_of String
     end
   end
 end

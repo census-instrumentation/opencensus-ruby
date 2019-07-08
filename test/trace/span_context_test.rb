@@ -102,8 +102,8 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root
       span = span_context.start_span "hello"
       frame = span.instance_variable_get(:@stack_trace).first
-      frame.label.must_match %r{^block}
-      frame.path.must_match %r{span_context_test\.rb$}
+      frame.must_match %r{block}
+      frame.must_match %r{span_context_test\.rb}
     end
 
     it "honors span-scoped sampler" do

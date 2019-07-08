@@ -150,8 +150,8 @@ describe OpenCensus::Trace::SpanContext do
       span_context = OpenCensus::Trace::SpanContext.create_root
       span_context.in_span "hello" do |span|
         frame = span.instance_variable_get(:@stack_trace).first
-        frame.label.must_match %r{^block}
-        frame.path.must_match %r{span_context_test\.rb$}
+        frame.must_match %r{block}
+        frame.must_match %r{span_context_test\.rb}
       end
     end
 

@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: OpenCensus::Trace::SpanContext
+  
+    &mdash; OpenCensus
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "OpenCensus::Trace::SpanContext";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (S)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span>
+     &raquo; 
+    <span class="title">SpanContext</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: OpenCensus::Trace::SpanContext
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">OpenCensus::Trace::SpanContext</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/opencensus/trace/span_context.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>SpanContext represents the context within which a span may be created. It
+includes the ID of the parent trace, the ID of the parent span, and
+sampling state.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#parent-instance_method" title="#parent (instance method)">#<strong>parent</strong>  &#x21d2; SpanContext<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The parent of this context, or <code>nil</code> if this is a root context.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#same_process_as_parent-instance_method" title="#same_process_as_parent (instance method)">#<strong>same_process_as_parent</strong>  &#x21d2; boolean<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Whether the parent of spans created by this context is local, or
+<code>nil</code> if this context creates root spans or this information is
+unknown.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#span_id-instance_method" title="#span_id (instance method)">#<strong>span_id</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The span ID as a 16-character hex string, or the empty string if the
+context refers to the root of the trace.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#trace_options-instance_method" title="#trace_options (instance method)">#<strong>trace_options</strong>  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The original trace options byte used to create this span context.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#create_root-class_method" title="create_root (class method)">.<strong>create_root</strong>(trace_context: nil, same_process_as_parent: nil)  &#x21d2; SpanContext </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Create a new root SpanContext object, given either a traceparent header
+value by itself, or an entire Rack environment.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#build_contained_spans-instance_method" title="#build_contained_spans (instance method)">#<strong>build_contained_spans</strong>(max_attributes: nil, max_stack_frames: nil, max_annotations: nil, max_message_events: nil, max_links: nil, max_string_length: nil)  &#x21d2; Array&lt;Span&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Builds spans under this context, and returns an array of built
+<code>Span</code> objects.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#end_span-instance_method" title="#end_span (instance method)">#<strong>end_span</strong>(span)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Finish the given span, which must have been created by this span context.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#in_span-instance_method" title="#in_span (instance method)">#<strong>in_span</strong>(name, kind: nil, skip_frames: 0, sampler: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Create a new span in this context.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#root-instance_method" title="#root (instance method)">#<strong>root</strong>  &#x21d2; SpanContext </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The root context, which may be this context or one of its ancestors.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#root%3F-instance_method" title="#root? (instance method)">#<strong>root?</strong>  &#x21d2; boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns true if this is a root span context.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sampled%3F-instance_method" title="#sampled? (instance method)">#<strong>sampled?</strong>  &#x21d2; boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Whether this context (e.g. the parent span) has been sampled.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_span-instance_method" title="#start_span (instance method)">#<strong>start_span</strong>(name, kind: nil, skip_frames: 0, sampler: nil)  &#x21d2; SpanBuilder </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Create a new span in this context.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#this_span-instance_method" title="#this_span (instance method)">#<strong>this_span</strong>  &#x21d2; SpanBuilder<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the span that defines this context; that is, the span that is the
+parent of spans created by this context.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#trace_context-instance_method" title="#trace_context (instance method)">#<strong>trace_context</strong>  &#x21d2; TraceContextData </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the trace context for this span.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#trace_id-instance_method" title="#trace_id (instance method)">#<strong>trace_id</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The trace ID, as a 32-character hex string.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="parent-instance_method">
+  
+    #<strong>parent</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="OpenCensus::Trace::SpanContext (class)">SpanContext</a></span></tt><sup>?</sup>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The parent of this context, or <code>nil</code> if this is a root context.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="OpenCensus::Trace::SpanContext (class)">SpanContext</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+77
+78
+79</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 77</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
+  <span class='ivar'>@parent</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="same_process_as_parent-instance_method">
+  
+    #<strong>same_process_as_parent</strong>  &#x21d2; <tt>boolean</tt><sup>?</sup>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Whether the parent of spans created by this context is local, or
+<code>nil</code> if this context creates root spans or this information is
+unknown.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>boolean</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+140
+141
+142</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 140</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_same_process_as_parent'>same_process_as_parent</span>
+  <span class='ivar'>@same_process_as_parent</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="span_id-instance_method">
+  
+    #<strong>span_id</strong>  &#x21d2; <tt>String</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The span ID as a 16-character hex string, or the empty string if the
+context refers to the root of the trace.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+132
+133
+134</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 132</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_span_id'>span_id</span>
+  <span class='ivar'>@span_id</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="trace_options-instance_method">
+  
+    #<strong>trace_options</strong>  &#x21d2; <tt>Integer</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The original trace options byte used to create this span context.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+124
+125
+126</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 124</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_trace_options'>trace_options</span>
+  <span class='ivar'>@trace_options</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="create_root-class_method">
+  
+    .<strong>create_root</strong>(trace_context: nil, same_process_as_parent: nil)  &#x21d2; <tt><span class='object_link'><a href="" title="OpenCensus::Trace::SpanContext (class)">SpanContext</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Create a new root SpanContext object, given either a traceparent header
+value by itself, or an entire Rack environment. If a valid traceparent
+header can be obtained from either source, it is used to generate the
+SpanContext. Otherwise, a new root context with a unique
+<code>trace_id</code> and a root <code>span_id</code> of “” is used.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>trace_context</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="TraceContextData.html" title="OpenCensus::Trace::TraceContextData (class)">TraceContextData</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The request&#39;s incoming trace context (optional)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>same_process_as_parent</span>
+      
+      
+        <span class='type'>(<tt>boolean</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Set to <code>true</code> if the parent span is local, <code>false</code> if
+it is remote, or <code>nil</code> if there is no parent span or this
+information is not available.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="OpenCensus::Trace::SpanContext (class)">SpanContext</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 58</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_create_root'>create_root</span> <span class='label'>trace_context:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>same_process_as_parent:</span> <span class='kw'>nil</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_trace_context'>trace_context</span>
+    <span class='id identifier rubyid_trace_data'>trace_data</span> <span class='op'>=</span> <span class='const'>TraceData</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_trace_context'>trace_context</span><span class='period'>.</span><span class='id identifier rubyid_trace_id'>trace_id</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_trace_data'>trace_data</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_trace_context'>trace_context</span><span class='period'>.</span><span class='id identifier rubyid_span_id'>span_id</span><span class='comma'>,</span>
+        <span class='id identifier rubyid_trace_context'>trace_context</span><span class='period'>.</span><span class='id identifier rubyid_trace_options'>trace_options</span><span class='comma'>,</span> <span class='id identifier rubyid_same_process_as_parent'>same_process_as_parent</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_trace_id'>trace_id</span> <span class='op'>=</span> <span class='id identifier rubyid_rand'>rand</span> <span class='int'>1</span><span class='op'>..</span><span class='const'>MAX_TRACE_ID</span>
+    <span class='id identifier rubyid_trace_id'>trace_id</span> <span class='op'>=</span> <span class='id identifier rubyid_trace_id'>trace_id</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='lparen'>(</span><span class='int'>16</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_rjust'>rjust</span><span class='lparen'>(</span><span class='int'>32</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>0</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_trace_data'>trace_data</span> <span class='op'>=</span> <span class='const'>TraceData</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_trace_id'>trace_id</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_trace_data'>trace_data</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='kw'>nil</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="build_contained_spans-instance_method">
+  
+    #<strong>build_contained_spans</strong>(max_attributes: nil, max_stack_frames: nil, max_annotations: nil, max_message_events: nil, max_links: nil, max_string_length: nil)  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="Span.html" title="OpenCensus::Trace::Span (class)">Span</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Builds spans under this context, and returns an array of built
+<code>Span</code> objects. Builds only spans that are both finished and
+sampled, and ignores others. The order of the generated spans is undefined.</p>
+
+<p>Does not build any ancestor spans. If you want the entire span tree built,
+call this method on the <code>#root</code> context.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>max_attributes</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The maximum number of attributes to save, or <code>nil</code> to use the
+config value.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>max_stack_frames</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The maximum number of stack frames to save, or <code>nil</code> to use the
+config value.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>max_annotations</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The maximum number of annotations to save, or <code>nil</code> to use the
+config value.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>max_message_events</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The maximum number of message events to save, or <code>nil</code> to use
+the config value.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>max_links</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The maximum number of links to save, or <code>nil</code> to use the config
+value.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>max_string_length</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The maximum length in bytes for truncated strings, or <code>nil</code> to
+use the config value.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="Span.html" title="OpenCensus::Trace::Span (class)">Span</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Built Span objects</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 264</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_build_contained_spans'>build_contained_spans</span> <span class='label'>max_attributes:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+                          <span class='label'>max_stack_frames:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+                          <span class='label'>max_annotations:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+                          <span class='label'>max_message_events:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+                          <span class='label'>max_links:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+                          <span class='label'>max_string_length:</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_sampled_span_builders'>sampled_span_builders</span> <span class='op'>=</span> <span class='id identifier rubyid_contained_span_builders'>contained_span_builders</span><span class='period'>.</span><span class='id identifier rubyid_find_all'>find_all</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_sb'>sb</span><span class='op'>|</span>
+    <span class='id identifier rubyid_sb'>sb</span><span class='period'>.</span><span class='id identifier rubyid_finished?'>finished?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_sb'>sb</span><span class='period'>.</span><span class='id identifier rubyid_sampled?'>sampled?</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_sampled_span_builders'>sampled_span_builders</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_sb'>sb</span><span class='op'>|</span>
+    <span class='id identifier rubyid_sb'>sb</span><span class='period'>.</span><span class='id identifier rubyid_to_span'>to_span</span> <span class='label'>max_attributes:</span> <span class='id identifier rubyid_max_attributes'>max_attributes</span><span class='comma'>,</span>
+               <span class='label'>max_stack_frames:</span> <span class='id identifier rubyid_max_stack_frames'>max_stack_frames</span><span class='comma'>,</span>
+               <span class='label'>max_annotations:</span> <span class='id identifier rubyid_max_annotations'>max_annotations</span><span class='comma'>,</span>
+               <span class='label'>max_message_events:</span> <span class='id identifier rubyid_max_message_events'>max_message_events</span><span class='comma'>,</span>
+               <span class='label'>max_links:</span> <span class='id identifier rubyid_max_links'>max_links</span><span class='comma'>,</span>
+               <span class='label'>max_string_length:</span> <span class='id identifier rubyid_max_string_length'>max_string_length</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="end_span-instance_method">
+  
+    #<strong>end_span</strong>(span)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Finish the given span, which must have been created by this span context.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>span</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">SpanBuilder</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The span to finish.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+222
+223
+224
+225
+226
+227</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 222</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_end_span'>end_span</span> <span class='id identifier rubyid_span'>span</span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_span'>span</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span> <span class='op'>==</span> <span class='kw'>self</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>The given span was not created by this context</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_span'>span</span><span class='period'>.</span><span class='id identifier rubyid_finish!'>finish!</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="in_span-instance_method">
+  
+    #<strong>in_span</strong>(name, kind: nil, skip_frames: 0, sampler: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Create a new span in this context. You must pass a name for the span. All
+other span attributes should be set using <span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">OpenCensus::Trace::SpanBuilder</a></span>
+methods.</p>
+
+<p>The span will be started automatically with the current timestamp. The
+SpanBuilder will then be passed to the block you provide. The span will be
+finished automatically at the end of the block.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of the span. Required.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>kind</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Kind of span. Optional. Defaults to unspecified. Other allowed values are
+<span class='object_link'><a href="SpanBuilder.html#SERVER-constant" title="OpenCensus::Trace::SpanBuilder::SERVER (constant)">OpenCensus::Trace::SpanBuilder::SERVER</a></span> and
+<span class='object_link'><a href="SpanBuilder.html#CLIENT-constant" title="OpenCensus::Trace::SpanBuilder::CLIENT (constant)">OpenCensus::Trace::SpanBuilder::CLIENT</a></span>.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>sampler</span>
+      
+      
+        <span class='type'>(<tt>Sampler</tt>, <tt>Boolean</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Span-scoped sampler. Optional. If provided, the sampler may be a sampler
+object as defined in the <span class='object_link'><a href="Samplers.html" title="OpenCensus::Trace::Samplers (module)">OpenCensus::Trace::Samplers</a></span> module docs, or the
+values <code>true</code> or <code>false</code> as shortcuts for
+<span class='object_link'><a href="Samplers/AlwaysSample.html" title="OpenCensus::Trace::Samplers::AlwaysSample (class)">OpenCensus::Trace::Samplers::AlwaysSample</a></span> or
+<span class='object_link'><a href="Samplers/NeverSample.html" title="OpenCensus::Trace::Samplers::NeverSample (class)">OpenCensus::Trace::Samplers::NeverSample</a></span>, respectively. If no span-scoped
+sampler is provided, the local parent span&#39;s sampling decision is used.
+If there is no local parent span, the configured default sampler is used to
+make a sampling decision.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+206
+207
+208
+209
+210
+211
+212
+213
+214</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 206</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_in_span'>in_span</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>kind:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_frames:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>sampler:</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_span'>span</span> <span class='op'>=</span> <span class='id identifier rubyid_start_span'>start_span</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>kind:</span> <span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='label'>skip_frames:</span> <span class='id identifier rubyid_skip_frames'>skip_frames</span> <span class='op'>+</span> <span class='int'>1</span><span class='comma'>,</span>
+                          <span class='label'>sampler:</span> <span class='id identifier rubyid_sampler'>sampler</span>
+  <span class='kw'>begin</span>
+    <span class='kw'>yield</span> <span class='id identifier rubyid_span'>span</span>
+  <span class='kw'>ensure</span>
+    <span class='id identifier rubyid_end_span'>end_span</span> <span class='id identifier rubyid_span'>span</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="root-instance_method">
+  
+    #<strong>root</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="OpenCensus::Trace::SpanContext (class)">SpanContext</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The root context, which may be this context or one of its ancestors.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="OpenCensus::Trace::SpanContext (class)">SpanContext</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+93
+94
+95
+96
+97
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 93</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span>
+  <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='kw'>self</span>
+  <span class='kw'>until</span> <span class='lparen'>(</span><span class='id identifier rubyid_parent'>parent</span> <span class='op'>=</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_parent'>parent</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="root?-instance_method">
+  
+    #<strong>root?</strong>  &#x21d2; <tt>boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns true if this is a root span context</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+84
+85
+86</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 84</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_root?'>root?</span>
+  <span class='id identifier rubyid_parent'>parent</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="sampled?-instance_method">
+  
+    #<strong>sampled?</strong>  &#x21d2; <tt>boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Whether this context (e.g. the parent span) has been sampled. This
+information may be used in sampling decisions for new spans.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+148
+149
+150</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 148</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sampled?'>sampled?</span>
+  <span class='id identifier rubyid_trace_options'>trace_options</span> <span class='op'>&amp;</span> <span class='int'>0x01</span> <span class='op'>!=</span> <span class='int'>0</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_span-instance_method">
+  
+    #<strong>start_span</strong>(name, kind: nil, skip_frames: 0, sampler: nil)  &#x21d2; <tt><span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">SpanBuilder</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Create a new span in this context. You must pass a name for the span. All
+other span attributes should be set using <span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">OpenCensus::Trace::SpanBuilder</a></span>
+methods. The span will be started automatically with the current timestamp.
+However, you are responsible for finishing the span yourself.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of the span. Required.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>kind</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Kind of span. Optional. Defaults to unspecified. Other allowed values are
+<span class='object_link'><a href="SpanBuilder.html#SERVER-constant" title="OpenCensus::Trace::SpanBuilder::SERVER (constant)">OpenCensus::Trace::SpanBuilder::SERVER</a></span> and
+<span class='object_link'><a href="SpanBuilder.html#CLIENT-constant" title="OpenCensus::Trace::SpanBuilder::CLIENT (constant)">OpenCensus::Trace::SpanBuilder::CLIENT</a></span>.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>sampler</span>
+      
+      
+        <span class='type'>(<tt>Sampler</tt>, <tt>Boolean</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Span-scoped sampler. Optional. If provided, the sampler may be a sampler
+object as defined in the <span class='object_link'><a href="Samplers.html" title="OpenCensus::Trace::Samplers (module)">OpenCensus::Trace::Samplers</a></span> module docs, or the
+values <code>true</code> or <code>false</code> as shortcuts for
+<span class='object_link'><a href="Samplers/AlwaysSample.html" title="OpenCensus::Trace::Samplers::AlwaysSample (class)">OpenCensus::Trace::Samplers::AlwaysSample</a></span> or
+<span class='object_link'><a href="Samplers/NeverSample.html" title="OpenCensus::Trace::Samplers::NeverSample (class)">OpenCensus::Trace::Samplers::NeverSample</a></span>, respectively. If no span-scoped
+sampler is provided, the local parent span&#39;s sampling decision is used.
+If there is no local parent span, the configured default sampler is used to
+make a sampling decision.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">SpanBuilder</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>A SpanBuilder object that you can use to set span attributes and create
+children.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+175
+176
+177
+178
+179
+180
+181
+182</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 175</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start_span'>start_span</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>kind:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_frames:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>sampler:</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_child_context'>child_context</span> <span class='op'>=</span> <span class='id identifier rubyid_create_child'>create_child</span> <span class='id identifier rubyid_sampler'>sampler</span>
+  <span class='id identifier rubyid_span'>span</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">SpanBuilder</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_child_context'>child_context</span><span class='comma'>,</span> <span class='label'>skip_frames:</span> <span class='id identifier rubyid_skip_frames'>skip_frames</span> <span class='op'>+</span> <span class='int'>1</span>
+  <span class='id identifier rubyid_span'>span</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='id identifier rubyid_span'>span</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>=</span> <span class='id identifier rubyid_kind'>kind</span> <span class='kw'>if</span> <span class='id identifier rubyid_kind'>kind</span>
+  <span class='id identifier rubyid_span'>span</span><span class='period'>.</span><span class='id identifier rubyid_start!'>start!</span>
+  <span class='ivar'>@trace_data</span><span class='period'>.</span><span class='id identifier rubyid_span_map'>span_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_child_context'>child_context</span><span class='period'>.</span><span class='id identifier rubyid_span_id'>span_id</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_span'>span</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="this_span-instance_method">
+  
+    #<strong>this_span</strong>  &#x21d2; <tt><span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">SpanBuilder</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the span that defines this context; that is, the span that is the
+parent of spans created by this context. Returns <code>nil</code> if this
+context is the root and doesn&#39;t correspond to an actual span, or if the
+corresponding span is remote.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SpanBuilder.html" title="OpenCensus::Trace::SpanBuilder (class)">SpanBuilder</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The span defining this context.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+237
+238
+239</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 237</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_this_span'>this_span</span>
+  <span class='id identifier rubyid_get_span'>get_span</span> <span class='ivar'>@span_id</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="trace_context-instance_method">
+  
+    #<strong>trace_context</strong>  &#x21d2; <tt><span class='object_link'><a href="TraceContextData.html" title="OpenCensus::Trace::TraceContextData (class)">TraceContextData</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the trace context for this span.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="TraceContextData.html" title="OpenCensus::Trace::TraceContextData (class)">TraceContextData</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+106
+107
+108</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 106</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_trace_context'>trace_context</span>
+  <span class='const'><span class='object_link'><a href="TraceContextData.html" title="OpenCensus::Trace::TraceContextData (class)">TraceContextData</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_trace_id'>trace_id</span><span class='comma'>,</span> <span class='ivar'>@span_id</span><span class='comma'>,</span> <span class='id identifier rubyid_trace_options'>trace_options</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="trace_id-instance_method">
+  
+    #<strong>trace_id</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>The trace ID, as a 32-character hex string.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+115
+116
+117</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/trace/span_context.rb', line 115</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_trace_id'>trace_id</span>
+  <span class='ivar'>@trace_data</span><span class='period'>.</span><span class='id identifier rubyid_trace_id'>trace_id</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Oct 14 17:55:24 2019 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.20 (ruby-2.5.3).
+</div>
+
+    </div>
+  </body>
+</html>

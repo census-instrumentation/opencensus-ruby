@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; OpenCensus
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-OpenCensus+-+A+stats+collection+and+distributed+tracing+framework">OpenCensus - A stats collection and distributed tracing framework</h1>
+
+<p>This is the open-source release of Census for Ruby. Census provides a
+framework to measure a server&#39;s resource usage and collect performance
+stats.</p>
+
+<p>This repository contains the source to the <code>opencensus</code> Rubygem,
+which contains the core OpenCensus APIs and basic integrations with Rails,
+Faraday, and GRPC. Additional integrations, including exporters to popular
+analytics services, will be available in separate gems.</p>
+
+<p>The library is in alpha stage, and the API is subject to change. In
+particular, support for the Stats API is currently incomplete and
+experimental.</p>
+
+<h2 id="label-Quick+Start">Quick Start</h2>
+
+<h3 id="label-Installation">Installation</h3>
+
+<p>Install the gem directly:</p>
+
+<pre class="code ruby"><code class="ruby">$ gem install opencensus
+</code></pre>
+
+<p>Or install through Bundler:</p>
+<ol><li>
+<p>Add the <code>opencensus</code> gem to your Gemfile:</p>
+</li></ol>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>opencensus</span><span class='tstring_end'>&quot;</span></span>
+</code></pre>
+<ol><li>
+<p>Use Bundler to install the gem:</p>
+</li></ol>
+
+<pre class="code ruby"><code class="ruby">$ bundle install
+</code></pre>
+
+<h3 id="label-Getting+started+with+Ruby+on+Rails">Getting started with Ruby on Rails</h3>
+
+<p>The OpenCensus library provides a Railtie that integrates with Ruby On
+Rails, automatically tracing incoming requests in the application. It also
+automatically traces key processes in your application such as database
+queries and view rendering.</p>
+
+<p>To enable Rails integration, require this file during application startup:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># In config/application.rb
+</span><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>opencensus/trace/integrations/rails</span><span class='tstring_end'>&quot;</span></span>
+</code></pre>
+
+<p>See the documentation for the <a
+href="http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/Rails">Rails
+integration class</a> for more information.</p>
+
+<h3 id="label-Getting+started+with+other+Rack-based+frameworks">Getting started with other Rack-based frameworks</h3>
+
+<p>Other Rack-based frameworks, such as Sinatra, can use the Rack Middleware
+integration, which automatically traces incoming requests. To enable the
+integration for a non-Rails Rack framework, add the middleware to your
+middleware stack.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># In config.ru or similar Rack configuration file
+</span><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>opencensus/trace/integrations/rack_middleware</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_use'>use</span> <span class='const'><span class='object_link'><a href="OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Integrations.html" title="OpenCensus::Trace::Integrations (module)">Integrations</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Integrations/RackMiddleware.html" title="OpenCensus::Trace::Integrations::RackMiddleware (class)">RackMiddleware</a></span></span>
+</code></pre>
+
+<h2 id="label-Instrumentation+features">Instrumentation features</h2>
+
+<h3 id="label-Tracing+outgoing+HTTP+requests">Tracing outgoing HTTP requests</h3>
+
+<p>If your app uses the <a
+href="https://github.com/lostisland/faraday">Faraday</a> library to make
+outgoing HTTP requests, consider installing the Faraday Middleware
+integration. This integration creates a span for each outgoing Faraday
+request, tracking the latency of that request, and propagates distributed
+trace headers into the request so you can potentially connect your request
+trace with that of the remote service. Here is an example:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>opencensus/trace/integrations/rack_middleware</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_conn'>conn</span> <span class='op'>=</span> <span class='const'>Faraday</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>url:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://www.example.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_use'>use</span> <span class='const'><span class='object_link'><a href="OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Integrations.html" title="OpenCensus::Trace::Integrations (module)">Integrations</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Integrations/FaradayMiddleware.html" title="OpenCensus::Trace::Integrations::FaradayMiddleware (class)">FaradayMiddleware</a></span></span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_adapter'>adapter</span> <span class='const'>Faraday</span><span class='period'>.</span><span class='id identifier rubyid_default_adapter'>default_adapter</span>
+<span class='kw'>end</span>
+<span class='id identifier rubyid_conn'>conn</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span>
+</code></pre>
+
+<p>See the documentation for the <a
+href="http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Integrations/FaradayMiddleware">FaradayMiddleware</a>
+class for more info.</p>
+
+<h3 id="label-Adding+Custom+Trace+Spans">Adding Custom Trace Spans</h3>
+
+<p>In addition to the spans added by the Rails integration (e.g. for database
+queries) and by Faraday integration for outgoing HTTP requests, you can add
+additional custom spans to the request trace:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='period'>.</span><span class='id identifier rubyid_in_span'><span class='object_link'><a href="OpenCensus/Trace.html#in_span-class_method" title="OpenCensus::Trace.in_span (method)">in_span</a></span></span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>my_task</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_span'>span</span><span class='op'>|</span>
+  <span class='comment'># Do stuff...
+</span>  
+  <span class='const'><span class='object_link'><a href="OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='period'>.</span><span class='id identifier rubyid_in_span'><span class='object_link'><a href="OpenCensus/Trace.html#in_span-class_method" title="OpenCensus::Trace.in_span (method)">in_span</a></span></span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>my_subtask</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_subspan'>subspan</span><span class='op'>|</span>
+    <span class='comment'># Do other stuff
+</span>  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>See the documentation for the <a
+href="http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace">OpenCensus::Trace</a>
+module for more info.</p>
+
+<h3 id="label-Exporting+traces">Exporting traces</h3>
+
+<p>By default, OpenCensus will log request trace data as JSON. To export
+traces to your favorite analytics backend, install an export plugin.</p>
+
+<p>The provided exporters are:</p>
+
+<p>| Class | Description | | —– | ———– | | <a
+href="https://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Exporters/Logger">LoggerExporter</a>
+| Exporter JSON encoded spans to a standard Ruby Logger interface | | <a
+href="https://github.com/census-ecosystem/opencensus-ruby-exporter-stackdriver">StackdriverExporter</a>
+| Report traces to Google Cloud Stackdriver Trace | | <a
+href="https://github.com/census-ecosystem/opencensus-ruby-exporter-zipkin">ZipkinExporter</a>
+| Report collected spans to a Zipkin server |</p>
+
+<p>You may also create your own <a
+href="http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace/Exporters">Exporter</a></p>
+
+<h3 id="label-Configuring+the+library">Configuring the library</h3>
+
+<p>OpenCensus allows configuration of a number of aspects via the
+configuration class. The following example illustrates how that looks:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="OpenCensus.html#configure-class_method" title="OpenCensus.configure (method)">configure</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_default_sampler'>default_sampler</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Samplers.html" title="OpenCensus::Trace::Samplers (module)">Samplers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Samplers/AlwaysSample.html" title="OpenCensus::Trace::Samplers::AlwaysSample (class)">AlwaysSample</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_default_max_attributes'>default_max_attributes</span> <span class='op'>=</span> <span class='int'>16</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>If you are using Rails, you can equivalently use the Rails config:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_opencensus'>opencensus</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_default_sampler'>default_sampler</span> <span class='op'>=</span>
+  <span class='const'><span class='object_link'><a href="OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Samplers.html" title="OpenCensus::Trace::Samplers (module)">Samplers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="OpenCensus/Trace/Samplers/AlwaysSample.html" title="OpenCensus::Trace::Samplers::AlwaysSample (class)">AlwaysSample</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+<span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_opencensus'>opencensus</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_default_max_attributes'>default_max_attributes</span> <span class='op'>=</span> <span class='int'>16</span>
+</code></pre>
+
+<p>You can configure a variety of core OpenCensus options, including:</p>
+<ul><li>
+<p>Sampling, which controls how often a request is traced.</p>
+</li><li>
+<p>Exporting, which controls how trace information is reported.</p>
+</li><li>
+<p>Formatting, which controls how distributed request trace headers are 
+constructed</p>
+</li><li>
+<p>Size maximums, which control when trace data is truncated.</p>
+</li></ul>
+
+<p>Additionally, integrations and other plugins might have their own
+configurations.</p>
+
+<p>For more information, consult the documentation for <a
+href="http://www.rubydoc.info/gems/opencensus/OpenCensus#configure-class_method">OpenCensus.configure</a>
+and <a
+href="http://www.rubydoc.info/gems/opencensus/OpenCensus/Trace#configure-class_method">OpenCensus::Trace.configure</a>.</p>
+
+<h2 id="label-About+the+library">About the library</h2>
+
+<h3 id="label-Supported+Ruby+Versions">Supported Ruby Versions</h3>
+
+<p>This library is supported on Ruby 2.2+.</p>
+
+<p>However, Ruby 2.3 or later is strongly recommended, as earlier releases
+have reached or are nearing end-of-life. After June 1, 2018, OpenCensus
+will provide official support only for Ruby versions that are considered
+current and supported by Ruby Core (that is, Ruby versions that are either
+in normal maintenance or in security maintenance). See <a
+href="https://www.ruby-lang.org/en/downloads/branches">www.ruby-lang.org/en/downloads/branches</a>/
+for further details.</p>
+
+<h3 id="label-Versioning">Versioning</h3>
+
+<p>This library follows <a href="http://semver.org/">Semantic Versioning</a>.</p>
+
+<p>It is currently in major version zero (0.y.z), which means that anything
+may change at any time, and the public API should not be considered stable.</p>
+
+<h2 id="label-Contributing">Contributing</h2>
+
+<p>Contributions to this library are always welcome and highly encouraged.</p>
+
+<p>See the <a href="CONTRIBUTING.md">Contributing Guide</a> for more
+information on how to get started.</p>
+
+<p>Please note that this project is released with a Contributor Code of
+Conduct. By participating in this project you agree to abide by its terms.
+See <a href="CODE_OF_CONDUCT.md">Code of Conduct</a> for more information.</p>
+
+<h2 id="label-License">License</h2>
+
+<p>This library is licensed under Apache 2.0. Full license text is available
+in <a href="LICENSE">LICENSE</a>.</p>
+
+<h2 id="label-Disclaimer">Disclaimer</h2>
+
+<p>This is not an official Google product.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Oct 14 17:55:19 2019 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.20 (ruby-2.5.3).
+</div>
+
+    </div>
+  </body>
+</html>

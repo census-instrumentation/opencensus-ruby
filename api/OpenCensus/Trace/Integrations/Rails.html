@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: OpenCensus::Trace::Integrations::Rails
+  
+    &mdash; OpenCensus
+  
+</title>
+
+  <link rel="stylesheet" href="../../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "OpenCensus::Trace::Integrations::Rails";
+  relpath = '../../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../../_index.html">Index (R)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Integrations.html" title="OpenCensus::Trace::Integrations (module)">Integrations</a></span></span>
+     &raquo; 
+    <span class="title">Rails</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: OpenCensus::Trace::Integrations::Rails
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Rails::Railtie</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Rails::Railtie</li>
+          
+            <li class="next">OpenCensus::Trace::Integrations::Rails</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/opencensus/trace/integrations/rails.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<h1 id="label-Rails+Integration">Rails Integration</h1>
+
+<p>This Railtie automatically sets up OpenCensus for a Rails server:</p>
+<ul><li>
+<p>It wraps all requests in spans, using the <code>RackMiddleware</code>
+integration.</p>
+</li><li>
+<p>It wraps common events (ActiveRecord database calls, ActionView renders,
+etc) in subspans.</p>
+</li></ul>
+
+<h2 id="label-Configuration">Configuration</h2>
+
+<p>This Railtie exposes the OpenCensus configuration on the
+<code>opencensus</code> key of the Rails configuration. So you can, for
+example, set:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_opencensus'>opencensus</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_default_max_attributes'>default_max_attributes</span> <span class='op'>=</span> <span class='int'>64</span>
+</code></pre>
+
+<h3 id="label-Configuring+ActiveSupport+Notifications">Configuring ActiveSupport Notifications</h3>
+
+<p>This Railtie also provides a <code>notifications</code> configuration that
+supports the following fields:</p>
+<ul><li>
+<p><code>events</code> An array of strings indicating the events that will 
+trigger the creation of spans. The default value is 
+<span class='object_link'><a href="#DEFAULT_NOTIFICATION_EVENTS-constant" title="OpenCensus::Trace::Integrations::Rails::DEFAULT_NOTIFICATION_EVENTS (constant)">DEFAULT_NOTIFICATION_EVENTS</a></span>.</p>
+</li><li>
+<p><code>attribute_namespace</code> A string that will be prepended to all 
+attributes copied from the event payload. Defaults to “<code>rails/</code>”</p>
+</li></ul>
+
+<p>You can access these in the <code>notifications</code> subconfiguration
+under the trace configuration. For example:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="../../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_notifications'>notifications</span><span class='period'>.</span><span class='id identifier rubyid_attribute_namespace'>attribute_namespace</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>myapp/</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Or, using Rails:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_opencensus'>opencensus</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_notifications'>notifications</span><span class='period'>.</span><span class='id identifier rubyid_attribute_namespace'>attribute_namespace</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>myapp/</span><span class='tstring_end'>&quot;</span></span>
+</code></pre>
+
+<h3 id="label-Configuring+Middleware+Placement">Configuring Middleware Placement</h3>
+
+<p>By default, the Railtie places the OpenCensus middleware at the end of the
+middleware stack. This means it will measure your application code but not
+the effect of other middleware, including middlware that is part of the
+Rails stack or any custom middleware you have installed. If you would
+rather place the middleware at the beginning of the stack where it
+surrounds all other middleware, set the this configuration:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="../../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_middleware_placement'>middleware_placement</span> <span class='op'>=</span> <span class='symbol'>:begin</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Or, using Rails:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_opencensus'>opencensus</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_middleware_placement'>middleware_placement</span> <span class='op'>=</span> <span class='symbol'>:begin</span>
+</code></pre>
+
+<p>This effectively causes the Railtie to use <code>unshift</code> rather than
+<code>use</code> to add the OpenCensus middleware to the middleware stack.
+You may also set this configuration to an existing middleware class to
+cause the OpenCensus middleware to be inserted before that middleware in
+the stack. For example:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="../../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Trace.html" title="OpenCensus::Trace (module)">Trace</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_middleware_placement'>middleware_placement</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Rails</span><span class='op'>::</span><span class='const'>Rack</span><span class='op'>::</span><span class='const'>Logger</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Or, using Rails:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_opencensus'>opencensus</span><span class='period'>.</span><span class='id identifier rubyid_trace'>trace</span><span class='period'>.</span><span class='id identifier rubyid_middleware_placement'>middleware_placement</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Rails</span><span class='op'>::</span><span class='const'>Rack</span><span class='op'>::</span><span class='const'>Logger</span>
+</code></pre>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="DEFAULT_NOTIFICATION_EVENTS-constant" class="">DEFAULT_NOTIFICATION_EVENTS =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>The ActiveSupport notifications that will be reported as spans by default.
+To change this list, update the value of the
+<code>trace.notifications.events</code> configuration.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbracket'>[</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sql.active_record</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>render_template.action_view</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>send_file.action_controller</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>send_data.action_controller</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>deliver.action_mailer</span><span class='tstring_end'>&quot;</span></span>
+<span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+
+  
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Oct 14 17:55:24 2019 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.20 (ruby-2.5.3).
+</div>
+
+    </div>
+  </body>
+</html>

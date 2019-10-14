@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: OpenCensus::Tags::TagMap
+  
+    &mdash; OpenCensus
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "OpenCensus::Tags::TagMap";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (T)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Tags.html" title="OpenCensus::Tags (module)">Tags</a></span></span>
+     &raquo; 
+    <span class="title">TagMap</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: OpenCensus::Tags::TagMap
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">OpenCensus::Tags::TagMap</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  <dl>
+      <dt>Extended by:</dt>
+      <dd>Forwardable</dd>
+  </dl>
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/opencensus/tags/tag_map.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<h1 id="label-TagMap">TagMap</h1>
+
+<p>Collection of tag key and value.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+      <pre class="example code"><code>
+<span class='id identifier rubyid_tag_map'>tag_map</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Tags.html" title="OpenCensus::Tags (module)">Tags</a></span></span><span class='op'>::</span><span class='const'>OpenCensus</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+
+<span class='comment'># Add or update
+</span><span class='id identifier rubyid_tag_map'>tag_map</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value1</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_tag_map'>tag_map</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key2</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value2</span><span class='tstring_end'>&quot;</span></span>
+
+<span class='comment'># Get value
+</span><span class='id identifier rubyid_tag_map'>tag_map</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='comment'># value1
+</span>
+<span class='comment'># Delete
+</span><span class='id identifier rubyid_tag_map'>tag_map</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1</span><span class='tstring_end'>&quot;</span></span>
+
+<span class='comment'># Iterate
+</span><span class='id identifier rubyid_tag_map'>tag_map</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
+  <span class='id identifier rubyid_p'>p</span> <span class='id identifier rubyid_key'>key</span>
+  <span class='id identifier rubyid_p'>p</span> <span class='id identifier rubyid_value'>value</span>
+<span class='kw'>end</span>
+
+<span class='comment'># Length
+</span><span class='id identifier rubyid_tag_map'>tag_map</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='comment'># 1</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Create tag map from hash</p>
+</div></p>
+      
+      <pre class="example code"><code>
+<span class='id identifier rubyid_tag_map'>tag_map</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../OpenCensus.html" title="OpenCensus (module)">OpenCensus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Tags.html" title="OpenCensus::Tags (module)">Tags</a></span></span><span class='op'>::</span><span class='const'>OpenCensus</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value1</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="TagMap/InvalidTagError.html" title="OpenCensus::Tags::TagMap::InvalidTagError (class)">InvalidTagError</a></span>
+    
+  
+</p>
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="MAX_LENGTH-constant" class="">MAX_LENGTH =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>The maximum length for a tag key and tag value</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='int'>255</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#from_binary-class_method" title="from_binary (class method)">.<strong>from_binary</strong>(data)  &#x21d2; TagMap </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Create a tag map from the binary string.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#[]-instance_method" title="#[] (instance method)">#<strong>[]</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#[]=-instance_method" title="#[]= (instance method)">#<strong>[]=</strong>(key, value)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Set tag key value.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#delete-instance_method" title="#delete (instance method)">#<strong>delete</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#delete_if-instance_method" title="#delete_if (instance method)">#<strong>delete_if</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#each-instance_method" title="#each (instance method)">#<strong>each</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#empty%3F-instance_method" title="#empty? (instance method)">#<strong>empty?</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(tags = {})  &#x21d2; TagMap </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Create a tag map.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#length-instance_method" title="#length (instance method)">#<strong>length</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#to_binary-instance_method" title="#to_binary (instance method)">#<strong>to_binary</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Convert tag map to binary string format.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#to_h-instance_method" title="#to_h (instance method)">#<strong>to_h</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  <div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(tags = {})  &#x21d2; <tt><span class='object_link'><a href="" title="OpenCensus::Tags::TagMap (class)">TagMap</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Create a tag map. It is a map of tags from key to value.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>tags</span>
+      
+      
+        <span class='type'>(<tt>Hash{String=&gt;String}</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Tags hash with string key and value.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+47
+48
+49
+50
+51
+52
+53</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 47</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span> <span class='id identifier rubyid_tags'>tags</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='ivar'>@tags</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+
+  <span class='id identifier rubyid_tags'>tags</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
+    <span class='kw'>self</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="from_binary-class_method">
+  
+    .<strong>from_binary</strong>(data)  &#x21d2; <tt><span class='object_link'><a href="" title="OpenCensus::Tags::TagMap (class)">TagMap</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Create a tag map from the binary string.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>data</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Binary string data</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="OpenCensus::Tags::TagMap (class)">TagMap</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+80
+81
+82</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 80</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_from_binary'>from_binary</span> <span class='id identifier rubyid_data'>data</span>
+  <span class='const'><span class='object_link'><a href="Formatters.html" title="OpenCensus::Tags::Formatters (module)">Formatters</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Formatters/Binary.html" title="OpenCensus::Tags::Formatters::Binary (class)">Binary</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_deserialize'><span class='object_link'><a href="Formatters/Binary.html#deserialize-instance_method" title="OpenCensus::Tags::Formatters::Binary#deserialize (method)">deserialize</a></span></span> <span class='id identifier rubyid_data'>data</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="[]-instance_method">
+  
+    #<strong>[]</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>Hash#[]</li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 98</span>
+
+<span class='id identifier rubyid_def_delegators'>def_delegators</span> <span class='symbol'>:@tags</span><span class='comma'>,</span> <span class='symbol'>:[]</span><span class='comma'>,</span> <span class='symbol'>:each</span><span class='comma'>,</span> <span class='symbol'>:delete</span><span class='comma'>,</span> <span class='symbol'>:delete_if</span><span class='comma'>,</span> <span class='symbol'>:length</span><span class='comma'>,</span> \
+<span class='symbol'>:to_h</span><span class='comma'>,</span> <span class='symbol'>:empty?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="[]=-instance_method">
+  
+    #<strong>[]=</strong>(key, value)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Set tag key value</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>key</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Tag key</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Tag value</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="TagMap/InvalidTagError.html" title="OpenCensus::Tags::TagMap::InvalidTagError (class)">InvalidTagError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>If invalid tag key or value.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+61
+62
+63
+64
+65
+66</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 61</span>
+
+<span class='kw'>def</span> <span class='op'>[]=</span> <span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span>
+  <span class='id identifier rubyid_validate_key!'>validate_key!</span> <span class='id identifier rubyid_key'>key</span>
+  <span class='id identifier rubyid_validate_value!'>validate_value!</span> <span class='id identifier rubyid_value'>value</span>
+
+  <span class='ivar'>@tags</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="delete-instance_method">
+  
+    #<strong>delete</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>Hash#delete</li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 98</span>
+
+<span class='id identifier rubyid_def_delegators'>def_delegators</span> <span class='symbol'>:@tags</span><span class='comma'>,</span> <span class='symbol'>:[]</span><span class='comma'>,</span> <span class='symbol'>:each</span><span class='comma'>,</span> <span class='symbol'>:delete</span><span class='comma'>,</span> <span class='symbol'>:delete_if</span><span class='comma'>,</span> <span class='symbol'>:length</span><span class='comma'>,</span> \
+<span class='symbol'>:to_h</span><span class='comma'>,</span> <span class='symbol'>:empty?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="delete_if-instance_method">
+  
+    #<strong>delete_if</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>Hash#delete_if</li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 98</span>
+
+<span class='id identifier rubyid_def_delegators'>def_delegators</span> <span class='symbol'>:@tags</span><span class='comma'>,</span> <span class='symbol'>:[]</span><span class='comma'>,</span> <span class='symbol'>:each</span><span class='comma'>,</span> <span class='symbol'>:delete</span><span class='comma'>,</span> <span class='symbol'>:delete_if</span><span class='comma'>,</span> <span class='symbol'>:length</span><span class='comma'>,</span> \
+<span class='symbol'>:to_h</span><span class='comma'>,</span> <span class='symbol'>:empty?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="each-instance_method">
+  
+    #<strong>each</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>Hash#each</li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 98</span>
+
+<span class='id identifier rubyid_def_delegators'>def_delegators</span> <span class='symbol'>:@tags</span><span class='comma'>,</span> <span class='symbol'>:[]</span><span class='comma'>,</span> <span class='symbol'>:each</span><span class='comma'>,</span> <span class='symbol'>:delete</span><span class='comma'>,</span> <span class='symbol'>:delete_if</span><span class='comma'>,</span> <span class='symbol'>:length</span><span class='comma'>,</span> \
+<span class='symbol'>:to_h</span><span class='comma'>,</span> <span class='symbol'>:empty?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="empty?-instance_method">
+  
+    #<strong>empty?</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>Hash#empty?</li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 98</span>
+
+<span class='id identifier rubyid_def_delegators'>def_delegators</span> <span class='symbol'>:@tags</span><span class='comma'>,</span> <span class='symbol'>:[]</span><span class='comma'>,</span> <span class='symbol'>:each</span><span class='comma'>,</span> <span class='symbol'>:delete</span><span class='comma'>,</span> <span class='symbol'>:delete_if</span><span class='comma'>,</span> <span class='symbol'>:length</span><span class='comma'>,</span> \
+<span class='symbol'>:to_h</span><span class='comma'>,</span> <span class='symbol'>:empty?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="length-instance_method">
+  
+    #<strong>length</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>Hash#length</li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 98</span>
+
+<span class='id identifier rubyid_def_delegators'>def_delegators</span> <span class='symbol'>:@tags</span><span class='comma'>,</span> <span class='symbol'>:[]</span><span class='comma'>,</span> <span class='symbol'>:each</span><span class='comma'>,</span> <span class='symbol'>:delete</span><span class='comma'>,</span> <span class='symbol'>:delete_if</span><span class='comma'>,</span> <span class='symbol'>:length</span><span class='comma'>,</span> \
+<span class='symbol'>:to_h</span><span class='comma'>,</span> <span class='symbol'>:empty?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="to_binary-instance_method">
+  
+    #<strong>to_binary</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Convert tag map to binary string format.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Binary string</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><a href="[documentation](https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md#tag-context)" target="_parent" title="[documentation](https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md#tag-context)">[documentation](https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md#tag-context)</a></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+72
+73
+74</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 72</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_to_binary'>to_binary</span>
+  <span class='const'><span class='object_link'><a href="Formatters.html" title="OpenCensus::Tags::Formatters (module)">Formatters</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Formatters/Binary.html" title="OpenCensus::Tags::Formatters::Binary (class)">Binary</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_serialize'><span class='object_link'><a href="Formatters/Binary.html#serialize-instance_method" title="OpenCensus::Tags::Formatters::Binary#serialize (method)">serialize</a></span></span> <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="to_h-instance_method">
+  
+    #<strong>to_h</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>Hash#to_h</li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencensus/tags/tag_map.rb', line 98</span>
+
+<span class='id identifier rubyid_def_delegators'>def_delegators</span> <span class='symbol'>:@tags</span><span class='comma'>,</span> <span class='symbol'>:[]</span><span class='comma'>,</span> <span class='symbol'>:each</span><span class='comma'>,</span> <span class='symbol'>:delete</span><span class='comma'>,</span> <span class='symbol'>:delete_if</span><span class='comma'>,</span> <span class='symbol'>:length</span><span class='comma'>,</span> \
+<span class='symbol'>:to_h</span><span class='comma'>,</span> <span class='symbol'>:empty?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Oct 14 17:55:21 2019 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.20 (ruby-2.5.3).
+</div>
+
+    </div>
+  </body>
+</html>

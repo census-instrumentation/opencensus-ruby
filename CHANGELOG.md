@@ -1,5 +1,14 @@
 # Release History
 
+### 0.5.0 / 2019-10-14
+
+This update brings experimental support for the OpenCensus Stats API. Note that
+Stats support is currently partial and not well-tested.
+
+Other changes:
+
+* Attributes in the Trace API can now be floats.
+
 ### 0.4.0 / 2018-10-22
 
 This is an important update that includes a number of fixes and brings the

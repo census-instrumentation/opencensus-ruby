@@ -8,7 +8,8 @@ the core OpenCensus APIs and basic integrations with Rails, Faraday, and GRPC.
 Additional integrations, including exporters to popular analytics services,
 will be available in separate gems.
 
-The library is in alpha stage, and the API is subject to change.
+The library is in alpha stage, and the API is subject to change. In particular,
+support for the Stats API is currently incomplete and experimental.
 
 ## Quick Start
 

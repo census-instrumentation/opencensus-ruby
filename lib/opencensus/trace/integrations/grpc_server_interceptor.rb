@@ -49,30 +49,15 @@ module OpenCensus
         # @param [GRPC::ActiveCall::SingleReqView] call
         # @param [Method] method
         #
-        def request_response request:, call:, method:
+        def request_response request:, call:, method:, &block
           context_bin = call.metadata[OPENCENSUS_TRACE_BIN_KEY]
-          if context_bin
-            context = deserialize(context_bin)
-          end
+          context = context_bin ? deserialize(context_bin) : nil
 
           Trace.start_request_trace \
             trace_context: context,
             same_process_as_parent: false do |span_context|
             begin
-              Trace.in_span get_name(method) do |span|
-                modify_span span, request, call, method
-
-                start_request span, call, method
-                begin
-                  grpc_ex = GRPC::Ok.new
-                  yield
-                rescue StandardError => e
-                  grpc_ex = to_grpc_ex(e)
-                  raise e
-                ensure
-                  finish_request span, grpc_ex
-                end
-              end
+              yield_with_trace(request, call, method, &block)
             ensure
               @exporter.export span_context.build_contained_spans
             end
@@ -90,6 +75,28 @@ module OpenCensus
         #
         def deserialize context_bin
           @formatter.deserialize(context_bin)
+        end
+
+        ##
+        # @param [Object] request
+        # @param [GRPC::ActiveCall::SingleReqView] call
+        # @param [Method] method
+        #
+        def yield_with_trace request, call, method
+          Trace.in_span get_name(method) do |span|
+            modify_span span, request, call, method
+
+            start_request span, call, method
+            begin
+              grpc_ex = GRPC::Ok.new
+              yield request: request, call: call, method: method
+            rescue StandardError => e
+              grpc_ex = to_grpc_ex(e)
+              raise e
+            ensure
+              finish_request span, grpc_ex
+            end
+          end
         end
 
         ##
@@ -139,9 +146,9 @@ module OpenCensus
         def start_request span, call, method
           span.kind = SpanBuilder::SERVER
           span.put_attribute "http.path", get_path(method)
-          span.put_attribute "http.method", "POST"  # gRPC always uses "POST"
-          if call.metadata['user-agent']
-            span.put_attribute "http.user_agent", call.metadata['user-agent']
+          span.put_attribute "http.method", "POST" # gRPC always uses "POST"
+          if call.metadata["user-agent"]
+            span.put_attribute "http.user_agent", call.metadata["user-agent"]
           end
         end
 
@@ -155,6 +162,9 @@ module OpenCensus
           span.set_status exception.code
           span.put_attribute "http.status_code", to_http_status(exception)
         end
+
+        # rubocop:disable Metrics/MethodLength
+        # rubocop:disable Metrics/CyclomaticComplexity
 
         ##
         # cf. https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/HTTP.md#mapping-from-http-status-codes-to-trace-status-codes
@@ -194,6 +204,9 @@ module OpenCensus
             500
           end
         end
+
+        # rubocop:enable Metrics/MethodLength
+        # rubocop:enable Metrics/CyclomaticComplexity
 
         ##
         # @param [Exception] exception

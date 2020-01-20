@@ -76,8 +76,10 @@ module OpenCensus
       end
 
       # Create new measurement
+      #
       # @param [Integer, Float] value
-      # @param [Hash<String,String>] tags Tags to which the value is recorded
+      # @param [Hash<String,String>, Tags::TagMap] tags Tags to which the value
+      #   is recorded
       # @return [Measurement]
       def create_measurement value:, tags:
         Measurement.new measure: self, value: value, tags: tags
@@ -89,7 +91,7 @@ module OpenCensus
         type == INT64_TYPE
       end
 
-      # Is float data type
+      # Is double data type
       # @return [Boolean]
       def double?
         type == DOUBLE_TYPE

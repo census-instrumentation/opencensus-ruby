@@ -13,7 +13,8 @@ module OpenCensus
       # @return [Integer,Float] The recorded value
       attr_reader :value
 
-      # @return [TagMap] The tags to which the value is applied
+      # @return [Tags::TagMap] The collection of tags to which the value is
+      #   applied
       attr_reader :tags
 
       # @return [Time] The time when measurement was created.
@@ -22,12 +23,13 @@ module OpenCensus
       # Create a instance of measurement
       #
       # @param [Measure] measure A measure to which the value is applied.
-      # @param [Integer,Float] value Measurement value.
-      # @param [Hash<String,String>] tags The tags to which the value is applied
-      def initialize measure:, value:, tags:
+      # @param [Integer, Float] value Measurement value.
+      # @param [Hash<String,String>,Tags::TagMap, nil] tags The tags to which
+      #   the value is applied
+      def initialize measure:, value:, tags: nil
         @measure = measure
         @value = value
-        @tags = Tags::TagMap.new tags
+        @tags = tags.instance_of?(Tags::TagMap) ? tags : Tags::TagMap.new(tags)
         @time = Time.now.utc
       end
     end

@@ -1,6 +1,15 @@
 require "test_helper"
 
-describe OpenCensus::Stats::Measurement do
+describe OpenCensus::Stats::Measure do
+  let(:tag_key) { "key1" }
+  let(:tag_value) { "val1" }
+  let(:tag){
+    OpenCensus::Tags::Tag.new tag_key, tag_value
+  }
+  let(:tags) {
+    OpenCensus::Tags::TagMap.new [tag]
+  }
+
   describe "create" do
     it "int64 type measure" do
       measure = OpenCensus::Stats::Measure.new(
@@ -42,11 +51,11 @@ describe OpenCensus::Stats::Measurement do
       type: OpenCensus::Stats::Measure::DOUBLE_TYPE,
       description: "storage desc"
     )
-    tags = { "key1" => "val1" }
+
     measurement = measure.create_measurement value: 10.10, tags: tags
     measurement.value.must_equal 10.10
     measurement.measure.must_equal measure
     measurement.tags.must_be_kind_of OpenCensus::Tags::TagMap
-    measurement.tags.to_h.must_equal tags
+    measurement.tags[tag_key].value.must_equal tag_value
   end
 end

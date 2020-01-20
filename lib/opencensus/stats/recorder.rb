@@ -54,10 +54,15 @@ module OpenCensus
         view
       end
 
-      # Record measurements
+      # Record measurements.
       #
       # @param [Array<Measurement>, Measurement] measurements
-      # @param [Hash<String,String>] attachments
+      #   A list of measurements to or single measurement.
+      #   All passed measurements will be rejected If any one of the measurement
+      #  has negative value.
+      # @param [Hash<String,String>] attachments The contextual information
+      #   associated with an example value. The contextual information is
+      #   represented as key, value string pairs.
       def record *measurements, attachments: nil
         return if measurements.any? { |m| m.value < 0 }
 

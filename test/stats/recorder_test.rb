@@ -14,7 +14,9 @@ describe OpenCensus::Stats::Recorder do
     )
   }
   let(:aggregation){ OpenCensus::Stats::Aggregation::Sum.new }
-  let(:tag_keys) { ["frontend"]}
+  let(:tag_key) { "frontend" }
+  let(:tag_value) { "mobile.1.0.1" }
+  let(:tag_keys) { [tag_key]}
   let(:view) {
     OpenCensus::Stats::View.new(
       name: "test.view",
@@ -24,12 +26,11 @@ describe OpenCensus::Stats::Recorder do
       columns: tag_keys
     )
   }
-  let(:tag_map) {
-    OpenCensus::Tags::TagMap.new(tag_keys.first => "mobile-ios9.3.5")
+  let(:tag) {
+    OpenCensus::Tags::Tag.new tag_key, tag_value
   }
-
   let(:tags) {
-    { tag_keys.first => "mobile-ios9.3.5" }
+    OpenCensus::Tags::TagMap.new [tag]
   }
 
   it "create reacorder with default properties" do
@@ -155,22 +156,21 @@ describe OpenCensus::Stats::Recorder do
     end
 
     it "record measurement against tags global context" do
-      OpenCensus::Tags.tag_map_context = OpenCensus::Tags::TagMap.new(
-        "frontend" => "android-1.0.1"
-      )
+      tag_ctx =  OpenCensus::Tags::TagMap.new
+      tag_ctx << OpenCensus::Tags::Tag.new(tag_key, tag_value)
+      OpenCensus::Tags.tag_map_context = tag_ctx
 
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
 
       measurement = OpenCensus::Stats.create_measurement(
         name: measure_name,
-        value: 1,
-        tags: OpenCensus::Tags.tag_map_context
+        value: 1
       )
       recorder.record measurement
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 1
-      view_data.data.key?(["android-1.0.1"]).must_equal true
+      view_data.data.key?([tag_value]).must_equal true
     end
   end
 
@@ -179,7 +179,7 @@ describe OpenCensus::Stats::Recorder do
       recorder = OpenCensus::Stats::Recorder.new
       recorder.register_view view
 
-      recorder.record measure.create_measurement(value: 10, tags: tag_map)
+      recorder.record measure.create_measurement(value: 10, tags: tags)
       view_data = recorder.view_data view.name
       view_data.data.length.must_equal 1
 

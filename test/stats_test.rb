@@ -2,7 +2,10 @@ require "test_helper"
 
 describe OpenCensus::Stats do
   let(:tags) {
-    { "tag1" => "value1", "tag2" => "value2"}
+    [
+      OpenCensus::Tags::Tag.new("tag1", "value1"),
+      OpenCensus::Tags::Tag.new("tag2", "value2")
+    ]
   }
 
   describe "stats context" do

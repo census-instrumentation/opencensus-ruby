@@ -1,5 +1,20 @@
 # frozen_string_literal: true
 
+# Copyright 2019 OpenCensus Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 module OpenCensus
   module Tags
     module Formatters
@@ -44,16 +59,24 @@ module OpenCensus
         # Serialize TagMap object
         #
         # @param [TagMap] tags_context
+        # @return [String, nil]
         #
         def serialize tags_context
           binary = [int_to_varint(VERSION_ID)]
 
-          tags_context.each do |key, value|
+          tags_context.each do |_, tag|
+            next unless tag.propagate?
+
             binary << int_to_varint(TAG_FIELD_ID)
-            binary << int_to_varint(key.length)
-            binary << key.encode(Encoding::UTF_8)
-            binary << int_to_varint(value ? value.length : 0)
-            binary << value.to_s.encode(Encoding::UTF_8)
+            binary << int_to_varint(tag.key.length)
+            binary << tag.key
+
+            if tag.value
+              binary << int_to_varint(tag.value.length)
+              binary << tag.value
+            else
+              binary << int_to_varint(0)
+            end
           end
 
           binary = binary.join
@@ -87,7 +110,7 @@ module OpenCensus
             key = io.gets key_length
             value_length = varint_to_int io
             value = io.gets value_length
-            tag_map[key] = value
+            tag_map << Tag.new(key, value)
           end
 
           io.close

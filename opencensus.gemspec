@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "~> 0.59.2"
   spec.add_development_dependency "yard", "~> 0.9"
   spec.add_development_dependency "yard-doctest", "~> 0.1.6"
+  spec.add_development_dependency "grpc", "~> 1.26"
 end
